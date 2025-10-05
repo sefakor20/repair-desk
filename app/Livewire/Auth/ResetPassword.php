@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Auth;
 
 use Illuminate\Auth\Events\PasswordReset;
@@ -57,7 +59,7 @@ class ResetPassword extends Component
                 ])->save();
 
                 event(new PasswordReset($user));
-            }
+            },
         );
 
         // If the password was successfully reset, we will redirect the user back to
