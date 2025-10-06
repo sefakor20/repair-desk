@@ -11,6 +11,7 @@ use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\TwoFactor;
 use App\Livewire\Tickets\Create as TicketsCreate;
+use App\Livewire\Tickets\Edit as TicketsEdit;
 use App\Livewire\Tickets\Index as TicketsIndex;
 use App\Livewire\Tickets\Show as TicketsShow;
 use Illuminate\Support\Facades\Route;
@@ -35,9 +36,7 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('tickets', TicketsIndex::class)->name('tickets.index');
     Route::get('tickets/create', TicketsCreate::class)->name('tickets.create');
     Route::get('tickets/{ticket}', TicketsShow::class)->name('tickets.show');
-    Route::get('tickets/{ticket}/edit', function () {
-        return 'Edit ticket';
-    })->name('tickets.edit');
+    Route::get('tickets/{ticket}/edit', TicketsEdit::class)->name('tickets.edit');
 
     // Settings Routes
     Route::redirect('settings', 'settings/profile');
