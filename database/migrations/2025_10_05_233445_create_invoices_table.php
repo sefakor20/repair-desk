@@ -13,16 +13,16 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('invoices', function (Blueprint $table) {
-            $table->id();
+            $table->ulid('id')->primary();
             $table->string('invoice_number')->unique();
-            $table->foreignId('ticket_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('customer_id')->constrained()->cascadeOnDelete();
+            $table->foreignUlid('ticket_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignUlid('customer_id')->constrained()->cascadeOnDelete();
+            $table->decimal('labor_cost', 10, 2)->default(0);
+            $table->decimal('parts_cost', 10, 2)->default(0);
             $table->decimal('subtotal', 10, 2)->default(0);
-            $table->decimal('tax_rate', 5, 2)->default(0);
-            $table->decimal('tax_amount', 10, 2)->default(0);
-            $table->decimal('discount', 10, 2)->default(0);
+            $table->decimal('tax', 10, 2)->default(0);
             $table->decimal('total', 10, 2)->default(0);
-            $table->string('status')->default('pending'); // pending, paid, cancelled
+            $table->string('status')->default('pending');
             $table->text('notes')->nullable();
             $table->timestamps();
 

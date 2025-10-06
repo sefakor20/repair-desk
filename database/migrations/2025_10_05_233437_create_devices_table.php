@@ -13,8 +13,8 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('devices', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('customer_id')->constrained()->cascadeOnDelete();
+            $table->ulid('id')->primary();
+            $table->foreignUlid('customer_id')->constrained()->cascadeOnDelete();
             $table->string('type'); // phone, computer, tablet, etc.
             $table->string('brand')->nullable();
             $table->string('model')->nullable();

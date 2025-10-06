@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\InvoiceStatus;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,6 +15,7 @@ class Invoice extends Model
 {
     /** @use HasFactory<\Database\Factories\InvoiceFactory> */
     use HasFactory;
+    use HasUlids;
 
     protected $fillable = [
         'invoice_number',
@@ -35,6 +38,7 @@ class Invoice extends Model
             'tax_amount' => 'decimal:2',
             'discount' => 'decimal:2',
             'total' => 'decimal:2',
+            'status' => InvoiceStatus::class,
         ];
     }
 
@@ -65,7 +69,7 @@ class Invoice extends Model
 
     public function isPaid(): bool
     {
-        return $this->status === 'paid' || $this->getBalanceDueAttribute() <= 0;
+        return $this->status === InvoiceStatus::Paid || $this->getBalanceDueAttribute() <= 0;
     }
 
     protected static function boot(): void

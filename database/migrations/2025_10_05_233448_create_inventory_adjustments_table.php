@@ -13,14 +13,14 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('inventory_adjustments', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('inventory_item_id')->constrained()->cascadeOnDelete();
-            $table->integer('quantity_change'); // can be positive or negative
+            $table->ulid('id')->primary();
+            $table->foreignUlid('inventory_item_id')->constrained()->cascadeOnDelete();
+            $table->integer('quantity_change');
             $table->integer('quantity_before');
             $table->integer('quantity_after');
             $table->string('reason');
             $table->text('notes')->nullable();
-            $table->foreignId('adjusted_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignUlid('adjusted_by')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
 
             $table->index(['inventory_item_id', 'created_at']);

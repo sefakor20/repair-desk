@@ -13,13 +13,13 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('ticket_attachments', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('ticket_id')->constrained()->cascadeOnDelete();
+            $table->ulid('id')->primary();
+            $table->foreignUlid('ticket_id')->constrained()->cascadeOnDelete();
             $table->string('file_path');
             $table->string('file_name');
             $table->string('mime_type')->nullable();
             $table->unsignedBigInteger('file_size')->nullable();
-            $table->foreignId('uploaded_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignUlid('uploaded_by')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
 
             $table->index('ticket_id');

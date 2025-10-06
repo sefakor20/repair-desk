@@ -13,13 +13,13 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('payments', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('invoice_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('ticket_id')->nullable()->constrained()->nullOnDelete();
+            $table->ulid('id')->primary();
+            $table->foreignUlid('invoice_id')->constrained()->cascadeOnDelete();
+            $table->foreignUlid('ticket_id')->nullable()->constrained()->nullOnDelete();
             $table->decimal('amount', 10, 2);
-            $table->string('payment_method'); // cash, card, bank_transfer
+            $table->string('payment_method');
             $table->timestamp('payment_date');
-            $table->foreignId('processed_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignUlid('processed_by')->constrained('users')->cascadeOnDelete();
             $table->text('notes')->nullable();
             $table->string('transaction_reference')->nullable();
             $table->timestamps();

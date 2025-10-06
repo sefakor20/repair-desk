@@ -13,7 +13,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('inventory_items', function (Blueprint $table) {
-            $table->id();
+            $table->ulid('id')->primary();
             $table->string('name');
             $table->string('sku')->unique();
             $table->text('description')->nullable();
@@ -22,7 +22,7 @@ return new class extends Migration {
             $table->decimal('selling_price', 10, 2)->default(0);
             $table->integer('quantity')->default(0);
             $table->integer('reorder_level')->default(10);
-            $table->string('status')->default('active'); // active, inactive
+            $table->string('status')->default('active');
             $table->string('image_path')->nullable();
             $table->timestamps();
 

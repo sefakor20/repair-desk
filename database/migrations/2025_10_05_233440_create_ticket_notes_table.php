@@ -13,11 +13,11 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('ticket_notes', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('ticket_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->ulid('id')->primary();
+            $table->foreignUlid('ticket_id')->constrained()->cascadeOnDelete();
+            $table->foreignUlid('user_id')->constrained()->cascadeOnDelete();
             $table->text('note');
-            $table->boolean('is_internal')->default(false); // true = staff only, false = customer visible
+            $table->boolean('is_internal')->default(false);
             $table->timestamps();
 
             $table->index(['ticket_id', 'created_at']);

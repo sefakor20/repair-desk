@@ -13,10 +13,10 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('ticket_parts', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('ticket_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('inventory_item_id')->nullable()->constrained()->nullOnDelete();
-            $table->string('part_name'); // Store name in case inventory item is deleted
+            $table->ulid('id')->primary();
+            $table->foreignUlid('ticket_id')->constrained()->cascadeOnDelete();
+            $table->foreignUlid('inventory_item_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('part_name');
             $table->integer('quantity')->default(1);
             $table->decimal('cost_price', 10, 2)->default(0);
             $table->decimal('selling_price', 10, 2)->default(0);

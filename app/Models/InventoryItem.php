@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\InventoryStatus;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,6 +14,7 @@ class InventoryItem extends Model
 {
     /** @use HasFactory<\Database\Factories\InventoryItemFactory> */
     use HasFactory;
+    use HasUlids;
 
     protected $fillable = [
         'name',
@@ -33,6 +36,7 @@ class InventoryItem extends Model
             'selling_price' => 'decimal:2',
             'quantity' => 'integer',
             'reorder_level' => 'integer',
+            'status' => InventoryStatus::class,
         ];
     }
 
