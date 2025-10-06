@@ -46,6 +46,6 @@ class Index extends Component
                 ->withCount(['devices', 'tickets'])
                 ->latest()
                 ->paginate(15),
-        ]);
+        ])->with('Customer', Customer::class);
     }
 }

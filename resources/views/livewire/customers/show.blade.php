@@ -173,14 +173,8 @@
                                 <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
                                     {{ $ticket->problem_description }}</p>
                                 <div class="mt-2 flex items-center gap-2">
-                                    <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
-                                        style="background-color: {{ $ticket->status->color() }}20; color: {{ $ticket->status->color() }}">
-                                        {{ $ticket->status->label() }}
-                                    </span>
-                                    <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
-                                        style="background-color: {{ $ticket->priority->color() }}20; color: {{ $ticket->priority->color() }}">
-                                        {{ $ticket->priority->label() }}
-                                    </span>
+                                    <x-status-badge :status="$ticket->status" />
+                                    <x-status-badge :status="$ticket->priority" />
                                 </div>
                             </div>
                             <div class="text-sm text-zinc-500 dark:text-zinc-400">
