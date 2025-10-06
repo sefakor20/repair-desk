@@ -24,6 +24,7 @@ class Ticket extends Model
         'customer_id',
         'device_id',
         'problem_description',
+        'diagnosis',
         'status',
         'priority',
         'assigned_to',
