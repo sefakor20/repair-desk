@@ -45,4 +45,47 @@ class TicketFactory extends Factory
             'created_by' => User::factory(),
         ];
     }
+
+    public function statusNew(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'status' => TicketStatus::New,
+        ]);
+    }
+
+    public function inProgress(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'status' => TicketStatus::InProgress,
+        ]);
+    }
+
+    public function completed(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'status' => TicketStatus::Completed,
+            'actual_completion' => now(),
+        ]);
+    }
+
+    public function urgent(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'priority' => TicketPriority::Urgent,
+        ]);
+    }
+
+    public function highPriority(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'priority' => TicketPriority::High,
+        ]);
+    }
+
+    public function lowPriority(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'priority' => TicketPriority::Low,
+        ]);
+    }
 }

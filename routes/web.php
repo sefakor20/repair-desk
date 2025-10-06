@@ -10,6 +10,7 @@ use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\TwoFactor;
+use App\Livewire\Tickets\Index as TicketsIndex;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -27,6 +28,12 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('customers/create', CustomersCreate::class)->name('customers.create');
     Route::get('customers/{customer}', CustomersShow::class)->name('customers.show');
     Route::get('customers/{customer}/edit', CustomersEdit::class)->name('customers.edit');
+
+    // Ticket Management Routes
+    Route::get('tickets', TicketsIndex::class)->name('tickets.index');
+    Route::get('tickets/create', fn() => 'Create Ticket - Coming Soon')->name('tickets.create');
+    Route::get('tickets/{ticket}', fn() => 'Show Ticket - Coming Soon')->name('tickets.show');
+    Route::get('tickets/{ticket}/edit', fn() => 'Edit Ticket - Coming Soon')->name('tickets.edit');
 
     // Settings Routes
     Route::redirect('settings', 'settings/profile');
