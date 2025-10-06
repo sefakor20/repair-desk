@@ -21,6 +21,8 @@
                     :current="request()->routeIs('customers.*')" wire:navigate>{{ __('Customers') }}</flux:navlist.item>
                 <flux:navlist.item icon="wrench-screwdriver" :href="route('tickets.index')"
                     :current="request()->routeIs('tickets.*')" wire:navigate>{{ __('Tickets') }}</flux:navlist.item>
+                <flux:navlist.item icon="cube" :href="route('inventory.index')"
+                    :current="request()->routeIs('inventory.*')" wire:navigate>{{ __('Inventory') }}</flux:navlist.item>
             </flux:navlist.group>
         </flux:navlist>
 
@@ -65,7 +67,8 @@
                 <flux:menu.separator />
 
                 <flux:menu.radio.group>
-                    <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>{{ __('Settings') }}
+                    <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>
+                        {{ __('Settings') }}
                     </flux:menu.item>
                 </flux:menu.radio.group>
 

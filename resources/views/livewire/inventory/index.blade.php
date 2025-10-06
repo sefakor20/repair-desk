@@ -5,10 +5,10 @@
                 <flux:heading size="xl" class="mb-2">{{ __('Inventory') }}</flux:heading>
                 <flux:text>{{ __('Manage parts and products inventory') }}</flux:text>
             </div>
-            {{-- <flux:button :href="route('inventory.create')" wire:navigate>
+            <flux:button :href="route('inventory.create')" wire:navigate>
                 <flux:icon.plus class="-ml-1 mr-2 size-5" />
                 {{ __('Add Item') }}
-            </flux:button> --}}
+            </flux:button>
         </div>
     </div>
 

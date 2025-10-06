@@ -6,7 +6,6 @@ namespace App\Livewire;
 
 use App\Enums\{TicketPriority, TicketStatus};
 use App\Models\{InventoryItem, Invoice, Payment, Ticket};
-use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
