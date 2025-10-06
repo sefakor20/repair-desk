@@ -26,6 +26,8 @@ class Index extends Component
     #[Url]
     public bool $lowStock = false;
 
+    public ?string $deletingItemId = null;
+
     public function render()
     {
         $items = InventoryItem::query()
@@ -78,12 +80,30 @@ class Index extends Component
         $this->resetPage();
     }
 
-    public function delete(InventoryItem $item): void
+    public function confirmDelete($itemId): void
     {
+        $this->deletingItemId = $itemId;
+    }
+
+    public function delete(): void
+    {
+        if (!$this->deletingItemId) {
+            return;
+        }
+
+        $item = InventoryItem::findOrFail($this->deletingItemId);
+
         $this->authorize('delete', $item);
 
         $item->delete();
 
-        $this->dispatch('item-deleted');
+        $this->deletingItemId = null;
+
+        session()->flash('success', 'Inventory item deleted successfully.');
+    }
+
+    public function cancelDelete(): void
+    {
+        $this->deletingItemId = null;
     }
 }

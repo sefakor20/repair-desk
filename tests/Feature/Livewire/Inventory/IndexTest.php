@@ -190,7 +190,9 @@ test('can delete inventory item', function () {
     $item = InventoryItem::factory()->create(['name' => 'To Delete']);
 
     Volt::test(Index::class)
-        ->call('delete', $item);
+        ->call('confirmDelete', $item->id)
+        ->assertSet('deletingItemId', $item->id)
+        ->call('delete');
 
     expect(InventoryItem::where('name', 'To Delete')->exists())->toBeFalse();
 });

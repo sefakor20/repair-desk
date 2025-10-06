@@ -157,14 +157,27 @@
                             </td>
                             <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
                                 <div class="flex items-center justify-end gap-2">
-                                    {{-- <flux:button size="sm" variant="ghost" :href="route('inventory.edit', $item)" wire:navigate>
-                                        {{ __('Edit') }}
-                                    </flux:button> --}}
-                                    <flux:button size="sm" variant="danger"
-                                        wire:click="delete({{ $item->id }})"
-                                        wire:confirm="{{ __('Are you sure you want to delete this item?') }}">
-                                        {{ __('Delete') }}
-                                    </flux:button>
+                                    @can('update', $item)
+                                        <a href="{{ route('inventory.edit', $item) }}" wire:navigate
+                                            class="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+                                            title="Edit">
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                        </a>
+                                    @endcan
+
+                                    @can('delete', $item)
+                                        <button wire:click="confirmDelete('{{ $item->id }}')"
+                                            class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                                            title="Delete">
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button>
+                                    @endcan
                                 </div>
                             </td>
                         </tr>
@@ -177,4 +190,25 @@
             </div>
         @endif
     </div>
+
+    {{-- Delete Confirmation Modal --}}
+    <flux:modal name="delete-confirmation" :show="$deletingItemId !== null" class="max-w-md">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">{{ __('Delete Inventory Item') }}</flux:heading>
+                <flux:subheading class="mt-2">
+                    {{ __('Are you sure you want to delete this inventory item? This action cannot be undone.') }}
+                </flux:subheading>
+            </div>
+
+            <div class="flex justify-end gap-2">
+                <flux:button variant="ghost" wire:click="cancelDelete">
+                    {{ __('Cancel') }}
+                </flux:button>
+                <flux:button variant="danger" wire:click="delete">
+                    {{ __('Delete Item') }}
+                </flux:button>
+            </div>
+        </div>
+    </flux:modal>
 </div>

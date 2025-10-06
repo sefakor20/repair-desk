@@ -8,6 +8,7 @@ use App\Livewire\Customers\Index as CustomersIndex;
 use App\Livewire\Customers\Show as CustomersShow;
 use App\Livewire\Dashboard;
 use App\Livewire\Inventory\Create as InventoryCreate;
+use App\Livewire\Inventory\Edit as InventoryEdit;
 use App\Livewire\Inventory\Index as InventoryIndex;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
@@ -44,6 +45,7 @@ Route::middleware(['auth'])->group(function (): void {
     // Inventory routes
     Route::get('inventory', InventoryIndex::class)->name('inventory.index');
     Route::get('inventory/create', InventoryCreate::class)->name('inventory.create');
+    Route::get('inventory/{item}/edit', InventoryEdit::class)->name('inventory.edit');
 
     // Settings Routes
     Route::redirect('settings', 'settings/profile');
