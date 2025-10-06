@@ -108,10 +108,11 @@
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-2">
                                     <div>
-                                        {{-- <a href="{{ route('inventory.show', $item) }}" class="font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300" wire:navigate>
+                                        <a href="{{ route('inventory.show', $item) }}"
+                                            class="font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                                            wire:navigate>
                                             {{ $item->name }}
-                                        </a> --}}
-                                        <span class="font-medium">{{ $item->name }}</span>
+                                        </a>
                                         @if ($item->description)
                                             <p class="text-xs text-zinc-500 dark:text-zinc-400">
                                                 {{ Str::limit($item->description, 40) }}
