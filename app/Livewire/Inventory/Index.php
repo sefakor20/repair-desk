@@ -1,0 +1,89 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Livewire\Inventory;
+
+use App\Enums\InventoryStatus;
+use App\Models\InventoryItem;
+use Livewire\Attributes\{Layout, Url};
+use Livewire\{Component, WithPagination};
+
+#[Layout('components.layouts.app')]
+class Index extends Component
+{
+    use WithPagination;
+
+    #[Url(as: 'q')]
+    public string $search = '';
+
+    #[Url]
+    public string $status = '';
+
+    #[Url]
+    public string $category = '';
+
+    #[Url]
+    public bool $lowStock = false;
+
+    public function render()
+    {
+        $items = InventoryItem::query()
+            ->when($this->search, function ($query) {
+                $query->where(function ($q) {
+                    $q->where('name', 'like', "%{$this->search}%")
+                        ->orWhere('sku', 'like', "%{$this->search}%")
+                        ->orWhere('description', 'like', "%{$this->search}%");
+                });
+            })
+            ->when($this->status, function ($query) {
+                $query->where('status', InventoryStatus::from($this->status));
+            })
+            ->when($this->category, fn($query) => $query->where('category', $this->category))
+            ->when($this->lowStock, fn($query) => $query->whereColumn('quantity', '<=', 'reorder_level'))
+            ->latest()
+            ->paginate(15);
+
+        $categories = InventoryItem::distinct()->pluck('category')->filter()->sort()->values();
+
+        return view('livewire.inventory.index', [
+            'items' => $items,
+            'categories' => $categories,
+        ]);
+    }
+
+    public function updatingSearch(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatingStatus(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatingCategory(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatingLowStock(): void
+    {
+        $this->resetPage();
+    }
+
+    public function clearFilters(): void
+    {
+        $this->reset(['search', 'status', 'category', 'lowStock']);
+        $this->resetPage();
+    }
+
+    public function delete(InventoryItem $item): void
+    {
+        $this->authorize('delete', $item);
+
+        $item->delete();
+
+        $this->dispatch('item-deleted');
+    }
+}

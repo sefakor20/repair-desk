@@ -7,6 +7,7 @@ use App\Livewire\Customers\Edit as CustomersEdit;
 use App\Livewire\Customers\Index as CustomersIndex;
 use App\Livewire\Customers\Show as CustomersShow;
 use App\Livewire\Dashboard;
+use App\Livewire\Inventory\Index as InventoryIndex;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -38,6 +39,9 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('tickets/create', TicketsCreate::class)->name('tickets.create');
     Route::get('tickets/{ticket}', TicketsShow::class)->name('tickets.show');
     Route::get('tickets/{ticket}/edit', TicketsEdit::class)->name('tickets.edit');
+
+    // Inventory routes
+    Route::get('inventory', InventoryIndex::class)->name('inventory.index');
 
     // Settings Routes
     Route::redirect('settings', 'settings/profile');
