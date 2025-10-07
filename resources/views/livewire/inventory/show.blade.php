@@ -165,6 +165,20 @@
                             ${{ number_format($item->quantity * $item->selling_price, 2) }}
                         </flux:text>
                     </div>
+
+                    @can('adjustQuantity', $item)
+                        <hr class="border-zinc-200 dark:border-zinc-700" />
+
+                        <flux:button type="button" wire:click="openAdjustModal" variant="primary" class="w-full">
+                            <div class="flex items-center justify-center gap-2">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 4v16m8-8H4" />
+                                </svg>
+                                <span>{{ __('Adjust Quantity') }}</span>
+                            </div>
+                        </flux:button>
+                    @endcan
                 </div>
             </div>
 
@@ -195,4 +209,146 @@
             </div>
         </div>
     </div>
+
+    {{-- Adjustment History --}}
+    @if ($adjustments->isNotEmpty())
+        <div class="mt-6">
+            <flux:heading size="lg" class="mb-4">{{ __('Adjustment History') }}</flux:heading>
+
+            <div
+                class="overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
+                        <thead class="bg-zinc-50 dark:bg-zinc-900">
+                            <tr>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                                    {{ __('Date') }}
+                                </th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                                    {{ __('Type') }}
+                                </th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                                    {{ __('Quantity Change') }}
+                                </th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                                    {{ __('Before → After') }}
+                                </th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                                    {{ __('Reason') }}
+                                </th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                                    {{ __('Adjusted By') }}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-zinc-200 bg-white dark:divide-zinc-700 dark:bg-zinc-800">
+                            @foreach ($adjustments as $adjustment)
+                                <tr>
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm text-zinc-900 dark:text-zinc-100">
+                                        {{ $adjustment->created_at->format('M d, Y') }}
+                                        <span class="text-zinc-500 dark:text-zinc-400">
+                                            {{ $adjustment->created_at->format('g:i A') }}
+                                        </span>
+                                    </td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm">
+                                        @if ($adjustment->quantity_change > 0)
+                                            <flux:badge color="green" size="sm">{{ __('Added') }}
+                                            </flux:badge>
+                                        @else
+                                            <flux:badge color="red" size="sm">{{ __('Removed') }}
+                                            </flux:badge>
+                                        @endif
+                                    </td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm">
+                                        <span
+                                            class="font-semibold {{ $adjustment->quantity_change > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
+                                            {{ $adjustment->quantity_change > 0 ? '+' : '' }}{{ $adjustment->quantity_change }}
+                                        </span>
+                                    </td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm text-zinc-900 dark:text-zinc-100">
+                                        {{ $adjustment->quantity_before }} → {{ $adjustment->quantity_after }}
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-zinc-900 dark:text-zinc-100">
+                                        <div>{{ $adjustment->reason }}</div>
+                                        @if ($adjustment->notes)
+                                            <div class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                                                {{ $adjustment->notes }}
+                                            </div>
+                                        @endif
+                                    </td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm text-zinc-900 dark:text-zinc-100">
+                                        {{ $adjustment->adjustedBy->name }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- Adjustment Modal --}}
+    <flux:modal name="adjust-inventory" :show="$showAdjustModal" class="max-w-md">
+        <form wire:submit="saveAdjustment">
+            <div class="space-y-6">
+                <div>
+                    <flux:heading size="lg">{{ __('Adjust Inventory Quantity') }}</flux:heading>
+                    <flux:subheading class="mt-2">
+                        {{ __('Add or remove inventory for') }} {{ $item->name }}
+                    </flux:subheading>
+                </div>
+
+                <div class="space-y-4">
+                    {{-- Adjustment Type --}}
+                    <flux:field>
+                        <flux:label>{{ __('Type') }}</flux:label>
+                        <flux:select wire:model="adjustmentType">
+                            <option value="add">{{ __('Add Inventory') }}</option>
+                            <option value="remove">{{ __('Remove Inventory') }}</option>
+                        </flux:select>
+                        <flux:error name="adjustmentType" />
+                    </flux:field>
+
+                    {{-- Quantity --}}
+                    <flux:field>
+                        <flux:label>{{ __('Quantity') }}</flux:label>
+                        <flux:input wire:model="adjustmentQuantity" type="number" min="1"
+                            placeholder="Enter quantity" />
+                        <flux:error name="adjustmentQuantity" />
+                    </flux:field>
+
+                    {{-- Reason --}}
+                    <flux:field>
+                        <flux:label>{{ __('Reason') }}</flux:label>
+                        <flux:input wire:model="adjustmentReason" placeholder="e.g., Restock, Damaged, Theft" />
+                        <flux:error name="adjustmentReason" />
+                    </flux:field>
+
+                    {{-- Notes (Optional) --}}
+                    <flux:field>
+                        <flux:label>{{ __('Notes (Optional)') }}</flux:label>
+                        <flux:textarea wire:model="adjustmentNotes" rows="3"
+                            placeholder="Additional details about this adjustment" />
+                        <flux:error name="adjustmentNotes" />
+                    </flux:field>
+                </div>
+
+                <div class="flex justify-end gap-2">
+                    <flux:button type="button" variant="ghost" wire:click="closeAdjustModal">
+                        {{ __('Cancel') }}
+                    </flux:button>
+                    <flux:button type="submit" variant="primary">
+                        {{ __('Save Adjustment') }}
+                    </flux:button>
+                </div>
+            </div>
+        </form>
+    </flux:modal>
 </div>

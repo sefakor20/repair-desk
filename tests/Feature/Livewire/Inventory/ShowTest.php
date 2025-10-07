@@ -188,10 +188,211 @@ test('shows back to inventory link', function (): void {
 
 test('shows low stock badge in header when applicable', function (): void {
     $item = InventoryItem::factory()->create([
-        'quantity' => 3,
-        'reorder_level' => 10,
+        'quantity' => 2,
+        'reorder_level' => 5,
     ]);
 
     Livewire::test(Show::class, ['item' => $item])
         ->assertSee('Low Stock');
+});
+
+// Adjustment Tests
+
+test('authorized user can open adjustment modal', function (): void {
+    $admin = User::factory()->admin()->create();
+    $this->actingAs($admin);
+
+    $item = InventoryItem::factory()->create();
+
+    Livewire::test(Show::class, ['item' => $item])
+        ->call('openAdjustModal')
+        ->assertSet('showAdjustModal', true)
+        ->assertSet('adjustmentType', 'add')
+        ->assertSet('adjustmentQuantity', '')
+        ->assertSet('adjustmentReason', '');
+});
+
+test('unauthorized user cannot adjust inventory', function (): void {
+    $technician = User::factory()->technician()->create();
+    $this->actingAs($technician);
+
+    $item = InventoryItem::factory()->create();
+
+    Livewire::test(Show::class, ['item' => $item])
+        ->call('openAdjustModal')
+        ->assertForbidden();
+});
+
+test('can add inventory quantity', function (): void {
+    $admin = User::factory()->admin()->create();
+    $this->actingAs($admin);
+
+    $item = InventoryItem::factory()->create(['quantity' => 10]);
+
+    Livewire::test(Show::class, ['item' => $item])
+        ->set('showAdjustModal', true)
+        ->set('adjustmentType', 'add')
+        ->set('adjustmentQuantity', '5')
+        ->set('adjustmentReason', 'Restock')
+        ->call('saveAdjustment')
+        ->assertHasNoErrors();
+
+    $item->refresh();
+    expect($item->quantity)->toBe(15);
+});
+
+test('can remove inventory quantity', function (): void {
+    $admin = User::factory()->admin()->create();
+    $this->actingAs($admin);
+
+    $item = InventoryItem::factory()->create(['quantity' => 10]);
+
+    Livewire::test(Show::class, ['item' => $item])
+        ->set('showAdjustModal', true)
+        ->set('adjustmentType', 'remove')
+        ->set('adjustmentQuantity', '3')
+        ->set('adjustmentReason', 'Damaged')
+        ->call('saveAdjustment')
+        ->assertHasNoErrors();
+
+    $item->refresh();
+    expect($item->quantity)->toBe(7);
+});
+
+test('creates adjustment record when adjusting inventory', function (): void {
+    $admin = User::factory()->admin()->create();
+    $this->actingAs($admin);
+
+    $item = InventoryItem::factory()->create(['quantity' => 10]);
+
+    Livewire::test(Show::class, ['item' => $item])
+        ->set('showAdjustModal', true)
+        ->set('adjustmentType', 'add')
+        ->set('adjustmentQuantity', '5')
+        ->set('adjustmentReason', 'Restock from supplier')
+        ->set('adjustmentNotes', 'Received shipment #12345')
+        ->call('saveAdjustment');
+
+    expect($item->adjustments()->count())->toBe(1);
+
+    $adjustment = $item->adjustments()->first();
+    expect($adjustment->quantity_change)->toBe(5);
+    expect($adjustment->quantity_before)->toBe(10);
+    expect($adjustment->quantity_after)->toBe(15);
+    expect($adjustment->reason)->toBe('Restock from supplier');
+    expect($adjustment->notes)->toBe('Received shipment #12345');
+    expect($adjustment->adjusted_by)->toBe($admin->id);
+});
+
+test('adjustment quantity is required', function (): void {
+    $admin = User::factory()->admin()->create();
+    $this->actingAs($admin);
+
+    $item = InventoryItem::factory()->create();
+
+    Livewire::test(Show::class, ['item' => $item])
+        ->set('showAdjustModal', true)
+        ->set('adjustmentType', 'add')
+        ->set('adjustmentReason', 'Restock')
+        ->call('saveAdjustment')
+        ->assertHasErrors(['adjustmentQuantity' => 'required']);
+});
+
+test('adjustment quantity must be at least 1', function (): void {
+    $admin = User::factory()->admin()->create();
+    $this->actingAs($admin);
+
+    $item = InventoryItem::factory()->create();
+
+    Livewire::test(Show::class, ['item' => $item])
+        ->set('showAdjustModal', true)
+        ->set('adjustmentType', 'add')
+        ->set('adjustmentQuantity', '0')
+        ->set('adjustmentReason', 'Restock')
+        ->call('saveAdjustment')
+        ->assertHasErrors(['adjustmentQuantity' => 'min']);
+});
+
+test('adjustment reason is required', function (): void {
+    $admin = User::factory()->admin()->create();
+    $this->actingAs($admin);
+
+    $item = InventoryItem::factory()->create();
+
+    Livewire::test(Show::class, ['item' => $item])
+        ->set('showAdjustModal', true)
+        ->set('adjustmentType', 'add')
+        ->set('adjustmentQuantity', '5')
+        ->call('saveAdjustment')
+        ->assertHasErrors(['adjustmentReason' => 'required']);
+});
+
+test('cannot remove more than current quantity', function (): void {
+    $admin = User::factory()->admin()->create();
+    $this->actingAs($admin);
+
+    $item = InventoryItem::factory()->create(['quantity' => 5]);
+
+    Livewire::test(Show::class, ['item' => $item])
+        ->set('showAdjustModal', true)
+        ->set('adjustmentType', 'remove')
+        ->set('adjustmentQuantity', '10')
+        ->set('adjustmentReason', 'Damage')
+        ->call('saveAdjustment')
+        ->assertHasErrors('adjustmentQuantity');
+
+    $item->refresh();
+    expect($item->quantity)->toBe(5); // Quantity unchanged
+});
+
+test('displays adjustment history', function (): void {
+    $admin = User::factory()->admin()->create();
+    $this->actingAs($admin);
+
+    $item = InventoryItem::factory()->create(['quantity' => 10]);
+
+    // Create an adjustment
+    Livewire::test(Show::class, ['item' => $item])
+        ->set('showAdjustModal', true)
+        ->set('adjustmentType', 'add')
+        ->set('adjustmentQuantity', '5')
+        ->set('adjustmentReason', 'Restock')
+        ->call('saveAdjustment');
+
+    // View the page again to see the adjustment history
+    Livewire::test(Show::class, ['item' => $item])
+        ->assertSee('Adjustment History')
+        ->assertSee('Restock')
+        ->assertSee('+5')
+        ->assertSee($admin->name);
+});
+
+test('adjustment notes are optional', function (): void {
+    $admin = User::factory()->admin()->create();
+    $this->actingAs($admin);
+
+    $item = InventoryItem::factory()->create(['quantity' => 10]);
+
+    Livewire::test(Show::class, ['item' => $item])
+        ->set('showAdjustModal', true)
+        ->set('adjustmentType', 'add')
+        ->set('adjustmentQuantity', '5')
+        ->set('adjustmentReason', 'Restock')
+        ->call('saveAdjustment')
+        ->assertHasNoErrors();
+});
+
+test('closes modal after successful adjustment', function (): void {
+    $admin = User::factory()->admin()->create();
+    $this->actingAs($admin);
+
+    $item = InventoryItem::factory()->create(['quantity' => 10]);
+
+    Livewire::test(Show::class, ['item' => $item])
+        ->set('showAdjustModal', true)
+        ->set('adjustmentType', 'add')
+        ->set('adjustmentQuantity', '5')
+        ->set('adjustmentReason', 'Restock')
+        ->call('saveAdjustment')
+        ->assertSet('showAdjustModal', false);
 });
