@@ -20,19 +20,19 @@ class InvoiceFactory extends Factory
      */
     public function definition(): array
     {
-        $laborCost = fake()->randomFloat(2, 20, 200);
-        $partsCost = fake()->randomFloat(2, 0, 500);
-        $subtotal = $laborCost + $partsCost;
-        $tax = round($subtotal * 0.08, 2);
-        $total = $subtotal + $tax;
+        $subtotal = fake()->randomFloat(2, 100, 1000);
+        $discount = fake()->optional(0.3)->randomFloat(2, 0, $subtotal * 0.2) ?? 0;
+        $taxRate = fake()->randomFloat(2, 0, 15);
+        $taxAmount = round(($subtotal - $discount) * ($taxRate / 100), 2);
+        $total = $subtotal - $discount + $taxAmount;
 
         return [
             'ticket_id' => Ticket::factory(),
             'customer_id' => Customer::factory(),
-            'labor_cost' => $laborCost,
-            'parts_cost' => $partsCost,
             'subtotal' => $subtotal,
-            'tax' => $tax,
+            'tax_rate' => $taxRate,
+            'tax_amount' => $taxAmount,
+            'discount' => $discount,
             'total' => $total,
             'status' => fake()->randomElement(InvoiceStatus::cases()),
             'notes' => fake()->optional()->sentence(),

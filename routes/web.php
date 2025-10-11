@@ -11,6 +11,10 @@ use App\Livewire\Inventory\Create as InventoryCreate;
 use App\Livewire\Inventory\Edit as InventoryEdit;
 use App\Livewire\Inventory\Index as InventoryIndex;
 use App\Livewire\Inventory\Show as InventoryShow;
+use App\Livewire\Invoices\Create as InvoicesCreate;
+use App\Livewire\Invoices\Edit as InvoicesEdit;
+use App\Livewire\Invoices\Index as InvoicesIndex;
+use App\Livewire\Invoices\Show as InvoicesShow;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -48,6 +52,12 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('inventory/create', InventoryCreate::class)->name('inventory.create');
     Route::get('inventory/{item}', InventoryShow::class)->name('inventory.show');
     Route::get('inventory/{item}/edit', InventoryEdit::class)->name('inventory.edit');
+
+    // Invoice routes
+    Route::get('invoices', InvoicesIndex::class)->name('invoices.index');
+    Route::get('invoices/create', InvoicesCreate::class)->name('invoices.create');
+    Route::get('invoices/{invoice}', InvoicesShow::class)->name('invoices.show');
+    Route::get('invoices/{invoice}/edit', InvoicesEdit::class)->name('invoices.edit');
 
     // Settings Routes
     Route::redirect('settings', 'settings/profile');
