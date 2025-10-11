@@ -15,6 +15,9 @@ use App\Livewire\Invoices\Create as InvoicesCreate;
 use App\Livewire\Invoices\Edit as InvoicesEdit;
 use App\Livewire\Invoices\Index as InvoicesIndex;
 use App\Livewire\Invoices\Show as InvoicesShow;
+use App\Livewire\Pos\Create as PosCreate;
+use App\Livewire\Pos\Index as PosIndex;
+use App\Livewire\Pos\Show as PosShow;
 use App\Livewire\Reports\Index as ReportsIndex;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
@@ -63,6 +66,11 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('invoices/create', InvoicesCreate::class)->name('invoices.create');
     Route::get('invoices/{invoice}', InvoicesShow::class)->name('invoices.show');
     Route::get('invoices/{invoice}/edit', InvoicesEdit::class)->name('invoices.edit');
+
+    // POS routes
+    Route::get('pos', PosIndex::class)->name('pos.index');
+    Route::get('pos/create', PosCreate::class)->name('pos.create');
+    Route::get('pos/{sale}', PosShow::class)->name('pos.show');
 
     // Reports routes
     Route::get('reports', ReportsIndex::class)->name('reports.index');
