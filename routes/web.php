@@ -8,6 +8,10 @@ use App\Livewire\Customers\Edit as CustomersEdit;
 use App\Livewire\Customers\Index as CustomersIndex;
 use App\Livewire\Customers\Show as CustomersShow;
 use App\Livewire\Dashboard;
+use App\Livewire\Devices\Create as DevicesCreate;
+use App\Livewire\Devices\Edit as DevicesEdit;
+use App\Livewire\Devices\Index as DevicesIndex;
+use App\Livewire\Devices\Show as DevicesShow;
 use App\Livewire\Inventory\Create as InventoryCreate;
 use App\Livewire\Inventory\Edit as InventoryEdit;
 use App\Livewire\Inventory\Index as InventoryIndex;
@@ -60,6 +64,12 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('customers/create', CustomersCreate::class)->name('customers.create');
     Route::get('customers/{customer}', CustomersShow::class)->name('customers.show');
     Route::get('customers/{customer}/edit', CustomersEdit::class)->name('customers.edit');
+
+    // Device Management Routes
+    Route::get('devices', DevicesIndex::class)->name('devices.index');
+    Route::get('devices/create', DevicesCreate::class)->name('devices.create');
+    Route::get('devices/{device}', DevicesShow::class)->name('devices.show');
+    Route::get('devices/{device}/edit', DevicesEdit::class)->name('devices.edit');
 
     // Ticket routes
     Route::get('tickets', TicketsIndex::class)->name('tickets.index');
