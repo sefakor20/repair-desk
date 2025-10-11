@@ -19,6 +19,8 @@
                     wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
                 <flux:navlist.item icon="user-group" :href="route('customers.index')"
                     :current="request()->routeIs('customers.*')" wire:navigate>{{ __('Customers') }}</flux:navlist.item>
+                <flux:navlist.item icon="device-phone-mobile" :href="route('devices.index')"
+                    :current="request()->routeIs('devices.*')" wire:navigate>{{ __('Devices') }}</flux:navlist.item>
                 <flux:navlist.item icon="wrench-screwdriver" :href="route('tickets.index')"
                     :current="request()->routeIs('tickets.*')" wire:navigate>{{ __('Tickets') }}</flux:navlist.item>
                 <flux:navlist.item icon="cube" :href="route('inventory.index')"
