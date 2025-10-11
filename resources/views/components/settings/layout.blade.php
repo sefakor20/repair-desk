@@ -12,6 +12,8 @@
             @can('accessSettings', App\Models\User::class)
                 <flux:navlist.item :href="route('settings.shop')" wire:navigate>{{ __('Shop Settings') }}
                 </flux:navlist.item>
+                <flux:navlist.item :href="route('settings.return-policies')" wire:navigate>{{ __('Return Policies') }}
+                </flux:navlist.item>
             @endcan
         </flux:navlist>
     </div>
