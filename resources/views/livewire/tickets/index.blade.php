@@ -1,4 +1,7 @@
-<div class="space-y-6">
+<div class="space-y-6 relative">
+    {{-- Loading Overlay --}}
+    <x-loading-overlay wire:loading
+        wire:target="search, statusFilter, priorityFilter, assignedFilter, clearFilters, delete" />
     <!-- Header -->
     <div class="flex items-center justify-between">
         <div>
@@ -18,8 +21,14 @@
     </div>
 
     @if (session('success'))
-        <div class="rounded-lg bg-green-50 p-4 dark:bg-green-900/20">
-            <p class="text-sm text-green-800 dark:text-green-200">{{ session('success') }}</p>
+        <div
+            class="animate-in fade-in slide-in-from-top-2 duration-300 rounded-lg bg-green-50 p-4 dark:bg-green-900/20">
+            <div class="flex items-center gap-2">
+                <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <p class="text-sm text-green-800 dark:text-green-200">{{ session('success') }}</p>
+            </div>
         </div>
     @endif
 
@@ -29,9 +38,18 @@
         <div class="sm:col-span-2">
             <div class="relative">
                 <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <svg class="h-5 w-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg wire:loading.remove wire:target="search" class="h-5 w-5 text-zinc-400" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <svg wire:loading wire:target="search" class="h-5 w-5 animate-spin text-zinc-400" fill="none"
+                        viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                            stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
                     </svg>
                 </div>
                 <input type="search" wire:model.live.debounce.300ms="search" placeholder="Search tickets, customers..."
@@ -77,7 +95,7 @@
 
         @if ($search || $statusFilter || $priorityFilter || $assignedFilter)
             <button wire:click="clearFilters"
-                class="inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
+                class="inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-700 transition-all hover:bg-zinc-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -168,7 +186,8 @@
                                         <a href="{{ route('tickets.show', $ticket) }}" wire:navigate
                                             class="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
                                             title="View">
-                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -207,37 +226,14 @@
                     @empty
                         <tr>
                             <td colspan="6" class="px-6 py-12 text-center">
-                                <div class="flex flex-col items-center justify-center">
-                                    <svg class="h-12 w-12 text-zinc-400" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                    </svg>
-                                    <h3 class="mt-2 text-sm font-medium text-zinc-900 dark:text-white">No tickets found
-                                    </h3>
-                                    <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-                                        @if ($search || $statusFilter || $priorityFilter || $assignedFilter)
-                                            Try adjusting your search or filters
-                                        @else
-                                            Get started by creating a new ticket
-                                        @endif
-                                    </p>
-                                    @if (!$search && !$statusFilter && !$priorityFilter && !$assignedFilter)
-                                        @can('create', Ticket::class)
-                                            <div class="mt-6">
-                                                <a href="{{ route('tickets.create') }}" wire:navigate
-                                                    class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100">
-                                                    <svg class="h-5 w-5" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2" d="M12 4v16m8-8H4" />
-                                                    </svg>
-                                                    New Ticket
-                                                </a>
-                                            </div>
-                                        @endcan
-                                    @endif
-                                </div>
+                                @if ($search || $statusFilter || $priorityFilter || $assignedFilter)
+                                    <x-empty-state icon="search" title="{{ __('No tickets found') }}"
+                                        description="{{ __('Try adjusting your search or filters') }}" />
+                                @else
+                                    <x-empty-state icon="document" title="{{ __('No tickets found') }}"
+                                        description="{{ __('Get started by creating a new ticket') }}"
+                                        :action-route="route('tickets.create')" action-label="{{ __('New Ticket') }}" />
+                                @endif
                             </td>
                         </tr>
                     @endforelse

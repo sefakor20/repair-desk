@@ -1,4 +1,6 @@
-<div class="space-y-6">
+<div class="space-y-6 relative">
+    {{-- Loading Overlay --}}
+    <x-loading-overlay wire:loading wire:target="search, delete" />
     <!-- Header -->
     <div class="flex items-center justify-between">
         <div>
@@ -8,7 +10,7 @@
 
         @can('create', App\Models\Customer::class)
             <a href="{{ route('customers.create') }}" wire:navigate
-                class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100 dark:focus:ring-white">
+                class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-zinc-800 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100 dark:focus:ring-white">
                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
@@ -18,17 +20,32 @@
     </div>
 
     @if (session('success'))
-        <div class="rounded-lg bg-green-50 p-4 dark:bg-green-900/20">
-            <p class="text-sm text-green-800 dark:text-green-200">{{ session('success') }}</p>
+        <div
+            class="animate-in fade-in slide-in-from-top-2 duration-300 rounded-lg bg-green-50 p-4 dark:bg-green-900/20">
+            <div class="flex items-center gap-2">
+                <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <p class="text-sm text-green-800 dark:text-green-200">{{ session('success') }}</p>
+            </div>
         </div>
     @endif
 
     <!-- Search -->
     <div class="relative">
         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-            <svg class="h-5 w-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg wire:loading.remove wire:target="search" class="h-5 w-5 text-zinc-400" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <svg wire:loading wire:target="search" class="h-5 w-5 animate-spin text-zinc-400" fill="none"
+                viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                </circle>
+                <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
             </svg>
         </div>
         <input type="search" wire:model.live.debounce.300ms="search"
@@ -131,7 +148,8 @@
                                             wire:confirm="Are you sure you want to delete this customer?"
                                             class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
                                             title="Delete">
-                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                             </svg>
@@ -143,37 +161,14 @@
                     @empty
                         <tr>
                             <td colspan="5" class="px-6 py-12 text-center">
-                                <div class="flex flex-col items-center justify-center">
-                                    <svg class="h-12 w-12 text-zinc-400" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                    </svg>
-                                    <h3 class="mt-2 text-sm font-medium text-zinc-900 dark:text-white">No customers
-                                        found</h3>
-                                    <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-                                        @if ($search)
-                                            Try adjusting your search criteria
-                                        @else
-                                            Get started by creating a new customer
-                                        @endif
-                                    </p>
-                                    @if (!$search)
-                                        @can('create', App\Models\Customer::class)
-                                            <div class="mt-6">
-                                                <a href="{{ route('customers.create') }}" wire:navigate
-                                                    class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100">
-                                                    <svg class="h-5 w-5" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2" d="M12 4v16m8-8H4" />
-                                                    </svg>
-                                                    New Customer
-                                                </a>
-                                            </div>
-                                        @endcan
-                                    @endif
-                                </div>
+                                @if ($search)
+                                    <x-empty-state icon="search" title="{{ __('No customers found') }}"
+                                        description="{{ __('Try adjusting your search criteria') }}" />
+                                @else
+                                    <x-empty-state icon="users" title="{{ __('No customers found') }}"
+                                        description="{{ __('Get started by creating a new customer') }}"
+                                        :action-route="route('customers.create')" action-label="{{ __('New Customer') }}" />
+                                @endif
                             </td>
                         </tr>
                     @endforelse

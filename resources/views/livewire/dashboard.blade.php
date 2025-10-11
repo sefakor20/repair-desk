@@ -1,4 +1,7 @@
-<div>
+<div class="relative">
+    {{-- Loading Overlay --}}
+    <x-loading-overlay wire:loading wire:target="$refresh" />
+
     <div class="mb-6">
         <flux:heading size="xl" class="mb-2">{{ __('Dashboard') }}</flux:heading>
         <flux:text>{{ __('Overview of your repair shop operations') }}</flux:text>
@@ -7,11 +10,15 @@
     {{-- Key Metrics Cards --}}
     <div class="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {{-- Urgent Tickets --}}
-        <div class="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
+        <div
+            class="group rounded-lg border border-zinc-200 bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md dark:border-zinc-700 dark:bg-zinc-800">
             <div class="mb-2 flex items-center justify-between">
                 <flux:text class="text-sm font-medium text-zinc-500 dark:text-zinc-400">{{ __('Urgent Tickets') }}
                 </flux:text>
-                <flux:icon.exclamation-triangle class="size-5 text-red-500" />
+                <div
+                    class="rounded-lg bg-red-50 p-2 transition-colors group-hover:bg-red-100 dark:bg-red-900/20 dark:group-hover:bg-red-900/30">
+                    <flux:icon.exclamation-triangle class="size-5 text-red-500" />
+                </div>
             </div>
             <flux:heading size="2xl" class="mb-1">{{ $urgentTickets }}</flux:heading>
             <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">{{ __('Requires immediate attention') }}
@@ -19,11 +26,15 @@
         </div>
 
         {{-- Today's Revenue --}}
-        <div class="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
+        <div
+            class="group rounded-lg border border-zinc-200 bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md dark:border-zinc-700 dark:bg-zinc-800">
             <div class="mb-2 flex items-center justify-between">
                 <flux:text class="text-sm font-medium text-zinc-500 dark:text-zinc-400">{{ __('Today\'s Revenue') }}
                 </flux:text>
-                <flux:icon.currency-dollar class="size-5 text-green-500" />
+                <div
+                    class="rounded-lg bg-green-50 p-2 transition-colors group-hover:bg-green-100 dark:bg-green-900/20 dark:group-hover:bg-green-900/30">
+                    <flux:icon.currency-dollar class="size-5 text-green-500" />
+                </div>
             </div>
             <flux:heading size="2xl" class="mb-1">
                 {{ __('$:amount', ['amount' => number_format($todayRevenue, 2)]) }}</flux:heading>
@@ -31,11 +42,15 @@
         </div>
 
         {{-- Pending Invoices --}}
-        <div class="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
+        <div
+            class="group rounded-lg border border-zinc-200 bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md dark:border-zinc-700 dark:bg-zinc-800">
             <div class="mb-2 flex items-center justify-between">
                 <flux:text class="text-sm font-medium text-zinc-500 dark:text-zinc-400">{{ __('Pending Invoices') }}
                 </flux:text>
-                <flux:icon.document-text class="size-5 text-amber-500" />
+                <div
+                    class="rounded-lg bg-amber-50 p-2 transition-colors group-hover:bg-amber-100 dark:bg-amber-900/20 dark:group-hover:bg-amber-900/30">
+                    <flux:icon.document-text class="size-5 text-amber-500" />
+                </div>
             </div>
             <flux:heading size="2xl" class="mb-1">{{ $pendingInvoices['count'] }}</flux:heading>
             <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">
@@ -43,11 +58,15 @@
         </div>
 
         {{-- Low Stock Items --}}
-        <div class="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
+        <div
+            class="group rounded-lg border border-zinc-200 bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md dark:border-zinc-700 dark:bg-zinc-800">
             <div class="mb-2 flex items-center justify-between">
                 <flux:text class="text-sm font-medium text-zinc-500 dark:text-zinc-400">{{ __('Low Stock Items') }}
                 </flux:text>
-                <flux:icon.cube class="size-5 text-orange-500" />
+                <div
+                    class="rounded-lg bg-orange-50 p-2 transition-colors group-hover:bg-orange-100 dark:bg-orange-900/20 dark:group-hover:bg-orange-900/30">
+                    <flux:icon.cube class="size-5 text-orange-500" />
+                </div>
             </div>
             <flux:heading size="2xl" class="mb-1">{{ $lowStockItems }}</flux:heading>
             <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">{{ __('Items need reordering') }}</flux:text>
@@ -58,35 +77,40 @@
     <div class="mb-6">
         <flux:heading size="lg" class="mb-4">{{ __('Tickets by Status') }}</flux:heading>
         <div class="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
-            <div class="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-800">
+            <div
+                class="rounded-lg border border-zinc-200 bg-white p-4 transition-all duration-200 hover:shadow-md dark:border-zinc-700 dark:bg-zinc-800">
                 <div class="mb-2 flex items-center justify-between">
                     <x-status-badge :status="\App\Enums\TicketStatus::New" />
                 </div>
                 <flux:heading size="xl">{{ $ticketsByStatus['new'] }}</flux:heading>
             </div>
 
-            <div class="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-800">
+            <div
+                class="rounded-lg border border-zinc-200 bg-white p-4 transition-all duration-200 hover:shadow-md dark:border-zinc-700 dark:bg-zinc-800">
                 <div class="mb-2 flex items-center justify-between">
                     <x-status-badge :status="\App\Enums\TicketStatus::InProgress" />
                 </div>
                 <flux:heading size="xl">{{ $ticketsByStatus['in_progress'] }}</flux:heading>
             </div>
 
-            <div class="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-800">
+            <div
+                class="rounded-lg border border-zinc-200 bg-white p-4 transition-all duration-200 hover:shadow-md dark:border-zinc-700 dark:bg-zinc-800">
                 <div class="mb-2 flex items-center justify-between">
                     <x-status-badge :status="\App\Enums\TicketStatus::WaitingForParts" />
                 </div>
                 <flux:heading size="xl">{{ $ticketsByStatus['waiting_for_parts'] }}</flux:heading>
             </div>
 
-            <div class="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-800">
+            <div
+                class="rounded-lg border border-zinc-200 bg-white p-4 transition-all duration-200 hover:shadow-md dark:border-zinc-700 dark:bg-zinc-800">
                 <div class="mb-2 flex items-center justify-between">
                     <x-status-badge :status="\App\Enums\TicketStatus::Completed" />
                 </div>
                 <flux:heading size="xl">{{ $ticketsByStatus['completed'] }}</flux:heading>
             </div>
 
-            <div class="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-800">
+            <div
+                class="rounded-lg border border-zinc-200 bg-white p-4 transition-all duration-200 hover:shadow-md dark:border-zinc-700 dark:bg-zinc-800">
                 <div class="mb-2 flex items-center justify-between">
                     <x-status-badge :status="\App\Enums\TicketStatus::Delivered" />
                 </div>
@@ -105,11 +129,12 @@
             </flux:button>
         </div>
 
-        <div class="overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800">
+        <div
+            class="overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-sm transition-shadow duration-200 hover:shadow-md dark:border-zinc-700 dark:bg-zinc-800">
             @if ($recentTickets->isEmpty())
-                <div class="p-6 text-center">
-                    <flux:text class="text-zinc-500 dark:text-zinc-400">{{ __('No tickets yet') }}</flux:text>
-                </div>
+                <x-empty-state icon="document" title="{{ __('No tickets yet') }}"
+                    description="{{ __('Start by creating your first repair ticket') }}" :action-route="route('tickets.create')"
+                    action-label="{{ __('Create Ticket') }}" />
             @else
                 <table class="w-full">
                     <thead class="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
