@@ -89,7 +89,7 @@ class CustomerLoyaltyAccount extends Model
     {
         $eligibleTier = LoyaltyTier::active()
             ->where('min_points', '<=', $this->total_points)
-            ->orderedByPriority()
+            ->orderBy('min_points', 'desc')
             ->first();
 
         if ($eligibleTier && $eligibleTier->id !== $this->loyalty_tier_id) {
@@ -101,11 +101,11 @@ class CustomerLoyaltyAccount extends Model
 
     public function getPointsMultiplier(): float
     {
-        return $this->loyaltyTier?->points_multiplier ?? 1.0;
+        return (float) ($this->loyaltyTier?->points_multiplier ?? 1.0);
     }
 
     public function getDiscountPercentage(): float
     {
-        return $this->loyaltyTier?->discount_percentage ?? 0.0;
+        return (float) ($this->loyaltyTier?->discount_percentage ?? 0.0);
     }
 }
