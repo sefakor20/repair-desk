@@ -9,11 +9,28 @@
             @endif
             <flux:navlist.item :href="route('settings.appearance')" wire:navigate>{{ __('Appearance') }}
             </flux:navlist.item>
-            @can('accessSettings', App\Models\User::class)
-                <flux:navlist.item :href="route('settings.shop')" wire:navigate>{{ __('Shop Settings') }}
-                </flux:navlist.item>
-                <flux:navlist.item :href="route('settings.return-policies')" wire:navigate>{{ __('Return Policies') }}
-                </flux:navlist.item>
+            @can('accessSettings')
+                <flux:navlist.group heading="Shop Settings" class="mt-6">
+                    <flux:navlist.item :href="route('settings.shop')" :current="request()->routeIs('settings.shop')"
+                        icon="building-storefront">
+                        Shop Profile
+                    </flux:navlist.item>
+                    <flux:navlist.item :href="route('settings.return-policies')"
+                        :current="request()->routeIs('settings.return-policies')" icon="document-text">
+                        Return Policies
+                    </flux:navlist.item>
+                </flux:navlist.group>
+
+                <flux:navlist.group heading="Loyalty Program" class="mt-6">
+                    <flux:navlist.item :href="route('settings.loyalty-tiers')"
+                        :current="request()->routeIs('settings.loyalty-tiers')" icon="trophy">
+                        Loyalty Tiers
+                    </flux:navlist.item>
+                    <flux:navlist.item :href="route('settings.loyalty-rewards')"
+                        :current="request()->routeIs('settings.loyalty-rewards')" icon="gift">
+                        Loyalty Rewards
+                    </flux:navlist.item>
+                </flux:navlist.group>
             @endcan
         </flux:navlist>
     </div>

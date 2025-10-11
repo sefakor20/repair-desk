@@ -29,6 +29,8 @@ use App\Livewire\Shifts\Index as ShiftsIndex;
 use App\Livewire\Shifts\OpenShift;
 use App\Livewire\Shifts\CloseShift;
 use App\Livewire\Settings\Appearance;
+use App\Livewire\Settings\LoyaltyRewards;
+use App\Livewire\Settings\LoyaltyTiers;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\ReturnPolicies;
@@ -111,6 +113,8 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
     Route::get('settings/shop', SettingsShop::class)->name('settings.shop');
     Route::get('settings/return-policies', ReturnPolicies::class)->name('settings.return-policies');
+    Route::get('settings/loyalty-tiers', LoyaltyTiers::class)->name('settings.loyalty-tiers');
+    Route::get('settings/loyalty-rewards', LoyaltyRewards::class)->name('settings.loyalty-rewards');
 
     Route::get('settings/two-factor', TwoFactor::class)
         ->middleware(
