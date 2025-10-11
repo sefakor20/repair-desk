@@ -23,6 +23,8 @@ use App\Livewire\Pos\Receipt;
 use App\Livewire\Pos\Show as PosShow;
 use App\Livewire\Reports\Index as ReportsIndex;
 use App\Livewire\CashDrawer\Index as CashDrawerIndex;
+use App\Livewire\CashDrawer\OpenDrawer;
+use App\Livewire\CashDrawer\CloseDrawer;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -84,6 +86,8 @@ Route::middleware(['auth'])->group(function (): void {
 
     // Cash Drawer routes
     Route::get('cash-drawer', CashDrawerIndex::class)->name('cash-drawer.index');
+    Route::get('cash-drawer/open', OpenDrawer::class)->name('cash-drawer.open');
+    Route::get('cash-drawer/close', CloseDrawer::class)->name('cash-drawer.close');
 
     // User management routes
     Route::get('users', UsersIndex::class)->name('users.index');

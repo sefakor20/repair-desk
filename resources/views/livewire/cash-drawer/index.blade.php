@@ -7,11 +7,11 @@
         </div>
 
         @if ($activeSession)
-            <flux:button variant="danger" href="#" wire:navigate icon="lock-closed">
+            <flux:button variant="danger" :href="route('cash-drawer.close')" wire:navigate icon="lock-closed">
                 Close Drawer
             </flux:button>
         @else
-            <flux:button variant="primary" href="#" wire:navigate icon="lock-open">
+            <flux:button variant="primary" :href="route('cash-drawer.open')" wire:navigate icon="lock-open">
                 Open Drawer
             </flux:button>
         @endif
@@ -65,7 +65,7 @@
             <flux:icon.banknotes variant="outline" class="mx-auto mb-4 size-12 text-zinc-400" />
             <flux:heading size="lg" class="mb-2">No cash drawer sessions</flux:heading>
             <flux:text class="mb-6">Open a new cash drawer session to start tracking cash.</flux:text>
-            <flux:button variant="primary" href="#" wire:navigate>Open Drawer</flux:button>
+            <flux:button variant="primary" :href="route('cash-drawer.open')" wire:navigate>Open Drawer</flux:button>
         </div>
     @else
         <div class="space-y-4">
