@@ -27,6 +27,9 @@
                     :current="request()->routeIs('invoices.*')" wire:navigate>{{ __('Invoices') }}</flux:navlist.item>
                 <flux:navlist.item icon="shopping-cart" :href="route('pos.index')"
                     :current="request()->routeIs('pos.*')" wire:navigate>{{ __('POS') }}</flux:navlist.item>
+                <flux:navlist.item icon="banknotes" :href="route('cash-drawer.index')"
+                    :current="request()->routeIs('cash-drawer.*')" wire:navigate>{{ __('Cash Drawer') }}
+                </flux:navlist.item>
                 @can('viewReports', App\Models\User::class)
                     <flux:navlist.item icon="chart-bar" :href="route('reports.index')"
                         :current="request()->routeIs('reports.*')" wire:navigate>{{ __('Reports') }}</flux:navlist.item>

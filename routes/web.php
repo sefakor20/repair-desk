@@ -22,6 +22,7 @@ use App\Livewire\Pos\PaystackPayment;
 use App\Livewire\Pos\Receipt;
 use App\Livewire\Pos\Show as PosShow;
 use App\Livewire\Reports\Index as ReportsIndex;
+use App\Livewire\CashDrawer\Index as CashDrawerIndex;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -80,6 +81,9 @@ Route::middleware(['auth'])->group(function (): void {
 
     // Reports routes
     Route::get('reports', ReportsIndex::class)->name('reports.index');
+
+    // Cash Drawer routes
+    Route::get('cash-drawer', CashDrawerIndex::class)->name('cash-drawer.index');
 
     // User management routes
     Route::get('users', UsersIndex::class)->name('users.index');
