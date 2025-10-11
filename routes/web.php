@@ -25,6 +25,9 @@ use App\Livewire\Reports\Index as ReportsIndex;
 use App\Livewire\CashDrawer\Index as CashDrawerIndex;
 use App\Livewire\CashDrawer\OpenDrawer;
 use App\Livewire\CashDrawer\CloseDrawer;
+use App\Livewire\Shifts\Index as ShiftsIndex;
+use App\Livewire\Shifts\OpenShift;
+use App\Livewire\Shifts\CloseShift;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -88,6 +91,11 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('cash-drawer', CashDrawerIndex::class)->name('cash-drawer.index');
     Route::get('cash-drawer/open', OpenDrawer::class)->name('cash-drawer.open');
     Route::get('cash-drawer/close', CloseDrawer::class)->name('cash-drawer.close');
+
+    // Shifts routes
+    Route::get('shifts', ShiftsIndex::class)->name('shifts.index');
+    Route::get('shifts/open', OpenShift::class)->name('shifts.open');
+    Route::get('shifts/close', CloseShift::class)->name('shifts.close');
 
     // User management routes
     Route::get('users', UsersIndex::class)->name('users.index');

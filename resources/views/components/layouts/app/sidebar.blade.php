@@ -30,6 +30,9 @@
                 <flux:navlist.item icon="banknotes" :href="route('cash-drawer.index')"
                     :current="request()->routeIs('cash-drawer.*')" wire:navigate>{{ __('Cash Drawer') }}
                 </flux:navlist.item>
+                <flux:navlist.item icon="clock" :href="route('shifts.index')"
+                    :current="request()->routeIs('shifts.*')" wire:navigate>{{ __('Shifts') }}
+                </flux:navlist.item>
                 @can('viewReports', App\Models\User::class)
                     <flux:navlist.item icon="chart-bar" :href="route('reports.index')"
                         :current="request()->routeIs('reports.*')" wire:navigate>{{ __('Reports') }}</flux:navlist.item>

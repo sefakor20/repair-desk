@@ -17,6 +17,7 @@ class PosSale extends Model
     use HasUlids;
 
     protected $fillable = [
+        'shift_id',
         'sale_number',
         'customer_id',
         'subtotal',
@@ -57,6 +58,11 @@ class PosSale extends Model
     public function soldBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'sold_by');
+    }
+
+    public function shift(): BelongsTo
+    {
+        return $this->belongsTo(Shift::class);
     }
 
     public function items(): HasMany
