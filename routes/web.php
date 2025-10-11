@@ -31,6 +31,7 @@ use App\Livewire\Shifts\CloseShift;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
+use App\Livewire\Settings\ReturnPolicies;
 use App\Livewire\Settings\Shop as SettingsShop;
 use App\Livewire\Settings\TwoFactor;
 use App\Livewire\Tickets\Create as TicketsCreate;
@@ -109,6 +110,7 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('settings/password', Password::class)->name('settings.password');
     Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
     Route::get('settings/shop', SettingsShop::class)->name('settings.shop');
+    Route::get('settings/return-policies', ReturnPolicies::class)->name('settings.return-policies');
 
     Route::get('settings/two-factor', TwoFactor::class)
         ->middleware(

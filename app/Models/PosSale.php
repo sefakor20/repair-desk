@@ -18,6 +18,7 @@ class PosSale extends Model
 
     protected $fillable = [
         'shift_id',
+        'return_policy_id',
         'sale_number',
         'customer_id',
         'subtotal',
@@ -63,6 +64,11 @@ class PosSale extends Model
     public function shift(): BelongsTo
     {
         return $this->belongsTo(Shift::class);
+    }
+
+    public function returnPolicy(): BelongsTo
+    {
+        return $this->belongsTo(ReturnPolicy::class);
     }
 
     public function items(): HasMany
