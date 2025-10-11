@@ -48,6 +48,9 @@
             <flux:navlist.item wire:click="$set('tab', 'payments')" :current="$tab === 'payments'">
                 {{ __('Payment History') }}
             </flux:navlist.item>
+            <flux:navlist.item wire:click="$set('tab', 'pos')" :current="$tab === 'pos'">
+                {{ __('POS Analytics') }}
+            </flux:navlist.item>
             <flux:navlist.item wire:click="$set('tab', 'technicians')" :current="$tab === 'technicians'">
                 {{ __('Technician Performance') }}
             </flux:navlist.item>
@@ -245,6 +248,374 @@
                             @endforelse
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- POS Analytics --}}
+    @if ($tab === 'pos')
+        <div class="space-y-6">
+            {{-- Key Metrics --}}
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div class="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+                    <flux:text class="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                        {{ __('Total POS Revenue') }}
+                    </flux:text>
+                    <flux:heading size="2xl" class="mt-2 text-emerald-600">
+                        ${{ number_format($totalRevenue, 2) }}
+                    </flux:heading>
+                </div>
+
+                <div class="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+                    <flux:text class="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                        {{ __('Transactions') }}
+                    </flux:text>
+                    <flux:heading size="2xl" class="mt-2">{{ number_format($transactionCount) }}</flux:heading>
+                </div>
+
+                <div class="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+                    <flux:text class="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                        {{ __('Avg Transaction') }}
+                    </flux:text>
+                    <flux:heading size="2xl" class="mt-2">
+                        ${{ number_format($avgTransaction, 2) }}
+                    </flux:heading>
+                </div>
+
+                <div class="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+                    <flux:text class="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                        {{ __('Items Sold') }}
+                    </flux:text>
+                    <flux:heading size="2xl" class="mt-2">{{ number_format($totalItemsSold) }}</flux:heading>
+                </div>
+            </div>
+
+            {{-- Revenue by Payment Method --}}
+            <div class="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+                <flux:heading size="lg" class="mb-4">{{ __('Revenue by Payment Method') }}</flux:heading>
+                <div class="space-y-4">
+                    @forelse ($revenueByMethod as $method => $data)
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    @php
+                                        $colors = [
+                                            'Cash' => 'bg-green-500',
+                                            'Card' => 'bg-blue-500',
+                                            'Mobile Money' => 'bg-purple-500',
+                                            'Bank Transfer' => 'bg-orange-500',
+                                        ];
+                                        $color = $colors[$method] ?? 'bg-gray-500';
+                                    @endphp
+                                    <div class="h-3 w-3 rounded-full {{ $color }}"></div>
+                                    <flux:text class="font-medium">{{ $method }}</flux:text>
+                                    <flux:badge size="sm">{{ $data['count'] }} transactions</flux:badge>
+                                </div>
+                                <flux:text class="font-semibold text-emerald-600">
+                                    ${{ number_format($data['total'], 2) }}
+                                </flux:text>
+                            </div>
+                            <div class="h-2 w-full overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-700">
+                                <div class="{{ $color }} h-full transition-all"
+                                    style="width: {{ $data['percentage'] }}%">
+                                </div>
+                            </div>
+                            <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">
+                                {{ $data['percentage'] }}% of total transactions
+                            </flux:text>
+                        </div>
+                    @empty
+                        <flux:text class="text-zinc-500 dark:text-zinc-400">
+                            {{ __('No POS sales data for selected period') }}
+                        </flux:text>
+                    @endforelse
+                </div>
+            </div>
+
+            {{-- Daily Sales Trend --}}
+            @if ($dailySales->isNotEmpty())
+                <div class="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+                    <flux:heading size="lg" class="mb-4">{{ __('Daily Sales Trend') }}</flux:heading>
+                    <div class="space-y-3">
+                        @php
+                            $maxTotal = $dailySales->max('total');
+                        @endphp
+                        @foreach ($dailySales as $day)
+                            <div class="space-y-1">
+                                <div class="flex items-center justify-between text-sm">
+                                    <flux:text class="font-medium">{{ $day['date'] }}</flux:text>
+                                    <div class="flex items-center gap-3">
+                                        <flux:text class="text-zinc-500 dark:text-zinc-400">
+                                            {{ $day['count'] }} sales
+                                        </flux:text>
+                                        <flux:text class="font-semibold text-emerald-600">
+                                            ${{ number_format($day['total'], 2) }}
+                                        </flux:text>
+                                    </div>
+                                </div>
+                                <div class="h-2 w-full overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-700">
+                                    <div class="h-full bg-emerald-500 transition-all"
+                                        style="width: {{ $maxTotal > 0 ? ($day['total'] / $maxTotal) * 100 : 0 }}%">
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            {{-- Top Products Grid --}}
+            <div class="grid gap-6 lg:grid-cols-2">
+                {{-- Top Products by Quantity --}}
+                <div class="rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800">
+                    <div class="p-6">
+                        <flux:heading size="lg">{{ __('Top Products (Quantity)') }}</flux:heading>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="border-y border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+                                <tr>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                                        {{ __('Product') }}
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                                        {{ __('Qty Sold') }}
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                                        {{ __('Revenue') }}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                                @forelse ($topProductsByQuantity as $product)
+                                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-900/50">
+                                        <td class="px-6 py-4">
+                                            <flux:text class="font-medium">{{ $product->name }}</flux:text>
+                                            <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">
+                                                {{ $product->sku }}
+                                            </flux:text>
+                                        </td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-semibold">
+                                            {{ number_format($product->total_quantity) }}
+                                        </td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
+                                            ${{ number_format($product->total_revenue, 2) }}
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="3" class="px-6 py-8 text-center">
+                                            <flux:text class="text-zinc-500 dark:text-zinc-400">
+                                                {{ __('No product data available') }}
+                                            </flux:text>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {{-- Top Products by Revenue --}}
+                <div class="rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800">
+                    <div class="p-6">
+                        <flux:heading size="lg">{{ __('Top Products (Revenue)') }}</flux:heading>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="border-y border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+                                <tr>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                                        {{ __('Product') }}
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                                        {{ __('Revenue') }}
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                                        {{ __('Qty Sold') }}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                                @forelse ($topProductsByRevenue as $product)
+                                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-900/50">
+                                        <td class="px-6 py-4">
+                                            <flux:text class="font-medium">{{ $product->name }}</flux:text>
+                                            <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">
+                                                {{ $product->sku }}
+                                            </flux:text>
+                                        </td>
+                                        <td
+                                            class="whitespace-nowrap px-6 py-4 text-right text-sm font-semibold text-emerald-600">
+                                            ${{ number_format($product->total_revenue, 2) }}
+                                        </td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-right text-sm">
+                                            {{ number_format($product->total_quantity) }}
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="3" class="px-6 py-8 text-center">
+                                            <flux:text class="text-zinc-500 dark:text-zinc-400">
+                                                {{ __('No product data available') }}
+                                            </flux:text>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Performance Metrics Grid --}}
+            <div class="grid gap-6 lg:grid-cols-2">
+                {{-- Sales by Hour --}}
+                @if ($salesByHour->isNotEmpty())
+                    <div class="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+                        <flux:heading size="lg" class="mb-4">{{ __('Sales by Hour') }}</flux:heading>
+                        <div class="space-y-2">
+                            @php
+                                $maxHourlyTotal = $salesByHour->max('total');
+                            @endphp
+                            @foreach ($salesByHour->take(10) as $hour)
+                                <div class="flex items-center gap-3">
+                                    <flux:text class="w-16 text-sm font-medium">{{ $hour['hour'] }}</flux:text>
+                                    <div class="flex-1">
+                                        <div class="h-6 overflow-hidden rounded bg-zinc-100 dark:bg-zinc-700">
+                                            <div class="flex h-full items-center bg-emerald-500 px-2 text-xs font-medium text-white transition-all"
+                                                style="width: {{ $maxHourlyTotal > 0 ? ($hour['total'] / $maxHourlyTotal) * 100 : 0 }}%">
+                                                <span class="whitespace-nowrap">{{ $hour['count'] }} sales</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <flux:text class="w-24 text-right text-sm font-semibold">
+                                        ${{ number_format($hour['total'], 2) }}
+                                    </flux:text>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
+                {{-- Sales by Day of Week --}}
+                @if ($salesByDayOfWeek->isNotEmpty())
+                    <div class="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+                        <flux:heading size="lg" class="mb-4">{{ __('Sales by Day of Week') }}</flux:heading>
+                        <div class="space-y-3">
+                            @foreach ($salesByDayOfWeek as $day => $data)
+                                <div class="space-y-1">
+                                    <div class="flex items-center justify-between">
+                                        <flux:text class="font-medium">{{ $day }}</flux:text>
+                                        <div class="flex items-center gap-3 text-sm">
+                                            <flux:text class="text-zinc-500 dark:text-zinc-400">
+                                                {{ $data['count'] }} sales
+                                            </flux:text>
+                                            <flux:text class="font-semibold text-emerald-600">
+                                                ${{ number_format($data['total'], 2) }}
+                                            </flux:text>
+                                        </div>
+                                    </div>
+                                    <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">
+                                        Avg: ${{ number_format($data['avg'], 2) }} per transaction
+                                    </flux:text>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+            </div>
+
+            {{-- Top Customers --}}
+            @if ($topCustomers->isNotEmpty())
+                <div class="rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800">
+                    <div class="p-6">
+                        <flux:heading size="lg">{{ __('Top Customers') }}</flux:heading>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="border-y border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+                                <tr>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                                        {{ __('Customer') }}
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                                        {{ __('Transactions') }}
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                                        {{ __('Total Spent') }}
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                                        {{ __('Avg Transaction') }}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                                @foreach ($topCustomers as $customerData)
+                                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-900/50">
+                                        <td class="px-6 py-4">
+                                            <flux:text class="font-medium">{{ $customerData['customer']->full_name }}
+                                            </flux:text>
+                                            <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">
+                                                {{ $customerData['customer']->email }}
+                                            </flux:text>
+                                        </td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-right text-sm">
+                                            {{ $customerData['transactions'] }}
+                                        </td>
+                                        <td
+                                            class="whitespace-nowrap px-6 py-4 text-right text-sm font-semibold text-emerald-600">
+                                            ${{ number_format($customerData['total_spent'], 2) }}
+                                        </td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-right text-sm">
+                                            ${{ number_format($customerData['avg_transaction'], 2) }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            @endif
+
+            {{-- Additional Metrics --}}
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div class="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+                    <flux:text class="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                        {{ __('Total Discounts') }}
+                    </flux:text>
+                    <flux:heading size="2xl" class="mt-2 text-amber-600">
+                        ${{ number_format($totalDiscount, 2) }}
+                    </flux:heading>
+                </div>
+
+                <div class="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+                    <flux:text class="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                        {{ __('Cash Sales') }}
+                    </flux:text>
+                    <flux:heading size="2xl" class="mt-2 text-green-600">
+                        ${{ number_format($cashSales, 2) }}
+                    </flux:heading>
+                </div>
+
+                <div class="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+                    <flux:text class="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                        {{ __('Card/Digital Sales') }}
+                    </flux:text>
+                    <flux:heading size="2xl" class="mt-2 text-blue-600">
+                        ${{ number_format($cardSales, 2) }}
+                    </flux:heading>
                 </div>
             </div>
         </div>

@@ -43,6 +43,7 @@ class Index extends Component
             'payments' => $this->getPaymentsData(),
             'technicians' => $this->getTechniciansData(),
             'inventory' => $this->getInventoryData(),
+            'pos' => $this->getPosData(),
             default => $this->getSalesData(),
         };
 
@@ -229,6 +230,145 @@ class Index extends Component
             'totalInventoryValue' => $totalInventoryValue,
             'totalRetailValue' => $totalRetailValue,
             'mostUsedParts' => $mostUsedParts,
+        ];
+    }
+
+    protected function getPosData(): array
+    {
+        $start = Carbon::parse($this->startDate)->startOfDay();
+        $end = Carbon::parse($this->endDate)->endOfDay();
+
+        // Import PosSale model at top of file
+        $posSales = \App\Models\PosSale::with(['items.inventoryItem', 'customer', 'soldBy'])
+            ->whereBetween('sale_date', [$start, $end])
+            ->where('status', \App\Enums\PosSaleStatus::Completed)
+            ->get();
+
+        // Total POS revenue
+        $totalRevenue = $posSales->sum('total_amount');
+
+        // Transaction count
+        $transactionCount = $posSales->count();
+
+        // Average transaction value
+        $avgTransaction = $transactionCount > 0 ? $totalRevenue / $transactionCount : 0;
+
+        // Total items sold
+        $totalItemsSold = $posSales->sum('total_items');
+
+        // Revenue by payment method
+        $revenueByMethod = $posSales->groupBy(fn($sale) => $sale->payment_method->label())
+            ->map(fn($group) => [
+                'count' => $group->count(),
+                'total' => $group->sum('total_amount'),
+                'percentage' => $transactionCount > 0 ? round(($group->count() / $transactionCount) * 100, 1) : 0,
+            ])
+            ->sortByDesc('total');
+
+        // Daily sales trend
+        $dailySales = $posSales->groupBy(fn($sale) => $sale->sale_date->format('Y-m-d'))
+            ->map(fn($group) => [
+                'date' => $group->first()->sale_date->format('M d'),
+                'count' => $group->count(),
+                'total' => $group->sum('total_amount'),
+            ])
+            ->sortKeys()
+            ->values();
+
+        // Top products by quantity
+        $topProductsByQuantity = DB::table('pos_sale_items')
+            ->join('pos_sales', 'pos_sale_items.pos_sale_id', '=', 'pos_sales.id')
+            ->join('inventory_items', 'pos_sale_items.inventory_item_id', '=', 'inventory_items.id')
+            ->where('pos_sales.status', \App\Enums\PosSaleStatus::Completed->value)
+            ->whereBetween('pos_sales.sale_date', [$start, $end])
+            ->select(
+                'inventory_items.name',
+                'inventory_items.sku',
+                DB::raw('SUM(pos_sale_items.quantity) as total_quantity'),
+                DB::raw('SUM(pos_sale_items.quantity * pos_sale_items.unit_price) as total_revenue'),
+                DB::raw('AVG(pos_sale_items.unit_price) as avg_price'),
+            )
+            ->groupBy('inventory_items.id', 'inventory_items.name', 'inventory_items.sku')
+            ->orderByDesc('total_quantity')
+            ->limit(10)
+            ->get();
+
+        // Top products by revenue
+        $topProductsByRevenue = DB::table('pos_sale_items')
+            ->join('pos_sales', 'pos_sale_items.pos_sale_id', '=', 'pos_sales.id')
+            ->join('inventory_items', 'pos_sale_items.inventory_item_id', '=', 'inventory_items.id')
+            ->where('pos_sales.status', \App\Enums\PosSaleStatus::Completed->value)
+            ->whereBetween('pos_sales.sale_date', [$start, $end])
+            ->select(
+                'inventory_items.name',
+                'inventory_items.sku',
+                DB::raw('SUM(pos_sale_items.quantity) as total_quantity'),
+                DB::raw('SUM(pos_sale_items.quantity * pos_sale_items.unit_price) as total_revenue'),
+                DB::raw('AVG(pos_sale_items.unit_price) as avg_price'),
+            )
+            ->groupBy('inventory_items.id', 'inventory_items.name', 'inventory_items.sku')
+            ->orderByDesc('total_revenue')
+            ->limit(10)
+            ->get();
+
+        // Peak sales hours (group by hour of day)
+        $salesByHour = $posSales->groupBy(fn($sale) => $sale->sale_date->format('H'))
+            ->map(fn($group, $hour) => [
+                'hour' => mb_str_pad((string) $hour, 2, '0', STR_PAD_LEFT) . ':00',
+                'count' => $group->count(),
+                'total' => $group->sum('total_amount'),
+            ])
+            ->sortKeys()
+            ->values();
+
+        // Sales by day of week
+        $salesByDayOfWeek = $posSales->groupBy(fn($sale) => $sale->sale_date->format('l'))
+            ->map(fn($group) => [
+                'count' => $group->count(),
+                'total' => $group->sum('total_amount'),
+                'avg' => $group->avg('total_amount'),
+            ])
+            ->sortByDesc('total');
+
+        // Top customers
+        $topCustomers = $posSales->whereNotNull('customer_id')
+            ->groupBy('customer_id')
+            ->map(fn($group) => [
+                'customer' => $group->first()->customer,
+                'transactions' => $group->count(),
+                'total_spent' => $group->sum('total_amount'),
+                'avg_transaction' => $group->avg('total_amount'),
+            ])
+            ->sortByDesc('total_spent')
+            ->take(10)
+            ->values();
+
+        // Total discount given
+        $totalDiscount = $posSales->sum('discount_amount');
+
+        // Cash vs Card comparison
+        $cashSales = $posSales->where('payment_method', \App\Enums\PaymentMethod::Cash)->sum('total_amount');
+        $cardSales = $posSales->whereIn('payment_method', [
+            \App\Enums\PaymentMethod::Card,
+            \App\Enums\PaymentMethod::MobileMoney,
+            \App\Enums\PaymentMethod::BankTransfer,
+        ])->sum('total_amount');
+
+        return [
+            'totalRevenue' => $totalRevenue,
+            'transactionCount' => $transactionCount,
+            'avgTransaction' => $avgTransaction,
+            'totalItemsSold' => $totalItemsSold,
+            'totalDiscount' => $totalDiscount,
+            'revenueByMethod' => $revenueByMethod,
+            'dailySales' => $dailySales,
+            'topProductsByQuantity' => $topProductsByQuantity,
+            'topProductsByRevenue' => $topProductsByRevenue,
+            'salesByHour' => $salesByHour,
+            'salesByDayOfWeek' => $salesByDayOfWeek,
+            'topCustomers' => $topCustomers,
+            'cashSales' => $cashSales,
+            'cardSales' => $cardSales,
         ];
     }
 }
