@@ -1,7 +1,36 @@
 <div>
     <div class="mb-6">
-        <flux:heading size="xl" class="mb-2">{{ __('New Sale') }}</flux:heading>
-        <flux:text>{{ __('Quick checkout for direct product sales') }}</flux:text>
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <flux:heading size="xl" class="mb-2">{{ __('New Sale') }}</flux:heading>
+                <flux:text>{{ __('Quick checkout for direct product sales') }}</flux:text>
+            </div>
+
+            @if ($activeShift)
+                <div
+                    class="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 dark:border-emerald-800 dark:bg-emerald-950">
+                    <flux:icon.clock class="size-5 text-emerald-600 dark:text-emerald-400" />
+                    <div>
+                        <flux:text class="text-sm font-semibold text-emerald-900 dark:text-emerald-100">
+                            {{ $activeShift->shift_name }}</flux:text>
+                        <flux:text class="text-xs text-emerald-700 dark:text-emerald-300">Active Shift</flux:text>
+                    </div>
+                </div>
+            @else
+                <div
+                    class="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 dark:border-amber-800 dark:bg-amber-950">
+                    <flux:icon.exclamation-triangle class="size-5 text-amber-600 dark:text-amber-400" />
+                    <div>
+                        <flux:text class="text-sm font-semibold text-amber-900 dark:text-amber-100">No Active Shift
+                        </flux:text>
+                        <flux:text class="text-xs text-amber-700 dark:text-amber-300">
+                            <a href="{{ route('shifts.open') }}" wire:navigate
+                                class="underline hover:text-amber-900 dark:hover:text-amber-100">Open a shift</a>
+                        </flux:text>
+                    </div>
+                </div>
+            @endif
+        </div>
     </div>
 
     <div class="grid gap-6 lg:grid-cols-3">

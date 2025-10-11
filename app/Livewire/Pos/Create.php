@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Pos;
 
 use App\Enums\{PosSaleStatus};
-use App\Models\{Customer, InventoryItem, PosSale, PosSaleItem, ShopSettings};
+use App\Models\{Customer, InventoryItem, PosSale, PosSaleItem, Shift, ShopSettings};
 use Illuminate\Support\Facades\{Auth, DB};
 use Livewire\Attributes\{Computed, Layout};
 use Livewire\Component;
@@ -20,10 +20,16 @@ class Create extends Component
     public string $notes = '';
     public string $searchTerm = '';
     public string $barcodeInput = '';
+    public ?Shift $activeShift = null;
 
     public function mount()
     {
         $this->authorize('create', PosSale::class);
+
+        // Load active shift for current user
+        $this->activeShift = Shift::where('opened_by', Auth::id())
+            ->where('status', 'open')
+            ->first();
     }
 
     public function render()
@@ -182,6 +188,7 @@ class Create extends Component
         $sale = DB::transaction(function () use ($validated) {
             // Create the sale
             $sale = PosSale::create([
+                'shift_id' => $this->activeShift?->id,
                 'customer_id' => !empty($validated['customerId']) ? $validated['customerId'] : null,
                 'subtotal' => $this->subtotal(),
                 'tax_rate' => $this->taxRate(),
@@ -212,6 +219,11 @@ class Create extends Component
                 $inventoryItem->decrement('quantity', $item['quantity']);
             }
 
+            // Update shift totals if there's an active shift
+            if ($this->activeShift) {
+                $this->updateShiftTotals($sale);
+            }
+
             return $sale;
         });
 
@@ -222,5 +234,19 @@ class Create extends Component
         }
 
         $this->redirect(route('pos.index', ['success' => 'sale-completed']), navigate: true);
+    }
+
+    protected function updateShiftTotals(PosSale $sale): void
+    {
+        $this->activeShift->increment('total_sales', $sale->total_amount);
+        $this->activeShift->increment('sales_count');
+
+        // Update payment method totals
+        match ($sale->payment_method->value) {
+            'cash' => $this->activeShift->increment('cash_sales', $sale->total_amount),
+            'card' => $this->activeShift->increment('card_sales', $sale->total_amount),
+            'mobile_money' => $this->activeShift->increment('mobile_money_sales', $sale->total_amount),
+            'bank_transfer' => $this->activeShift->increment('bank_transfer_sales', $sale->total_amount),
+        };
     }
 }
