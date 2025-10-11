@@ -24,6 +24,9 @@ use App\Livewire\Tickets\Create as TicketsCreate;
 use App\Livewire\Tickets\Edit as TicketsEdit;
 use App\Livewire\Tickets\Index as TicketsIndex;
 use App\Livewire\Tickets\Show as TicketsShow;
+use App\Livewire\Users\Create as UsersCreate;
+use App\Livewire\Users\Edit as UsersEdit;
+use App\Livewire\Users\Index as UsersIndex;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -62,6 +65,11 @@ Route::middleware(['auth'])->group(function (): void {
 
     // Reports routes
     Route::get('reports', ReportsIndex::class)->name('reports.index');
+
+    // User management routes
+    Route::get('users', UsersIndex::class)->name('users.index');
+    Route::get('users/create', UsersCreate::class)->name('users.create');
+    Route::get('users/{user}/edit', UsersEdit::class)->name('users.edit');
 
     // Settings Routes
     Route::redirect('settings', 'settings/profile');

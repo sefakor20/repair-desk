@@ -29,6 +29,10 @@
                     <flux:navlist.item icon="chart-bar" :href="route('reports.index')"
                         :current="request()->routeIs('reports.*')" wire:navigate>{{ __('Reports') }}</flux:navlist.item>
                 @endcan
+                @can('viewAny', App\Models\User::class)
+                    <flux:navlist.item icon="users" :href="route('users.index')"
+                        :current="request()->routeIs('users.*')" wire:navigate>{{ __('Users') }}</flux:navlist.item>
+                @endcan
             </flux:navlist.group>
         </flux:navlist>
 
