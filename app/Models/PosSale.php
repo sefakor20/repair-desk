@@ -90,5 +90,47 @@ class PosSale extends Model
                 $sale->sale_number = 'POS-' . mb_strtoupper(uniqid());
             }
         });
+
+        static::created(function ($sale) {
+            if ($sale->customer_id && $sale->status === PosSaleStatus::Completed) {
+                $sale->awardLoyaltyPoints();
+            }
+        });
+
+        static::updated(function ($sale) {
+            if ($sale->customer_id && $sale->wasChanged('status') && $sale->status === PosSaleStatus::Completed) {
+                $sale->awardLoyaltyPoints();
+            }
+        });
+    }
+
+    public function awardLoyaltyPoints(): void
+    {
+        if (! $this->customer_id) {
+            return;
+        }
+
+        $loyaltyAccount = $this->customer->loyaltyAccount()->firstOrCreate(
+            ['customer_id' => $this->customer_id],
+            ['enrolled_at' => now()],
+        );
+
+        $basePoints = (int) floor((float) $this->total_amount);
+        $multiplier = $loyaltyAccount->getPointsMultiplier();
+        $pointsToAward = (int) floor($basePoints * $multiplier);
+
+        if ($pointsToAward > 0) {
+            $loyaltyAccount->addPoints(
+                $pointsToAward,
+                'earned',
+                "Purchase: {$this->sale_number}",
+                [
+                    'sale_id' => $this->id,
+                    'sale_total' => $this->total_amount,
+                    'base_points' => $basePoints,
+                    'multiplier' => $multiplier,
+                ],
+            );
+        }
     }
 }
