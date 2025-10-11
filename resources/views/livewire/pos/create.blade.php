@@ -32,26 +32,63 @@
                     placeholder="{{ __('Search products by name, SKU, or barcode...') }}" class="mb-4" />
 
                 {{-- Product Grid --}}
-                <div class="grid gap-3 sm:grid-cols-2">
+                <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     @forelse ($inventoryItems as $item)
                         <div wire:click="addToCart('{{ $item->id }}')"
-                            class="flex cursor-pointer items-center justify-between rounded-lg border border-zinc-200 p-3 transition hover:border-blue-500 hover:bg-blue-50 dark:border-zinc-700 dark:hover:border-blue-500 dark:hover:bg-blue-900/20">
-                            <div class="min-w-0 flex-1">
-                                <flux:text class="font-medium">{{ $item->name }}</flux:text>
-                                <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">
-                                    {{ $item->sku }} • {{ $item->quantity }} {{ __('in stock') }}
+                            class="group relative flex cursor-pointer flex-col rounded-lg border border-zinc-200 bg-white p-4 shadow-sm transition-all hover:border-emerald-500 hover:shadow-md dark:border-zinc-700 dark:bg-zinc-800 dark:hover:border-emerald-500">
+                            {{-- Product Name --}}
+                            <div class="mb-2">
+                                <flux:heading size="sm" class="line-clamp-2 text-zinc-900 dark:text-zinc-100">
+                                    {{ $item->name }}
+                                </flux:heading>
+                            </div>
+
+                            {{-- SKU and Stock Info --}}
+                            <div class="mb-3 flex items-center gap-2 text-xs">
+                                <flux:badge variant="outline" size="sm" class="font-mono">
+                                    {{ $item->sku }}
+                                </flux:badge>
+                                <flux:text class="text-zinc-500 dark:text-zinc-400">
+                                    <span
+                                        class="font-semibold text-zinc-700 dark:text-zinc-300">{{ $item->quantity }}</span>
+                                    in stock
                                 </flux:text>
                             </div>
-                            <div class="ml-3 text-right">
-                                <flux:text class="font-semibold text-green-600 dark:text-green-400">
-                                    ${{ number_format($item->selling_price, 2) }}
-                                </flux:text>
+
+                            {{-- Price and Add Button --}}
+                            <div class="mt-auto flex items-center justify-between">
+                                <div>
+                                    <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Price</flux:text>
+                                    <flux:text class="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                                        ${{ number_format($item->selling_price, 2) }}
+                                    </flux:text>
+                                </div>
+                                <div
+                                    class="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 transition-colors group-hover:bg-emerald-600 group-hover:text-white dark:bg-emerald-900/30 dark:text-emerald-400 dark:group-hover:bg-emerald-600">
+                                    <flux:icon.plus class="h-4 w-4" />
+                                </div>
                             </div>
+
+                            {{-- Low Stock Warning --}}
+                            @if ($item->quantity <= $item->reorder_level)
+                                <div class="absolute right-2 top-2">
+                                    <flux:badge variant="warning" size="sm">
+                                        Low Stock
+                                    </flux:badge>
+                                </div>
+                            @endif
                         </div>
                     @empty
-                        <div class="col-span-2 py-8 text-center">
-                            <flux:text class="text-zinc-500 dark:text-zinc-400">
-                                {{ $searchTerm ? __('No products found.') : __('No products available.') }}
+                        <div class="col-span-full py-12 text-center">
+                            <div
+                                class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800">
+                                <flux:icon.magnifying-glass class="h-8 w-8 text-zinc-400" />
+                            </div>
+                            <flux:heading size="sm" class="mb-2 text-zinc-700 dark:text-zinc-300">
+                                {{ $searchTerm ? __('No products found') : __('No products available') }}
+                            </flux:heading>
+                            <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">
+                                {{ $searchTerm ? __('Try a different search term') : __('Add inventory items to get started') }}
                             </flux:text>
                         </div>
                     @endforelse
@@ -70,37 +107,90 @@
 
                 {{-- Cart Items --}}
                 @if (empty($cart))
-                    <div class="mb-4 py-8 text-center">
-                        <flux:text class="text-zinc-500 dark:text-zinc-400">
-                            {{ __('Cart is empty. Add products to get started.') }}
+                    <div class="mb-4 py-12 text-center">
+                        <div
+                            class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800">
+                            <flux:icon.shopping-cart class="h-8 w-8 text-zinc-400" />
+                        </div>
+                        <flux:heading size="sm" class="mb-2 text-zinc-700 dark:text-zinc-300">
+                            {{ __('Cart is empty') }}
+                        </flux:heading>
+                        <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">
+                            {{ __('Add products to get started') }}
                         </flux:text>
                     </div>
                 @else
-                    <div class="mb-4 space-y-2">
+                    <div class="mb-4 max-h-96 space-y-3 overflow-y-auto">
                         @foreach ($cart as $key => $item)
                             <div
-                                class="flex items-center gap-2 rounded-lg border border-zinc-200 p-2 dark:border-zinc-700">
-                                <div class="min-w-0 flex-1">
-                                    <flux:text class="text-sm font-medium">{{ $item['name'] }}</flux:text>
-                                    <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">
-                                        ${{ number_format($item['unit_price'], 2) }}
-                                        {{ __('each') }}
-                                    </flux:text>
+                                class="group rounded-lg border border-zinc-200 bg-zinc-50/50 p-3 transition-all hover:border-zinc-300 hover:shadow-sm dark:border-zinc-700 dark:bg-zinc-800/50 dark:hover:border-zinc-600">
+                                {{-- Item Header --}}
+                                <div class="mb-2 flex items-start justify-between">
+                                    <div class="min-w-0 flex-1">
+                                        <flux:heading size="sm"
+                                            class="mb-1 line-clamp-1 text-zinc-900 dark:text-zinc-100">
+                                            {{ $item['name'] }}
+                                        </flux:heading>
+                                        <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">
+                                            SKU: {{ $item['sku'] }}
+                                        </flux:text>
+                                    </div>
+                                    <button wire:click="removeFromCart('{{ $key }}')" type="button"
+                                        class="ml-2 rounded-full p-1 text-zinc-400 transition-colors hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/30 dark:hover:text-red-400">
+                                        <flux:icon.trash class="h-4 w-4" />
+                                    </button>
                                 </div>
-                                <input type="number" wire:model.live="cart.{{ $key }}.quantity"
-                                    wire:change="updateQuantity('{{ $key }}', $event.target.value)"
-                                    min="1" max="{{ $item['max_quantity'] }}"
-                                    class="w-16 rounded-md border-gray-300 text-sm dark:border-gray-700 dark:bg-gray-900" />
-                                <button wire:click="removeFromCart('{{ $key }}')"
-                                    class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">
-                                    <flux:icon.x-mark class="size-5" />
-                                </button>
+
+                                {{-- Quantity and Price Row --}}
+                                <div class="flex items-center justify-between gap-3">
+                                    <div class="flex items-center gap-2">
+                                        <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Qty:</flux:text>
+                                        <div
+                                            class="flex items-center rounded-lg border border-zinc-300 dark:border-zinc-600">
+                                            <button type="button"
+                                                wire:click="updateQuantity('{{ $key }}', {{ max(1, $item['quantity'] - 1) }})"
+                                                class="px-2 py-1 text-zinc-600 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-700"
+                                                @if ($item['quantity'] <= 1) disabled @endif>
+                                                <flux:icon.minus class="h-3 w-3" />
+                                            </button>
+                                            <input type="number" wire:model.live="cart.{{ $key }}.quantity"
+                                                wire:change="updateQuantity('{{ $key }}', $event.target.value)"
+                                                min="1" max="{{ $item['max_quantity'] }}"
+                                                class="w-12 border-0 bg-transparent px-2 py-1 text-center text-sm font-medium focus:outline-none focus:ring-0 dark:text-zinc-100" />
+                                            <button type="button"
+                                                wire:click="updateQuantity('{{ $key }}', {{ min($item['max_quantity'], $item['quantity'] + 1) }})"
+                                                class="px-2 py-1 text-zinc-600 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-700"
+                                                @if ($item['quantity'] >= $item['max_quantity']) disabled @endif>
+                                                <flux:icon.plus class="h-3 w-3" />
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-right">
+                                        <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">
+                                            ${{ number_format($item['unit_price'], 2) }} each
+                                        </flux:text>
+                                        <flux:text class="text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                                            ${{ number_format($item['unit_price'] * $item['quantity'], 2) }}
+                                        </flux:text>
+                                    </div>
+                                </div>
+
+                                {{-- Stock Warning --}}
+                                @if ($item['quantity'] >= $item['max_quantity'])
+                                    <div class="mt-2 rounded bg-amber-50 px-2 py-1 dark:bg-amber-900/20">
+                                        <flux:text class="text-xs text-amber-700 dark:text-amber-400">
+                                            Max stock reached ({{ $item['max_quantity'] }} available)
+                                        </flux:text>
+                                    </div>
+                                @endif
                             </div>
                         @endforeach
                     </div>
 
-                    <div class="mb-4 flex justify-end">
+                    <div class="mb-4 flex justify-end border-t border-zinc-200 pt-3 dark:border-zinc-700">
                         <flux:button variant="ghost" size="sm" wire:click="clearCart">
+                            <flux:icon.trash class="mr-1 h-4 w-4" />
                             {{ __('Clear Cart') }}
                         </flux:button>
                     </div>
