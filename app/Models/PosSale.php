@@ -25,6 +25,9 @@ class PosSale extends Model
         'discount_amount',
         'total_amount',
         'payment_method',
+        'payment_reference',
+        'payment_status',
+        'payment_metadata',
         'notes',
         'sold_by',
         'sale_date',
@@ -41,6 +44,7 @@ class PosSale extends Model
             'total_amount' => 'decimal:2',
             'sale_date' => 'datetime',
             'payment_method' => PaymentMethod::class,
+            'payment_metadata' => 'array',
             'status' => PosSaleStatus::class,
         ];
     }

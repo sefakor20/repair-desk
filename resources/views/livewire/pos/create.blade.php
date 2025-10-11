@@ -10,9 +10,26 @@
             <div class="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
                 <flux:heading size="lg" class="mb-4">{{ __('Add Products') }}</flux:heading>
 
+                {{-- Barcode Scanner Input --}}
+                <div class="mb-4">
+                    <flux:field>
+                        <flux:label>{{ __('Scan Barcode') }}</flux:label>
+                        <div class="flex gap-2">
+                            <flux:input wire:model.live="barcodeInput" wire:keydown.enter="scanBarcode"
+                                placeholder="{{ __('Scan or enter barcode...') }}" class="flex-1" autofocus />
+                            <flux:button wire:click="scanBarcode" variant="ghost">
+                                <flux:icon.magnifying-glass />
+                            </flux:button>
+                        </div>
+                        @error('barcodeInput')
+                            <flux:error>{{ $message }}</flux:error>
+                        @enderror
+                    </flux:field>
+                </div>
+
                 {{-- Search Products --}}
                 <flux:input wire:model.live.debounce.300ms="searchTerm"
-                    placeholder="{{ __('Search products by name or SKU...') }}" class="mb-4" />
+                    placeholder="{{ __('Search products by name, SKU, or barcode...') }}" class="mb-4" />
 
                 {{-- Product Grid --}}
                 <div class="grid gap-3 sm:grid-cols-2">
@@ -106,6 +123,7 @@
                     <flux:select wire:model="paymentMethod" required>
                         <option value="cash">{{ __('Cash') }}</option>
                         <option value="card">{{ __('Card') }}</option>
+                        <option value="mobile_money">{{ __('Mobile Money') }}</option>
                         <option value="bank_transfer">{{ __('Bank Transfer') }}</option>
                     </flux:select>
                     @error('paymentMethod')

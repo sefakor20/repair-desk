@@ -19,6 +19,7 @@ class Create extends Component
     public string $discountAmount = '0';
     public string $notes = '';
     public string $searchTerm = '';
+    public string $barcodeInput = '';
 
     public function mount()
     {
@@ -34,7 +35,8 @@ class Create extends Component
             ->when($this->searchTerm, function ($query) {
                 $query->where(function ($q) {
                     $q->where('name', 'like', '%' . $this->searchTerm . '%')
-                        ->orWhere('sku', 'like', '%' . $this->searchTerm . '%');
+                        ->orWhere('sku', 'like', '%' . $this->searchTerm . '%')
+                        ->orWhere('barcode', 'like', '%' . $this->searchTerm . '%');
                 });
             })
             ->orderBy('name')
@@ -77,6 +79,26 @@ class Create extends Component
         }
 
         $this->searchTerm = '';
+    }
+
+    public function scanBarcode(): void
+    {
+        if (empty($this->barcodeInput)) {
+            return;
+        }
+
+        $item = InventoryItem::where('barcode', $this->barcodeInput)
+            ->where('status', 'active')
+            ->where('quantity', '>', 0)
+            ->first();
+
+        if ($item) {
+            $this->addToCart($item->id);
+            $this->barcodeInput = '';
+        } else {
+            $this->addError('barcodeInput', 'Item with barcode "' . $this->barcodeInput . '" not found.');
+            $this->barcodeInput = '';
+        }
     }
 
     public function updateQuantity(string $cartKey, int $quantity): void
@@ -152,12 +174,12 @@ class Create extends Component
 
         $validated = $this->validate([
             'customerId' => ['nullable', 'exists:customers,id'],
-            'paymentMethod' => ['required', 'string', 'in:cash,card,bank_transfer'],
+            'paymentMethod' => ['required', 'string', 'in:cash,card,mobile_money,bank_transfer'],
             'discountAmount' => ['nullable', 'numeric', 'min:0', 'max:' . $this->subtotal()],
             'notes' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        DB::transaction(function () use ($validated) {
+        $sale = DB::transaction(function () use ($validated) {
             // Create the sale
             $sale = PosSale::create([
                 'customer_id' => !empty($validated['customerId']) ? $validated['customerId'] : null,
@@ -167,6 +189,7 @@ class Create extends Component
                 'discount_amount' => (float) ($validated['discountAmount'] ?? 0),
                 'total_amount' => $this->total(),
                 'payment_method' => $validated['paymentMethod'],
+                'payment_status' => $validated['paymentMethod'] === 'card' ? 'pending' : 'completed',
                 'notes' => $validated['notes'] ?? null,
                 'sold_by' => Auth::id(),
                 'sale_date' => now(),
@@ -188,7 +211,15 @@ class Create extends Component
                 $inventoryItem = InventoryItem::find($item['id']);
                 $inventoryItem->decrement('quantity', $item['quantity']);
             }
+
+            return $sale;
         });
+
+        // If card payment, redirect to Paystack payment page
+        if ($validated['paymentMethod'] === 'card') {
+            $this->redirect(route('pos.paystack', $sale), navigate: true);
+            return;
+        }
 
         $this->redirect(route('pos.index', ['success' => 'sale-completed']), navigate: true);
     }

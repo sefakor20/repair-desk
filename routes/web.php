@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Pos\PaystackCallbackController;
 use App\Livewire\Customers\Create as CustomersCreate;
 use App\Livewire\Customers\Edit as CustomersEdit;
 use App\Livewire\Customers\Index as CustomersIndex;
@@ -17,6 +18,8 @@ use App\Livewire\Invoices\Index as InvoicesIndex;
 use App\Livewire\Invoices\Show as InvoicesShow;
 use App\Livewire\Pos\Create as PosCreate;
 use App\Livewire\Pos\Index as PosIndex;
+use App\Livewire\Pos\PaystackPayment;
+use App\Livewire\Pos\Receipt;
 use App\Livewire\Pos\Show as PosShow;
 use App\Livewire\Reports\Index as ReportsIndex;
 use App\Livewire\Settings\Appearance;
@@ -71,6 +74,9 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('pos', PosIndex::class)->name('pos.index');
     Route::get('pos/create', PosCreate::class)->name('pos.create');
     Route::get('pos/{sale}', PosShow::class)->name('pos.show');
+    Route::get('pos/{sale}/receipt', Receipt::class)->name('pos.receipt');
+    Route::get('pos/{sale}/paystack', PaystackPayment::class)->name('pos.paystack');
+    Route::get('pos/{sale}/paystack/callback', PaystackCallbackController::class)->name('pos.paystack.callback');
 
     // Reports routes
     Route::get('reports', ReportsIndex::class)->name('reports.index');

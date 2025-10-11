@@ -19,6 +19,7 @@ class InventoryItem extends Model
     protected $fillable = [
         'name',
         'sku',
+        'barcode',
         'description',
         'category',
         'cost_price',

@@ -6,6 +6,10 @@
                 <flux:text>{{ $sale->sale_number }}</flux:text>
             </div>
             <div class="flex gap-2">
+                <flux:button href="{{ route('pos.receipt', $sale) }}" wire:navigate variant="primary">
+                    <flux:icon.printer class="mr-2" />
+                    {{ __('Print Receipt') }}
+                </flux:button>
                 @can('refund', $sale)
                     @if ($sale->status === App\Enums\PosSaleStatus::Completed)
                         <flux:button variant="danger" wire:click="openRefundModal">
@@ -149,6 +153,36 @@
                         </flux:text>
                         <flux:badge size="lg">{{ $sale->payment_method->label() }}</flux:badge>
                     </div>
+
+                    @if ($sale->payment_status)
+                        <div class="border-t border-zinc-200 pt-3 dark:border-zinc-700">
+                            <flux:text class="mb-1 text-sm text-zinc-500 dark:text-zinc-400">
+                                {{ __('Payment Status') }}
+                            </flux:text>
+                            <flux:badge
+                                :color="$sale->payment_status === 'completed' ? 'green' : ($sale->payment_status === 'failed' ? 'red' : 'yellow')"
+                                size="lg">
+                                {{ ucfirst($sale->payment_status) }}
+                            </flux:badge>
+
+                            @if ($sale->payment_status === 'pending' && $sale->payment_method === App\Enums\PaymentMethod::Card)
+                                <flux:button href="{{ route('pos.paystack', $sale) }}" wire:navigate variant="primary"
+                                    class="mt-3 w-full">
+                                    <flux:icon.credit-card class="mr-2" />
+                                    {{ __('Complete Payment') }}
+                                </flux:button>
+                            @endif
+                        </div>
+                    @endif
+
+                    @if ($sale->payment_reference)
+                        <div class="border-t border-zinc-200 pt-3 dark:border-zinc-700">
+                            <flux:text class="mb-1 text-sm text-zinc-500 dark:text-zinc-400">
+                                {{ __('Payment Reference') }}
+                            </flux:text>
+                            <flux:text class="font-mono text-xs">{{ $sale->payment_reference }}</flux:text>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
