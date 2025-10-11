@@ -41,23 +41,34 @@
 
     {{-- Tabs --}}
     <div class="mb-6">
-        <flux:navlist variant="outline">
-            <flux:navlist.item wire:click="$set('tab', 'sales')" :current="$tab === 'sales'">
-                {{ __('Sales Report') }}
-            </flux:navlist.item>
-            <flux:navlist.item wire:click="$set('tab', 'payments')" :current="$tab === 'payments'">
-                {{ __('Payment History') }}
-            </flux:navlist.item>
-            <flux:navlist.item wire:click="$set('tab', 'pos')" :current="$tab === 'pos'">
-                {{ __('POS Analytics') }}
-            </flux:navlist.item>
-            <flux:navlist.item wire:click="$set('tab', 'technicians')" :current="$tab === 'technicians'">
-                {{ __('Technician Performance') }}
-            </flux:navlist.item>
-            <flux:navlist.item wire:click="$set('tab', 'inventory')" :current="$tab === 'inventory'">
-                {{ __('Inventory Insights') }}
-            </flux:navlist.item>
-        </flux:navlist>
+        <div class="border-b border-zinc-200 dark:border-zinc-700">
+            <nav class="-mb-px flex space-x-8 overflow-x-auto" aria-label="Tabs">
+                <button wire:click="$set('tab', 'sales')" type="button"
+                    class="{{ $tab === 'sales' ? 'border-emerald-500 text-emerald-600 dark:border-emerald-400 dark:text-emerald-400' : 'border-transparent text-zinc-500 hover:border-zinc-300 hover:text-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-300' }} whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium transition-colors">
+                    {{ __('Sales Report') }}
+                </button>
+
+                <button wire:click="$set('tab', 'payments')" type="button"
+                    class="{{ $tab === 'payments' ? 'border-emerald-500 text-emerald-600 dark:border-emerald-400 dark:text-emerald-400' : 'border-transparent text-zinc-500 hover:border-zinc-300 hover:text-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-300' }} whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium transition-colors">
+                    {{ __('Payment History') }}
+                </button>
+
+                <button wire:click="$set('tab', 'pos')" type="button"
+                    class="{{ $tab === 'pos' ? 'border-emerald-500 text-emerald-600 dark:border-emerald-400 dark:text-emerald-400' : 'border-transparent text-zinc-500 hover:border-zinc-300 hover:text-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-300' }} whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium transition-colors">
+                    {{ __('POS Analytics') }}
+                </button>
+
+                <button wire:click="$set('tab', 'technicians')" type="button"
+                    class="{{ $tab === 'technicians' ? 'border-emerald-500 text-emerald-600 dark:border-emerald-400 dark:text-emerald-400' : 'border-transparent text-zinc-500 hover:border-zinc-300 hover:text-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-300' }} whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium transition-colors">
+                    {{ __('Technician Performance') }}
+                </button>
+
+                <button wire:click="$set('tab', 'inventory')" type="button"
+                    class="{{ $tab === 'inventory' ? 'border-emerald-500 text-emerald-600 dark:border-emerald-400 dark:text-emerald-400' : 'border-transparent text-zinc-500 hover:border-zinc-300 hover:text-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-300' }} whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium transition-colors">
+                    {{ __('Inventory Insights') }}
+                </button>
+            </nav>
+        </div>
     </div>
 
     {{-- Sales Report --}}
