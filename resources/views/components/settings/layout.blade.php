@@ -9,7 +9,7 @@
             @endif
             <flux:navlist.item :href="route('settings.appearance')" wire:navigate>{{ __('Appearance') }}
             </flux:navlist.item>
-            @can('accessSettings')
+            @can('accessSettings', App\Models\User::class)
                 <flux:navlist.group heading="Shop Settings" class="mt-6">
                     <flux:navlist.item :href="route('settings.shop')" :current="request()->routeIs('settings.shop')"
                         icon="building-storefront">
