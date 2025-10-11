@@ -19,6 +19,7 @@ use App\Livewire\Reports\Index as ReportsIndex;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
+use App\Livewire\Settings\Shop as SettingsShop;
 use App\Livewire\Settings\TwoFactor;
 use App\Livewire\Tickets\Create as TicketsCreate;
 use App\Livewire\Tickets\Edit as TicketsEdit;
@@ -77,6 +78,7 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('settings/profile', Profile::class)->name('settings.profile');
     Route::get('settings/password', Password::class)->name('settings.password');
     Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
+    Route::get('settings/shop', SettingsShop::class)->name('settings.shop');
 
     Route::get('settings/two-factor', TwoFactor::class)
         ->middleware(
