@@ -46,7 +46,7 @@ class Dashboard extends Component
 
     protected function getTodayRevenue(): float
     {
-        return Payment::whereDate('payment_date', today())
+        return (float) Payment::whereDate('payment_date', today())
             ->sum('amount');
     }
 

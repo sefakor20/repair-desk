@@ -79,7 +79,7 @@ class Shift extends Model
             return null;
         }
 
-        return (int) $this->started_at->diffInMinutes($this->ended_at);
+        return (int) round($this->started_at->diffInMinutes($this->ended_at));
     }
 
     public function averageSaleAmount(): float
