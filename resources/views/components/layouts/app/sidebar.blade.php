@@ -24,7 +24,8 @@
                 <flux:navlist.item icon="wrench-screwdriver" :href="route('tickets.index')"
                     :current="request()->routeIs('tickets.*')" wire:navigate>{{ __('Tickets') }}</flux:navlist.item>
                 <flux:navlist.item icon="cube" :href="route('inventory.index')"
-                    :current="request()->routeIs('inventory.*')" wire:navigate>{{ __('Inventory') }}</flux:navlist.item>
+                    :current="request()->routeIs('inventory.*')" wire:navigate>{{ __('Inventory') }}
+                </flux:navlist.item>
                 <flux:navlist.item icon="document-text" :href="route('invoices.index')"
                     :current="request()->routeIs('invoices.*')" wire:navigate>{{ __('Invoices') }}</flux:navlist.item>
                 <flux:navlist.item icon="shopping-cart" :href="route('pos.index')"
