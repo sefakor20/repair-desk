@@ -73,35 +73,35 @@
             <div class="space-y-3">
                 <div class="flex justify-between">
                     <flux:text>{{ __('Subtotal') }}</flux:text>
-                    <flux:text class="font-medium">${{ number_format($invoice->subtotal, 2) }}</flux:text>
+                    <flux:text class="font-medium">{{ format_currency($invoice->subtotal) }}</flux:text>
                 </div>
                 @if ($invoice->discount > 0)
                     <div class="flex justify-between text-red-600 dark:text-red-400">
                         <flux:text>{{ __('Discount') }}</flux:text>
-                        <flux:text class="font-medium">-${{ number_format($invoice->discount, 2) }}</flux:text>
+                        <flux:text class="font-medium">-{{ format_currency($invoice->discount) }}</flux:text>
                     </div>
                 @endif
                 @if ($invoice->tax_rate > 0)
                     <div class="flex justify-between">
                         <flux:text>{{ __('Tax') }} ({{ number_format($invoice->tax_rate, 2) }}%)</flux:text>
-                        <flux:text class="font-medium">${{ number_format($invoice->tax_amount, 2) }}</flux:text>
+                        <flux:text class="font-medium">{{ format_currency($invoice->tax_amount) }}</flux:text>
                     </div>
                 @endif
                 <div class="border-t border-zinc-200 pt-3 dark:border-zinc-700">
                     <div class="flex justify-between">
                         <flux:text class="text-lg font-semibold">{{ __('Total') }}</flux:text>
-                        <flux:text class="text-lg font-semibold">${{ number_format($invoice->total, 2) }}</flux:text>
+                        <flux:text class="text-lg font-semibold">{{ format_currency($invoice->total) }}</flux:text>
                     </div>
                 </div>
                 <div class="flex justify-between text-green-600 dark:text-green-400">
                     <flux:text class="font-medium">{{ __('Total Paid') }}</flux:text>
-                    <flux:text class="font-medium">${{ number_format($invoice->total_paid, 2) }}</flux:text>
+                    <flux:text class="font-medium">{{ format_currency($invoice->total_paid) }}</flux:text>
                 </div>
                 <div class="flex justify-between">
                     <flux:text class="text-lg font-semibold">{{ __('Balance Due') }}</flux:text>
                     <flux:text class="text-lg font-semibold"
                         :class="$invoice->balance_due > 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'">
-                        ${{ number_format($invoice->balance_due, 2) }}
+                        {{ format_currency($invoice->balance_due) }}
                     </flux:text>
                 </div>
             </div>
@@ -146,7 +146,7 @@
                                 </td>
                                 <td
                                     class="whitespace-nowrap px-4 py-3 text-sm font-medium text-green-600 dark:text-green-400">
-                                    ${{ number_format($payment->amount, 2) }}
+                                    {{ format_currency($payment->amount) }}
                                 </td>
                                 <td class="whitespace-nowrap px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400">
                                     {{ $payment->payment_method->label() }}

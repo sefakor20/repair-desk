@@ -70,13 +70,13 @@
                     <div class="grid gap-4 sm:grid-cols-2">
                         <div>
                             <flux:subheading>{{ __('Cost Price') }}</flux:subheading>
-                            <flux:text class="mt-1 text-lg font-semibold">${{ number_format($item->cost_price, 2) }}
+                            <flux:text class="mt-1 text-lg font-semibold">{{ format_currency($item->cost_price) }}
                             </flux:text>
                             <flux:text class="text-xs">{{ __('What you pay') }}</flux:text>
                         </div>
                         <div>
                             <flux:subheading>{{ __('Selling Price') }}</flux:subheading>
-                            <flux:text class="mt-1 text-lg font-semibold">${{ number_format($item->selling_price, 2) }}
+                            <flux:text class="mt-1 text-lg font-semibold">{{ format_currency($item->selling_price) }}
                             </flux:text>
                             <flux:text class="text-xs">{{ __('What you charge') }}</flux:text>
                         </div>
@@ -92,7 +92,7 @@
                             <div>
                                 <flux:subheading>{{ __('Profit per Unit') }}</flux:subheading>
                                 <flux:text class="mt-1 text-lg font-semibold text-green-600 dark:text-green-400">
-                                    ${{ number_format($profit, 2) }}
+                                    {{ format_currency($profit) }}
                                 </flux:text>
                             </div>
                             <div class="text-right">
@@ -155,14 +155,14 @@
                     <div>
                         <flux:subheading>{{ __('Total Value (Cost)') }}</flux:subheading>
                         <flux:text class="mt-1 text-xl font-semibold">
-                            ${{ number_format($item->quantity * $item->cost_price, 2) }}
+                            {{ format_currency($item->quantity * $item->cost_price) }}
                         </flux:text>
                     </div>
 
                     <div>
                         <flux:subheading>{{ __('Total Value (Retail)') }}</flux:subheading>
                         <flux:text class="mt-1 text-xl font-semibold">
-                            ${{ number_format($item->quantity * $item->selling_price, 2) }}
+                            {{ format_currency($item->quantity * $item->selling_price) }}
                         </flux:text>
                     </div>
 

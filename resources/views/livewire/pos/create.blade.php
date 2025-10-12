@@ -89,7 +89,7 @@
                                 <div>
                                     <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Price</flux:text>
                                     <flux:text class="text-lg font-bold text-emerald-600 dark:text-emerald-400">
-                                        ${{ number_format($item->selling_price, 2) }}
+                                        {{ format_currency($item->selling_price) }}
                                     </flux:text>
                                 </div>
                                 <div
@@ -197,10 +197,10 @@
 
                                     <div class="text-right">
                                         <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">
-                                            ${{ number_format($item['unit_price'], 2) }} each
+                                            {{ format_currency($item['unit_price']) }} each
                                         </flux:text>
                                         <flux:text class="text-sm font-bold text-emerald-600 dark:text-emerald-400">
-                                            ${{ number_format($item['unit_price'] * $item['quantity'], 2) }}
+                                            {{ format_currency($item['unit_price'] * $item['quantity']) }}
                                         </flux:text>
                                     </div>
                                 </div>
@@ -273,24 +273,24 @@
                 <div class="mb-4 space-y-2 border-t border-zinc-200 pt-4 dark:border-zinc-700">
                     <div class="flex justify-between text-sm">
                         <flux:text>{{ __('Subtotal') }}</flux:text>
-                        <flux:text class="font-medium">${{ number_format($this->subtotal(), 2) }}</flux:text>
+                        <flux:text class="font-medium">{{ format_currency($this->subtotal()) }}</flux:text>
                     </div>
                     @if ($discountAmount > 0)
                         <div class="flex justify-between text-sm">
                             <flux:text>{{ __('Discount') }}</flux:text>
                             <flux:text class="font-medium text-red-600 dark:text-red-400">
-                                -${{ number_format($discountAmount, 2) }}
+                                -{{ format_currency($discountAmount) }}
                             </flux:text>
                         </div>
                     @endif
                     <div class="flex justify-between text-sm">
                         <flux:text>{{ __('Tax') }} ({{ number_format($this->taxRate(), 2) }}%)</flux:text>
-                        <flux:text class="font-medium">${{ number_format($this->taxAmount(), 2) }}</flux:text>
+                        <flux:text class="font-medium">{{ format_currency($this->taxAmount()) }}</flux:text>
                     </div>
                     <div class="flex justify-between border-t border-zinc-200 pt-2 dark:border-zinc-700">
                         <flux:heading size="lg">{{ __('Total') }}</flux:heading>
                         <flux:heading size="lg" class="text-green-600 dark:text-green-400">
-                            ${{ number_format($this->total(), 2) }}
+                            {{ format_currency($this->total()) }}
                         </flux:heading>
                     </div>
                 </div>

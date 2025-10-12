@@ -35,8 +35,10 @@ test('inventory page displays inventory items', function () {
         ->assertSee('IP-SCR-001')
         ->assertSee('Parts')
         ->assertSee('50')
-        ->assertSee('$25.00')
-        ->assertSee('$75.00');
+        ->assertSee('GHS', false)
+        ->assertSee('25.00')
+        ->assertSee('GHS', false)
+        ->assertSee('75.00');
 });
 
 test('inventory page shows empty state when no items exist', function () {

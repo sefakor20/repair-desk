@@ -145,10 +145,10 @@
                                 </p>
                             </td>
                             <td class="whitespace-nowrap px-6 py-4 text-sm text-zinc-500 dark:text-zinc-400">
-                                ${{ number_format($item->cost_price, 2) }}
+                                {{ format_currency($item->cost_price) }}
                             </td>
                             <td class="whitespace-nowrap px-6 py-4 text-sm text-zinc-500 dark:text-zinc-400">
-                                ${{ number_format($item->selling_price, 2) }}
+                                {{ format_currency($item->selling_price) }}
                             </td>
                             <td class="whitespace-nowrap px-6 py-4">
                                 @if ($item->status === 'active')

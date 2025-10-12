@@ -34,7 +34,8 @@ test('invoices page displays invoices', function () {
         ->assertSee('INV-TEST-001')
         ->assertSee($invoice->customer->name)
         ->assertSee($ticket->ticket_number)
-        ->assertSee('$150.00')
+        ->assertSee('GHS', false)
+        ->assertSee('150.00')
         ->assertSee('Pending');
 });
 

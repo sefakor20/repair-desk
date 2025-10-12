@@ -104,7 +104,7 @@
                                                     {{ $reward->reward_value['service_name'] ?? 'N/A' }}</flux:badge>
                                             @elseif($reward->type->value === 'voucher')
                                                 <flux:badge variant="success">
-                                                    ${{ number_format($reward->reward_value['amount'], 2) }} voucher
+                                                    {{ format_currency($reward->reward_value['amount']) }} voucher
                                                 </flux:badge>
                                             @elseif($reward->type->value === 'custom')
                                                 <flux:badge variant="muted">

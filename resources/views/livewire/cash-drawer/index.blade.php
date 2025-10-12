@@ -33,13 +33,13 @@
             <div class="grid gap-4 sm:grid-cols-3">
                 <div>
                     <flux:text class="mb-1 text-sm text-zinc-600 dark:text-zinc-400">Opening Balance</flux:text>
-                    <flux:text class="text-2xl font-bold">GHS {{ number_format($activeSession->opening_balance, 2) }}
+                    <flux:text class="text-2xl font-bold">{{ format_currency($activeSession->opening_balance) }}
                     </flux:text>
                 </div>
                 <div>
                     <flux:text class="mb-1 text-sm text-zinc-600 dark:text-zinc-400">Cash Sales</flux:text>
                     <flux:text class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-                        +GHS {{ number_format($activeSession->cash_sales, 2) }}
+                        +{{ format_currency($activeSession->cash_sales) }}
                     </flux:text>
                 </div>
                 <div>
@@ -91,7 +91,7 @@
                     <div class="grid gap-4 border-t border-zinc-200 pt-4 dark:border-zinc-700 sm:grid-cols-4">
                         <div>
                             <flux:text class="mb-1 text-sm text-zinc-600 dark:text-zinc-400">Opening</flux:text>
-                            <flux:text class="font-semibold">GHS {{ number_format($session->opening_balance, 2) }}
+                            <flux:text class="font-semibold">{{ format_currency($session->opening_balance) }}
                             </flux:text>
                         </div>
                         <div>
@@ -103,7 +103,7 @@
                         @if ($session->actual_balance !== null)
                             <div>
                                 <flux:text class="mb-1 text-sm text-zinc-600 dark:text-zinc-400">Actual</flux:text>
-                                <flux:text class="font-semibold">GHS {{ number_format($session->actual_balance, 2) }}
+                                <flux:text class="font-semibold">{{ format_currency($session->actual_balance) }}
                                 </flux:text>
                             </div>
                             <div>

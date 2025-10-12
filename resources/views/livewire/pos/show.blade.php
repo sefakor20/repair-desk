@@ -66,10 +66,10 @@
                                         {{ $item->quantity }}
                                     </td>
                                     <td class="py-3 text-right">
-                                        ${{ number_format($item->unit_price, 2) }}
+                                        {{ format_currency($item->unit_price) }}
                                     </td>
                                     <td class="py-3 text-right font-medium">
-                                        ${{ number_format($item->subtotal, 2) }}
+                                        {{ format_currency($item->subtotal) }}
                                     </td>
                                 </tr>
                             @endforeach
@@ -123,27 +123,27 @@
                 <div class="space-y-3">
                     <div class="flex justify-between">
                         <flux:text>{{ __('Subtotal') }}</flux:text>
-                        <flux:text class="font-medium">${{ number_format($sale->subtotal, 2) }}</flux:text>
+                        <flux:text class="font-medium">{{ format_currency($sale->subtotal) }}</flux:text>
                     </div>
 
                     @if ($sale->discount_amount > 0)
                         <div class="flex justify-between">
                             <flux:text>{{ __('Discount') }}</flux:text>
                             <flux:text class="font-medium text-red-600 dark:text-red-400">
-                                -${{ number_format($sale->discount_amount, 2) }}
+                                -{{ format_currency($sale->discount_amount) }}
                             </flux:text>
                         </div>
                     @endif
 
                     <div class="flex justify-between">
                         <flux:text>{{ __('Tax') }} ({{ number_format($sale->tax_rate, 2) }}%)</flux:text>
-                        <flux:text class="font-medium">${{ number_format($sale->tax_amount, 2) }}</flux:text>
+                        <flux:text class="font-medium">{{ format_currency($sale->tax_amount) }}</flux:text>
                     </div>
 
                     <div class="flex justify-between border-t border-zinc-200 pt-3 dark:border-zinc-700">
                         <flux:heading size="lg">{{ __('Total') }}</flux:heading>
                         <flux:heading size="lg" class="text-green-600 dark:text-green-400">
-                            ${{ number_format($sale->total_amount, 2) }}
+                            {{ format_currency($sale->total_amount) }}
                         </flux:heading>
                     </div>
 

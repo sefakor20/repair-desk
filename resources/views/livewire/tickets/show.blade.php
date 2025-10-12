@@ -126,10 +126,10 @@
                                             {{ $part->quantity }}</td>
                                         <td
                                             class="whitespace-nowrap px-4 py-3 text-right text-sm text-zinc-900 dark:text-white">
-                                            ${{ number_format($part->selling_price, 2) }}</td>
+                                            {{ format_currency($part->selling_price) }}</td>
                                         <td
                                             class="whitespace-nowrap px-4 py-3 text-right text-sm text-zinc-900 dark:text-white">
-                                            ${{ number_format($part->total, 2) }}</td>
+                                            {{ format_currency($part->total) }}</td>
                                     </tr>
                                 @endforeach
                                 <tr class="bg-zinc-50 dark:bg-zinc-900">
@@ -138,7 +138,7 @@
                                         Parts Total:</td>
                                     <td
                                         class="whitespace-nowrap px-4 py-3 text-right text-sm font-semibold text-zinc-900 dark:text-white">
-                                        ${{ number_format($ticket->parts->sum('total'), 2) }}</td>
+                                        {{ format_currency($ticket->parts->sum('total')) }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -281,14 +281,14 @@
                         <div>
                             <p class="text-sm text-zinc-500 dark:text-zinc-400">Total Amount</p>
                             <p class="mt-1 text-lg font-semibold text-zinc-900 dark:text-white">
-                                ${{ number_format($ticket->invoice->total, 2) }}</p>
+                                {{ format_currency($ticket->invoice->total) }}</p>
                         </div>
 
                         @if ($ticket->invoice->payments->isNotEmpty())
                             <div>
                                 <p class="text-sm text-zinc-500 dark:text-zinc-400">Paid</p>
                                 <p class="mt-1 font-medium text-green-600 dark:text-green-400">
-                                    ${{ number_format($ticket->invoice->payments->sum('amount'), 2) }}</p>
+                                    {{ format_currency($ticket->invoice->payments->sum('amount')) }}</p>
                             </div>
 
                             @php
@@ -299,7 +299,7 @@
                                 <div>
                                     <p class="text-sm text-zinc-500 dark:text-zinc-400">Balance Due</p>
                                     <p class="mt-1 font-medium text-red-600 dark:text-red-400">
-                                        ${{ number_format($balance, 2) }}</p>
+                                        {{ format_currency($balance) }}</p>
                                 </div>
                             @endif
                         @endif

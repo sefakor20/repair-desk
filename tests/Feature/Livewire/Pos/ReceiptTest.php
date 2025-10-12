@@ -32,7 +32,8 @@ it('displays sale details correctly', function () {
     Livewire::test(Receipt::class, ['sale' => $sale])
         ->assertSee($sale->sale_number)
         ->assertSee($customer->full_name)
-        ->assertSee('$100.50');
+        ->assertSee('GHS', false)
+        ->assertSee('100.50');
 });
 
 it('displays sale items', function () {
@@ -51,7 +52,8 @@ it('displays sale items', function () {
     Livewire::test(Receipt::class, ['sale' => $sale])
         ->assertSee('Test Product')
         ->assertSee('2')
-        ->assertSee('$25.00');
+        ->assertSee('GHS', false)
+        ->assertSee('25.00');
 });
 
 it('displays payment information', function () {

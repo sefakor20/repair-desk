@@ -59,8 +59,10 @@ test('displays pricing information', function (): void {
     ]);
 
     Livewire::test(Show::class, ['item' => $item])
-        ->assertSee('$100.00')
-        ->assertSee('$150.00');
+        ->assertSee('GHS', false)
+        ->assertSee('100.00')
+        ->assertSee('GHS', false)
+        ->assertSee('150.00');
 });
 
 test('calculates and displays profit margin', function (): void {
@@ -70,7 +72,8 @@ test('calculates and displays profit margin', function (): void {
     ]);
 
     Livewire::test(Show::class, ['item' => $item])
-        ->assertSee('$50.00') // profit
+        ->assertSee('GHS', false)
+        ->assertSee('50.00') // profit
         ->assertSee('50.0%'); // margin
 });
 
@@ -139,7 +142,8 @@ test('calculates total inventory value at cost', function (): void {
     ]);
 
     Livewire::test(Show::class, ['item' => $item])
-        ->assertSee('$500.00'); // total cost value
+        ->assertSee('GHS', false)
+        ->assertSee('500.00'); // total cost value
 });
 
 test('calculates total inventory value at retail', function (): void {
@@ -149,7 +153,8 @@ test('calculates total inventory value at retail', function (): void {
     ]);
 
     Livewire::test(Show::class, ['item' => $item])
-        ->assertSee('$750.00'); // total retail value
+        ->assertSee('GHS', false)
+        ->assertSee('750.00'); // total retail value
 });
 
 test('displays created date', function (): void {

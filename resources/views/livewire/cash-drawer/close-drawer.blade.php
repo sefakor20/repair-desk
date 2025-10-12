@@ -12,25 +12,25 @@
             <div class="grid gap-4 sm:grid-cols-2">
                 <div>
                     <flux:text class="mb-1 text-sm text-zinc-600 dark:text-zinc-400">Opening Balance</flux:text>
-                    <flux:text class="text-xl font-semibold">GHS {{ number_format($session->opening_balance, 2) }}
+                    <flux:text class="text-xl font-semibold">{{ format_currency($session->opening_balance) }}
                     </flux:text>
                 </div>
                 <div>
                     <flux:text class="mb-1 text-sm text-zinc-600 dark:text-zinc-400">Cash Sales</flux:text>
                     <flux:text class="text-xl font-semibold text-emerald-600 dark:text-emerald-400">
-                        +GHS {{ number_format($session->cash_sales, 2) }}
+                        +{{ format_currency($session->cash_sales) }}
                     </flux:text>
                 </div>
                 <div>
                     <flux:text class="mb-1 text-sm text-zinc-600 dark:text-zinc-400">Cash In</flux:text>
                     <flux:text class="text-xl font-semibold text-blue-600 dark:text-blue-400">
-                        +GHS {{ number_format($session->cash_in, 2) }}
+                        +{{ format_currency($session->cash_in) }}
                     </flux:text>
                 </div>
                 <div>
                     <flux:text class="mb-1 text-sm text-zinc-600 dark:text-zinc-400">Cash Out</flux:text>
                     <flux:text class="text-xl font-semibold text-red-600 dark:text-red-400">
-                        -GHS {{ number_format($session->cash_out, 2) }}
+                        -{{ format_currency($session->cash_out) }}
                     </flux:text>
                 </div>
             </div>
@@ -38,7 +38,7 @@
             <div class="mt-6 border-t border-zinc-200 pt-4 dark:border-zinc-700">
                 <flux:text class="mb-2 text-sm text-zinc-600 dark:text-zinc-400">Expected Balance</flux:text>
                 <flux:text class="text-3xl font-bold text-emerald-600 dark:text-emerald-400">
-                    GHS {{ number_format($expectedBalance, 2) }}
+                    {{ format_currency($expectedBalance) }}
                 </flux:text>
             </div>
         </div>

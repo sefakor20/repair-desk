@@ -19,7 +19,7 @@
             <div class="grid gap-4 sm:grid-cols-3">
                 <div>
                     <flux:text class="mb-1 text-sm text-zinc-600 dark:text-zinc-400">Total Sales</flux:text>
-                    <flux:text class="text-2xl font-bold">GHS {{ number_format($shift->total_sales, 2) }}</flux:text>
+                    <flux:text class="text-2xl font-bold">{{ format_currency($shift->total_sales) }}</flux:text>
                 </div>
                 <div>
                     <flux:text class="mb-1 text-sm text-zinc-600 dark:text-zinc-400">Sales Count</flux:text>
@@ -30,7 +30,7 @@
                 <div>
                     <flux:text class="mb-1 text-sm text-zinc-600 dark:text-zinc-400">Average Sale</flux:text>
                     <flux:text class="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                        GHS {{ number_format($averageSaleAmount, 2) }}
+                        {{ format_currency($averageSaleAmount) }}
                     </flux:text>
                 </div>
             </div>
@@ -42,25 +42,25 @@
                     <div>
                         <flux:text class="mb-1 text-sm text-zinc-600 dark:text-zinc-400">Cash</flux:text>
                         <flux:text class="text-lg font-semibold text-emerald-600 dark:text-emerald-400">
-                            GHS {{ number_format($shift->cash_sales, 2) }}
+                            {{ format_currency($shift->cash_sales) }}
                         </flux:text>
                     </div>
                     <div>
                         <flux:text class="mb-1 text-sm text-zinc-600 dark:text-zinc-400">Card</flux:text>
                         <flux:text class="text-lg font-semibold text-blue-600 dark:text-blue-400">
-                            GHS {{ number_format($shift->card_sales, 2) }}
+                            {{ format_currency($shift->card_sales) }}
                         </flux:text>
                     </div>
                     <div>
                         <flux:text class="mb-1 text-sm text-zinc-600 dark:text-zinc-400">Mobile Money</flux:text>
                         <flux:text class="text-lg font-semibold text-amber-600 dark:text-amber-400">
-                            GHS {{ number_format($shift->mobile_money_sales, 2) }}
+                            {{ format_currency($shift->mobile_money_sales) }}
                         </flux:text>
                     </div>
                     <div>
                         <flux:text class="mb-1 text-sm text-zinc-600 dark:text-zinc-400">Bank Transfer</flux:text>
                         <flux:text class="text-lg font-semibold text-purple-600 dark:text-purple-400">
-                            GHS {{ number_format($shift->bank_transfer_sales, 2) }}
+                            {{ format_currency($shift->bank_transfer_sales) }}
                         </flux:text>
                     </div>
                 </div>

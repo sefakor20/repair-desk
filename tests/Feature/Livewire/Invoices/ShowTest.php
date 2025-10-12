@@ -37,8 +37,10 @@ test('show page displays invoice details', function () {
         ->assertSee('INV-TEST-001')
         ->assertSee($invoice->customer->name)
         ->assertSee($invoice->ticket->ticket_number)
-        ->assertSee('$100.00')
-        ->assertSee('$105.00')
+        ->assertSee('GHS', false)
+        ->assertSee('100.00')
+        ->assertSee('GHS', false)
+        ->assertSee('105.00')
         ->assertSee('Pending');
 });
 
@@ -178,7 +180,8 @@ test('shows payment history', function () {
     ]);
 
     Livewire::test(Show::class, ['invoice' => $invoice])
-        ->assertSee('$50.00')
+        ->assertSee('GHS', false)
+        ->assertSee('50.00')
         ->assertSee('Card')
         ->assertSee($payment->processedBy->name);
 });
@@ -193,7 +196,10 @@ test('displays balance due correctly', function () {
     $invoice->refresh();
 
     Livewire::test(Show::class, ['invoice' => $invoice])
-        ->assertSee('$100.00') // Total
-        ->assertSee('$30.00') // Total Paid
-        ->assertSee('$70.00'); // Balance Due
+        ->assertSee('GHS', false)
+        ->assertSee('100.00') // Total
+        ->assertSee('GHS', false)
+        ->assertSee('30.00') // Total Paid
+        ->assertSee('GHS', false)
+        ->assertSee('70.00'); // Balance Due
 });

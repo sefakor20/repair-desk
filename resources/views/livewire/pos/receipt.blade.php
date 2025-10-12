@@ -71,8 +71,8 @@
                     <tr class="border-b border-zinc-200">
                         <td class="py-2 text-sm">{{ $item->inventoryItem->name ?? 'Unknown Item' }}</td>
                         <td class="py-2 text-center text-sm">{{ $item->quantity }}</td>
-                        <td class="py-2 text-right text-sm">${{ number_format($item->unit_price, 2) }}</td>
-                        <td class="py-2 text-right text-sm">${{ number_format($item->subtotal, 2) }}</td>
+                        <td class="py-2 text-right text-sm">{{ format_currency($item->unit_price) }}</td>
+                        <td class="py-2 text-right text-sm">{{ format_currency($item->subtotal) }}</td>
                     </tr>
                 @endforeach
             </tbody>
@@ -82,23 +82,23 @@
         <div class="mb-6 ml-auto max-w-xs space-y-2">
             <div class="flex justify-between text-sm">
                 <span>Subtotal:</span>
-                <span>${{ number_format($sale->subtotal, 2) }}</span>
+                <span>{{ format_currency($sale->subtotal) }}</span>
             </div>
             @if ($sale->tax_amount > 0)
                 <div class="flex justify-between text-sm">
                     <span>Tax ({{ $sale->tax_rate }}%):</span>
-                    <span>${{ number_format($sale->tax_amount, 2) }}</span>
+                    <span>{{ format_currency($sale->tax_amount) }}</span>
                 </div>
             @endif
             @if ($sale->discount_amount > 0)
                 <div class="flex justify-between text-sm text-green-600">
                     <span>Discount:</span>
-                    <span>-${{ number_format($sale->discount_amount, 2) }}</span>
+                    <span>-{{ format_currency($sale->discount_amount) }}</span>
                 </div>
             @endif
             <div class="flex justify-between border-t-2 border-zinc-300 pt-2 text-lg font-bold">
                 <span>Total:</span>
-                <span>${{ number_format($sale->total_amount, 2) }}</span>
+                <span>{{ format_currency($sale->total_amount) }}</span>
             </div>
         </div>
 

@@ -36,7 +36,7 @@
                 </div>
             </div>
             <flux:heading size="2xl" class="mb-3">
-                {{ __('$:amount', ['amount' => number_format($todayRevenue, 2)]) }}</flux:heading>
+                {{ format_currency($todayRevenue) }}</flux:heading>
             <x-trend-indicator :trend="$todayRevenueTrend" :sparkline-data="$revenueSparkline" />
         </div>
 
@@ -53,7 +53,7 @@
             </div>
             <flux:heading size="2xl" class="mb-1">{{ $pendingInvoices['count'] }}</flux:heading>
             <flux:text class="mb-3 text-xs text-zinc-500 dark:text-zinc-400">
-                {{ __('$:amount outstanding', ['amount' => number_format($pendingInvoices['total'], 2)]) }}</flux:text>
+                {{ format_currency($pendingInvoices['total']) }} {{ __('outstanding') }}</flux:text>
             <x-trend-indicator :trend="$pendingInvoicesTrend" :sparkline-data="$pendingInvoicesSparkline" label="new today" />
         </div>
 

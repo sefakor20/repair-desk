@@ -81,7 +81,7 @@
                         {{ __('Total Revenue') }}
                     </flux:text>
                     <flux:heading size="2xl" class="mt-2">
-                        ${{ number_format($totalRevenue, 2) }}
+                        {{ format_currency($totalRevenue) }}
                     </flux:heading>
                 </div>
 
@@ -97,7 +97,7 @@
                         {{ __('Avg Transaction') }}
                     </flux:text>
                     <flux:heading size="2xl" class="mt-2">
-                        ${{ number_format($avgTransaction, 2) }}
+                        {{ format_currency($avgTransaction) }}
                     </flux:heading>
                 </div>
 
@@ -106,7 +106,7 @@
                         {{ __('Pending Invoices') }}
                     </flux:text>
                     <flux:heading size="2xl" class="mt-2 text-amber-600">
-                        ${{ number_format($pendingInvoices, 2) }}
+                        {{ format_currency($pendingInvoices) }}
                     </flux:heading>
                 </div>
             </div>
@@ -121,7 +121,7 @@
                                 <div class="h-3 w-3 rounded-full bg-blue-500"></div>
                                 <flux:text>{{ $method }}</flux:text>
                             </div>
-                            <flux:text class="font-semibold">${{ number_format($amount, 2) }}</flux:text>
+                            <flux:text class="font-semibold">{{ format_currency($amount) }}</flux:text>
                         </div>
                     @empty
                         <flux:text class="text-zinc-500 dark:text-zinc-400">
@@ -139,7 +139,7 @@
                         @foreach ($dailyRevenue as $date => $amount)
                             <div class="flex items-center justify-between">
                                 <flux:text class="text-sm">{{ $date }}</flux:text>
-                                <flux:text class="font-medium">${{ number_format($amount, 2) }}</flux:text>
+                                <flux:text class="font-medium">{{ format_currency($amount) }}</flux:text>
                             </div>
                         @endforeach
                     </div>
@@ -158,7 +158,7 @@
                         {{ __('Total Collected') }}
                     </flux:text>
                     <flux:heading size="2xl" class="mt-2 text-green-600">
-                        ${{ number_format($totalCollected, 2) }}
+                        {{ format_currency($totalCollected) }}
                     </flux:heading>
                 </div>
 
@@ -191,7 +191,7 @@
                                     {{ $data['count'] }} {{ __('payments') }}
                                 </flux:text>
                             </div>
-                            <flux:text class="font-semibold">${{ number_format($data['total'], 2) }}</flux:text>
+                            <flux:text class="font-semibold">{{ format_currency($data['total']) }}</flux:text>
                         </div>
                     @endforeach
                 </div>
@@ -238,7 +238,7 @@
                                         {{ $payment->invoice->customer->full_name }}
                                     </td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm font-medium">
-                                        ${{ number_format($payment->amount, 2) }}
+                                        {{ format_currency($payment->amount) }}
                                     </td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm">
                                         <flux:badge size="sm">{{ $payment->payment_method->label() }}
@@ -274,7 +274,7 @@
                         {{ __('Total POS Revenue') }}
                     </flux:text>
                     <flux:heading size="2xl" class="mt-2 text-emerald-600">
-                        ${{ number_format($totalRevenue, 2) }}
+                        {{ format_currency($totalRevenue) }}
                     </flux:heading>
                 </div>
 
@@ -290,7 +290,7 @@
                         {{ __('Avg Transaction') }}
                     </flux:text>
                     <flux:heading size="2xl" class="mt-2">
-                        ${{ number_format($avgTransaction, 2) }}
+                        {{ format_currency($avgTransaction) }}
                     </flux:heading>
                 </div>
 
@@ -324,7 +324,7 @@
                                     <flux:badge size="sm">{{ $data['count'] }} transactions</flux:badge>
                                 </div>
                                 <flux:text class="font-semibold text-emerald-600">
-                                    ${{ number_format($data['total'], 2) }}
+                                    {{ format_currency($data['total']) }}
                                 </flux:text>
                             </div>
                             <div class="h-2 w-full overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-700">
@@ -361,7 +361,7 @@
                                             {{ $day['count'] }} sales
                                         </flux:text>
                                         <flux:text class="font-semibold text-emerald-600">
-                                            ${{ number_format($day['total'], 2) }}
+                                            {{ format_currency($day['total']) }}
                                         </flux:text>
                                     </div>
                                 </div>
@@ -414,7 +414,7 @@
                                             {{ number_format($product->total_quantity) }}
                                         </td>
                                         <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
-                                            ${{ number_format($product->total_revenue, 2) }}
+                                            {{ format_currency($product->total_revenue) }}
                                         </td>
                                     </tr>
                                 @empty
@@ -465,7 +465,7 @@
                                         </td>
                                         <td
                                             class="whitespace-nowrap px-6 py-4 text-right text-sm font-semibold text-emerald-600">
-                                            ${{ number_format($product->total_revenue, 2) }}
+                                            {{ format_currency($product->total_revenue) }}
                                         </td>
                                         <td class="whitespace-nowrap px-6 py-4 text-right text-sm">
                                             {{ number_format($product->total_quantity) }}
@@ -508,7 +508,7 @@
                                         </div>
                                     </div>
                                     <flux:text class="w-24 text-right text-sm font-semibold">
-                                        ${{ number_format($hour['total'], 2) }}
+                                        {{ format_currency($hour['total']) }}
                                     </flux:text>
                                 </div>
                             @endforeach
@@ -530,12 +530,12 @@
                                                 {{ $data['count'] }} sales
                                             </flux:text>
                                             <flux:text class="font-semibold text-emerald-600">
-                                                ${{ number_format($data['total'], 2) }}
+                                                {{ format_currency($data['total']) }}
                                             </flux:text>
                                         </div>
                                     </div>
                                     <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">
-                                        Avg: ${{ number_format($data['avg'], 2) }} per transaction
+                                        Avg: {{ format_currency($data['avg']) }} per transaction
                                     </flux:text>
                                 </div>
                             @endforeach
@@ -587,10 +587,10 @@
                                         </td>
                                         <td
                                             class="whitespace-nowrap px-6 py-4 text-right text-sm font-semibold text-emerald-600">
-                                            ${{ number_format($customerData['total_spent'], 2) }}
+                                            {{ format_currency($customerData['total_spent']) }}
                                         </td>
                                         <td class="whitespace-nowrap px-6 py-4 text-right text-sm">
-                                            ${{ number_format($customerData['avg_transaction'], 2) }}
+                                            {{ format_currency($customerData['avg_transaction']) }}
                                         </td>
                                     </tr>
                                 @endforeach
@@ -607,7 +607,7 @@
                         {{ __('Total Discounts') }}
                     </flux:text>
                     <flux:heading size="2xl" class="mt-2 text-amber-600">
-                        ${{ number_format($totalDiscount, 2) }}
+                        {{ format_currency($totalDiscount) }}
                     </flux:heading>
                 </div>
 
@@ -616,7 +616,7 @@
                         {{ __('Cash Sales') }}
                     </flux:text>
                     <flux:heading size="2xl" class="mt-2 text-green-600">
-                        ${{ number_format($cashSales, 2) }}
+                        {{ format_currency($cashSales) }}
                     </flux:heading>
                 </div>
 
@@ -625,7 +625,7 @@
                         {{ __('Card/Digital Sales') }}
                     </flux:text>
                     <flux:heading size="2xl" class="mt-2 text-blue-600">
-                        ${{ number_format($cardSales, 2) }}
+                        {{ format_currency($cardSales) }}
                     </flux:heading>
                 </div>
             </div>
@@ -678,7 +678,7 @@
                                         {{ $data['active_tickets'] }}
                                     </td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm font-medium">
-                                        ${{ number_format($data['revenue'], 2) }}
+                                        {{ format_currency($data['revenue']) }}
                                     </td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm">
                                         {{ $data['avg_resolution_hours'] }}h
@@ -710,7 +710,7 @@
                         {{ __('Inventory Value (Cost)') }}
                     </flux:text>
                     <flux:heading size="2xl" class="mt-2">
-                        ${{ number_format($totalInventoryValue, 2) }}
+                        {{ format_currency($totalInventoryValue) }}
                     </flux:heading>
                 </div>
 
@@ -719,7 +719,7 @@
                         {{ __('Retail Value') }}
                     </flux:text>
                     <flux:heading size="2xl" class="mt-2">
-                        ${{ number_format($totalRetailValue, 2) }}
+                        {{ format_currency($totalRetailValue) }}
                     </flux:heading>
                 </div>
 
@@ -773,7 +773,7 @@
                                         {{ $part->total_quantity }}
                                     </td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm font-medium">
-                                        ${{ number_format($part->total_revenue, 2) }}
+                                        {{ format_currency($part->total_revenue) }}
                                     </td>
                                 </tr>
                             @empty

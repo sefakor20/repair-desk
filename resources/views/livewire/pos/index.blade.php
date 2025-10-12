@@ -132,7 +132,7 @@
                             </td>
                             <td
                                 class="whitespace-nowrap px-6 py-4 text-sm font-medium text-zinc-900 dark:text-zinc-100">
-                                ${{ number_format($sale->total_amount, 2) }}
+                                {{ format_currency($sale->total_amount) }}
                             </td>
                             <td class="whitespace-nowrap px-6 py-4 text-sm">
                                 <flux:badge size="sm">{{ $sale->payment_method->label() }}</flux:badge>
@@ -193,7 +193,7 @@
                             </div>
                             <div class="text-right">
                                 <div class="text-lg font-semibold text-zinc-900 dark:text-white">
-                                    ${{ number_format($sale->total_amount, 2) }}
+                                    {{ format_currency($sale->total_amount) }}
                                 </div>
                             </div>
                         </div>
