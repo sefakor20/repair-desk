@@ -29,7 +29,11 @@
                 <flux:navlist.item icon="document-text" :href="route('invoices.index')"
                     :current="request()->routeIs('invoices.*')" wire:navigate>{{ __('Invoices') }}</flux:navlist.item>
                 <flux:navlist.item icon="shopping-cart" :href="route('pos.index')"
-                    :current="request()->routeIs('pos.*')" wire:navigate>{{ __('POS') }}</flux:navlist.item>
+                    :current="request()->routeIs('pos.*') && !request()->routeIs('pos.returns.*')" wire:navigate>
+                    {{ __('POS') }}</flux:navlist.item>
+                <flux:navlist.item icon="arrow-path" :href="route('pos.returns.index')"
+                    :current="request()->routeIs('pos.returns.*')" wire:navigate>{{ __('Returns') }}
+                </flux:navlist.item>
                 <flux:navlist.item icon="banknotes" :href="route('cash-drawer.index')"
                     :current="request()->routeIs('cash-drawer.*')" wire:navigate>{{ __('Cash Drawer') }}
                 </flux:navlist.item>
@@ -40,6 +44,9 @@
                     <flux:navlist.item icon="chart-bar" :href="route('reports.index')"
                         :current="request()->routeIs('reports.*')" wire:navigate>{{ __('Reports') }}</flux:navlist.item>
                 @endcan
+                <flux:navlist.item icon="chart-pie" :href="route('analytics.dashboard')"
+                    :current="request()->routeIs('analytics.*')" wire:navigate>{{ __('Analytics') }}
+                </flux:navlist.item>
                 @can('viewAny', App\Models\User::class)
                     <flux:navlist.item icon="users" :href="route('users.index')"
                         :current="request()->routeIs('users.*')" wire:navigate>{{ __('Users') }}</flux:navlist.item>

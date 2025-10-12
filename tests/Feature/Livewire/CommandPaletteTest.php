@@ -138,9 +138,6 @@ test('command palette hides admin commands for non-admin users', function () {
 test('command palette closes after executing command', function () {
     Livewire::test(CommandPalette::class)
         ->set('isOpen', true)
-        ->call('execute', [
-            'title' => 'Dashboard',
-            'url' => route('dashboard'),
-        ])
+        ->call('executeByIndex', 0)
         ->assertSet('isOpen', false);
 });

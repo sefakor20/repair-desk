@@ -76,6 +76,31 @@ class PosSale extends Model
         return $this->hasMany(PosSaleItem::class);
     }
 
+    public function returns(): HasMany
+    {
+        return $this->hasMany(PosReturn::class, 'original_sale_id');
+    }
+
+    public function hasReturns(): bool
+    {
+        return $this->returns()->exists();
+    }
+
+    public function canBeReturned(): bool
+    {
+        if ($this->status !== PosSaleStatus::Completed) {
+            return false;
+        }
+
+        if (! $this->returnPolicy) {
+            return true; // No policy means always returnable
+        }
+
+        $daysSinceSale = $this->sale_date->diffInDays(now());
+
+        return $daysSinceSale <= $this->returnPolicy->return_window_days;
+    }
+
     public function getTotalItemsAttribute(): int
     {
         return $this->items->sum('quantity');
