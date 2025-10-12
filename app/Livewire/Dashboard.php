@@ -34,14 +34,16 @@ class Dashboard extends Component
 
     protected function getTicketsByStatus(): array
     {
-        $tickets = Ticket::all()->groupBy(fn($ticket) => $ticket->status->value);
+        $tickets = Ticket::selectRaw('status, COUNT(*) as count')
+            ->groupBy('status')
+            ->pluck('count', 'status');
 
         return [
-            'new' => $tickets->get('new')?->count() ?? 0,
-            'in_progress' => $tickets->get('in_progress')?->count() ?? 0,
-            'waiting_for_parts' => $tickets->get('waiting_for_parts')?->count() ?? 0,
-            'completed' => $tickets->get('completed')?->count() ?? 0,
-            'delivered' => $tickets->get('delivered')?->count() ?? 0,
+            'new' => $tickets->get('new') ?? 0,
+            'in_progress' => $tickets->get('in_progress') ?? 0,
+            'waiting_for_parts' => $tickets->get('waiting_for_parts') ?? 0,
+            'completed' => $tickets->get('completed') ?? 0,
+            'delivered' => $tickets->get('delivered') ?? 0,
         ];
     }
 
@@ -54,17 +56,15 @@ class Dashboard extends Component
 
     protected function getUrgentTicketsTrend(): array
     {
-        // Count urgent tickets created today
-        $today = Ticket::where('priority', TicketPriority::Urgent)
+        $results = Ticket::where('priority', TicketPriority::Urgent)
             ->whereIn('status', [TicketStatus::New, TicketStatus::InProgress])
-            ->whereDate('created_at', today())
-            ->count();
+            ->whereBetween('created_at', [today()->subDay()->startOfDay(), today()->endOfDay()])
+            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->groupBy('date')
+            ->pluck('count', 'date');
 
-        // Count urgent tickets created yesterday
-        $yesterday = Ticket::where('priority', TicketPriority::Urgent)
-            ->whereIn('status', [TicketStatus::New, TicketStatus::InProgress])
-            ->whereDate('created_at', today()->subDay())
-            ->count();
+        $today = $results->get(today()->toDateString(), 0);
+        $yesterday = $results->get(today()->subDay()->toDateString(), 0);
 
         return $this->calculateTrend($today, $yesterday);
     }
@@ -77,11 +77,17 @@ class Dashboard extends Component
 
     protected function getTodayRevenueTrend(): array
     {
-        $today = $this->getTodayRevenue();
-        $yesterday = (float) Payment::whereDate('payment_date', today()->subDay())
-            ->sum('amount');
+        $yesterday = today()->subDay();
+        $results = Payment::whereBetween('payment_date', [$yesterday->startOfDay(), today()->endOfDay()])
+            ->selectRaw('DATE(payment_date) as date, COALESCE(SUM(amount), 0) as total')
+            ->groupBy('date')
+            ->get()
+            ->keyBy('date');
 
-        return $this->calculateTrend($today, $yesterday);
+        $today = (float) ($results->get(today()->toDateString())->total ?? 0);
+        $yesterdayAmount = (float) ($results->get(today()->subDay()->toDateString())->total ?? 0);
+
+        return $this->calculateTrend($today, $yesterdayAmount);
     }
 
     protected function getPendingInvoices(): array
@@ -100,13 +106,14 @@ class Dashboard extends Component
 
     protected function getPendingInvoicesTrend(): array
     {
-        $today = Invoice::where('status', 'pending')
-            ->whereDate('created_at', today())
-            ->count();
+        $results = Invoice::where('status', 'pending')
+            ->whereBetween('created_at', [today()->subDay()->startOfDay(), today()->endOfDay()])
+            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->groupBy('date')
+            ->pluck('count', 'date');
 
-        $yesterday = Invoice::where('status', 'pending')
-            ->whereDate('created_at', today()->subDay())
-            ->count();
+        $today = $results->get(today()->toDateString(), 0);
+        $yesterday = $results->get(today()->subDay()->toDateString(), 0);
 
         return $this->calculateTrend($today, $yesterday);
     }
@@ -156,14 +163,20 @@ class Dashboard extends Component
 
     protected function getUrgentTicketsSparkline(): array
     {
+        $startDate = today()->subDays(6);
+        $endDate = today();
+
+        $results = Ticket::where('priority', TicketPriority::Urgent)
+            ->whereIn('status', [TicketStatus::New, TicketStatus::InProgress])
+            ->whereBetween('created_at', [$startDate->startOfDay(), $endDate->endOfDay()])
+            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->groupBy('date')
+            ->pluck('count', 'date');
+
         $data = [];
         for ($i = 6; $i >= 0; $i--) {
-            $date = today()->subDays($i);
-            $count = Ticket::where('priority', TicketPriority::Urgent)
-                ->whereIn('status', [TicketStatus::New, TicketStatus::InProgress])
-                ->whereDate('created_at', $date)
-                ->count();
-            $data[] = $count;
+            $date = today()->subDays($i)->toDateString();
+            $data[] = $results->get($date, 0);
         }
 
         return $data;
@@ -171,12 +184,18 @@ class Dashboard extends Component
 
     protected function getRevenueSparkline(): array
     {
+        $startDate = today()->subDays(6);
+        $endDate = today();
+
+        $results = Payment::whereBetween('payment_date', [$startDate, $endDate])
+            ->selectRaw('DATE(payment_date) as date, SUM(amount) as total')
+            ->groupBy('date')
+            ->pluck('total', 'date');
+
         $data = [];
         for ($i = 6; $i >= 0; $i--) {
-            $date = today()->subDays($i);
-            $amount = (float) Payment::whereDate('payment_date', $date)
-                ->sum('amount');
-            $data[] = $amount;
+            $date = today()->subDays($i)->toDateString();
+            $data[] = (float) ($results->get($date, 0));
         }
 
         return $data;
@@ -184,13 +203,19 @@ class Dashboard extends Component
 
     protected function getPendingInvoicesSparkline(): array
     {
+        $startDate = today()->subDays(6);
+        $endDate = today();
+
+        $results = Invoice::where('status', 'pending')
+            ->whereBetween('created_at', [$startDate->startOfDay(), $endDate->endOfDay()])
+            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->groupBy('date')
+            ->pluck('count', 'date');
+
         $data = [];
         for ($i = 6; $i >= 0; $i--) {
-            $date = today()->subDays($i);
-            $count = Invoice::where('status', 'pending')
-                ->whereDate('created_at', $date)
-                ->count();
-            $data[] = $count;
+            $date = today()->subDays($i)->toDateString();
+            $data[] = $results->get($date, 0);
         }
 
         return $data;
@@ -198,13 +223,15 @@ class Dashboard extends Component
 
     protected function getLowStockSparkline(): array
     {
+        // Low stock sparkline is tricky because it's based on current state,
+        // not historical data. We'll keep a simplified version.
+        // For accurate historical tracking, you'd need a daily snapshot table.
         $data = [];
-        for ($i = 6; $i >= 0; $i--) {
-            $date = today()->subDays($i);
-            $count = InventoryItem::whereColumn('quantity', '<=', 'reorder_level')
-                ->whereDate('updated_at', '<=', $date)
-                ->count();
-            $data[] = $count;
+        $currentCount = $this->getLowStockItems();
+
+        // Fill with current count as approximation
+        for ($i = 0; $i < 7; $i++) {
+            $data[] = $currentCount;
         }
 
         return $data;

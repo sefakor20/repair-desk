@@ -57,38 +57,57 @@ class Dashboard extends Component
     }
 
     #[Computed]
+    public function salesAggregates(): object
+    {
+        $query = $this->salesQuery()
+            ->selectRaw('
+                COUNT(*) as total_sales,
+                COALESCE(SUM(total_amount), 0) as total_revenue,
+                COALESCE(SUM(tax_amount), 0) as total_tax,
+                COALESCE(SUM(discount_amount), 0) as total_discount
+            ')
+            ->first();
+
+        return (object) [
+            'total_sales' => (int) $query->total_sales,
+            'total_revenue' => (float) $query->total_revenue,
+            'total_tax' => (float) $query->total_tax,
+            'total_discount' => (float) $query->total_discount,
+        ];
+    }
+
+    #[Computed]
     public function totalRevenue(): float
     {
-        return (float) $this->salesQuery()
-            ->sum('total_amount');
+        return $this->salesAggregates()->total_revenue;
     }
 
     #[Computed]
     public function totalSales(): int
     {
-        return $this->salesQuery()->count();
+        return $this->salesAggregates()->total_sales;
     }
 
     #[Computed]
     public function averageOrderValue(): float
     {
-        $count = $this->totalSales();
+        $aggregates = $this->salesAggregates();
 
-        return $count > 0 ? $this->totalRevenue() / $count : 0.0;
+        return $aggregates->total_sales > 0
+            ? $aggregates->total_revenue / $aggregates->total_sales
+            : 0.0;
     }
 
     #[Computed]
     public function totalTax(): float
     {
-        return (float) $this->salesQuery()
-            ->sum('tax_amount');
+        return $this->salesAggregates()->total_tax;
     }
 
     #[Computed]
     public function totalDiscount(): float
     {
-        return (float) $this->salesQuery()
-            ->sum('discount_amount');
+        return $this->salesAggregates()->total_discount;
     }
 
     #[Computed]
@@ -134,8 +153,9 @@ class Dashboard extends Component
             ->groupBy('payment_method');
 
         $results = $query->get();
+        $totalRevenue = $this->totalRevenue();
 
-        return $results->map(function ($result) {
+        return $results->map(function ($result) use ($totalRevenue) {
             $paymentMethod = is_string($result->payment_method)
                 ? PaymentMethod::from($result->payment_method)
                 : $result->payment_method;
@@ -146,8 +166,8 @@ class Dashboard extends Component
                 'method' => $paymentMethod->label(),
                 'count' => $result->count,
                 'total' => $total,
-                'percentage' => $this->totalRevenue() > 0
-                    ? round(($total / $this->totalRevenue()) * 100, 1)
+                'percentage' => $totalRevenue > 0
+                    ? round(($total / $totalRevenue) * 100, 1)
                     : 0,
             ];
         })->toArray();
