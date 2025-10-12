@@ -44,6 +44,9 @@
                     <flux:navlist.item icon="chart-bar" :href="route('reports.index')"
                         :current="request()->routeIs('reports.*')" wire:navigate>{{ __('Reports') }}</flux:navlist.item>
                 @endcan
+                <flux:navlist.item icon="chart-pie" :href="route('analytics.dashboard')"
+                    :current="request()->routeIs('analytics.*')" wire:navigate>{{ __('Analytics') }}
+                </flux:navlist.item>
                 @can('viewAny', App\Models\User::class)
                     <flux:navlist.item icon="users" :href="route('users.index')"
                         :current="request()->routeIs('users.*')" wire:navigate>{{ __('Users') }}</flux:navlist.item>

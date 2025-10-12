@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Pos\PaystackCallbackController;
+use App\Livewire\Analytics\Dashboard as AnalyticsDashboard;
 use App\Livewire\Customers\Create as CustomersCreate;
 use App\Livewire\Customers\Edit as CustomersEdit;
 use App\Livewire\Customers\Index as CustomersIndex;
@@ -103,6 +104,9 @@ Route::middleware(['auth'])->group(function (): void {
 
     // Reports routes
     Route::get('reports', ReportsIndex::class)->name('reports.index');
+
+    // Analytics routes
+    Route::get('analytics', AnalyticsDashboard::class)->name('analytics.dashboard');
 
     // Cash Drawer routes
     Route::get('cash-drawer', CashDrawerIndex::class)->name('cash-drawer.index');
