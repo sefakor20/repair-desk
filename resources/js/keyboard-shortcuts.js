@@ -155,16 +155,15 @@ class KeyboardShortcuts {
     }
 
     toggleCommandPalette() {
-        // Wait for Livewire to be ready
+        // Use Livewire's dispatch method directly
         if (window.Livewire) {
-            window.dispatchEvent(new CustomEvent("toggle-command-palette"));
+            window.Livewire.dispatch("toggle-command-palette");
         }
     }
 
     toggleHelpModal() {
-        // Wait for Livewire to be ready
         if (window.Livewire) {
-            window.dispatchEvent(new CustomEvent("toggle-shortcuts-help"));
+            window.Livewire.dispatch("toggle-shortcuts-help");
         }
     }
 
@@ -213,13 +212,10 @@ class KeyboardShortcuts {
     }
 }
 
-// Initialize keyboard shortcuts when DOM is ready
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => {
-        window.keyboardShortcuts = new KeyboardShortcuts();
-    });
-} else {
+// Initialize keyboard shortcuts when DOM and Livewire are ready
+document.addEventListener("DOMContentLoaded", function () {
+    // Simple initialization - just create the instance
     window.keyboardShortcuts = new KeyboardShortcuts();
-}
+});
 
 export default KeyboardShortcuts;
