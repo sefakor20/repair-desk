@@ -20,9 +20,8 @@
                     <flux:icon.exclamation-triangle class="size-5 text-red-500" />
                 </div>
             </div>
-            <flux:heading size="2xl" class="mb-1">{{ $urgentTickets }}</flux:heading>
-            <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">{{ __('Requires immediate attention') }}
-            </flux:text>
+            <flux:heading size="2xl" class="mb-3">{{ $urgentTickets }}</flux:heading>
+            <x-trend-indicator :trend="$urgentTicketsTrend" :sparkline-data="$urgentTicketsSparkline" />
         </div>
 
         {{-- Today's Revenue --}}
@@ -36,9 +35,9 @@
                     <flux:icon.currency-dollar class="size-5 text-green-500" />
                 </div>
             </div>
-            <flux:heading size="2xl" class="mb-1">
+            <flux:heading size="2xl" class="mb-3">
                 {{ __('$:amount', ['amount' => number_format($todayRevenue, 2)]) }}</flux:heading>
-            <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">{{ now()->format('F j, Y') }}</flux:text>
+            <x-trend-indicator :trend="$todayRevenueTrend" :sparkline-data="$revenueSparkline" />
         </div>
 
         {{-- Pending Invoices --}}
@@ -53,8 +52,9 @@
                 </div>
             </div>
             <flux:heading size="2xl" class="mb-1">{{ $pendingInvoices['count'] }}</flux:heading>
-            <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">
+            <flux:text class="mb-3 text-xs text-zinc-500 dark:text-zinc-400">
                 {{ __('$:amount outstanding', ['amount' => number_format($pendingInvoices['total'], 2)]) }}</flux:text>
+            <x-trend-indicator :trend="$pendingInvoicesTrend" :sparkline-data="$pendingInvoicesSparkline" label="new today" />
         </div>
 
         {{-- Low Stock Items --}}
@@ -68,8 +68,8 @@
                     <flux:icon.cube class="size-5 text-orange-500" />
                 </div>
             </div>
-            <flux:heading size="2xl" class="mb-1">{{ $lowStockItems }}</flux:heading>
-            <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">{{ __('Items need reordering') }}</flux:text>
+            <flux:heading size="2xl" class="mb-3">{{ $lowStockItems }}</flux:heading>
+            <x-trend-indicator :trend="$lowStockItemsTrend" :sparkline-data="$lowStockSparkline" />
         </div>
     </div>
 
