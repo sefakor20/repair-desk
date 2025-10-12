@@ -18,7 +18,8 @@
             <div class="space-y-6">
                 <flux:field>
                     <flux:label>Customer *</flux:label>
-                    <flux:select wire:model="form.customer_id" placeholder="Select a customer">
+                    <flux:select wire:model="form.customer_id" placeholder="Select a customer"
+                        :invalid="$errors->has('form.customer_id')">
                         @foreach ($customers as $customer)
                             <option value="{{ $customer->id }}">{{ $customer->full_name }}</option>
                         @endforeach
@@ -29,41 +30,46 @@
                 <div class="grid gap-6 sm:grid-cols-2">
                     <flux:field>
                         <flux:label>Device Type *</flux:label>
-                        <flux:input wire:model="form.type" placeholder="e.g., Smartphone, Laptop" />
+                        <flux:input wire:model="form.type" placeholder="e.g., Smartphone, Laptop"
+                            :invalid="$errors->has('form.type')" />
                         <flux:error name="form.type" />
                     </flux:field>
 
                     <flux:field>
                         <flux:label>Brand *</flux:label>
-                        <flux:input wire:model="form.brand" placeholder="e.g., Apple, Samsung" />
+                        <flux:input wire:model="form.brand" placeholder="e.g., Apple, Samsung"
+                            :invalid="$errors->has('form.brand')" />
                         <flux:error name="form.brand" />
                     </flux:field>
                 </div>
 
                 <flux:field>
                     <flux:label>Model *</flux:label>
-                    <flux:input wire:model="form.model" placeholder="e.g., iPhone 15 Pro, MacBook Pro" />
+                    <flux:input wire:model="form.model" placeholder="e.g., iPhone 15 Pro, MacBook Pro"
+                        :invalid="$errors->has('form.model')" />
                     <flux:error name="form.model" />
                 </flux:field>
 
                 <div class="grid gap-6 sm:grid-cols-2">
                     <flux:field>
                         <flux:label>Serial Number</flux:label>
-                        <flux:input wire:model="form.serial_number" placeholder="Optional" />
+                        <flux:input wire:model="form.serial_number" placeholder="Optional"
+                            :invalid="$errors->has('form.serial_number')" />
                         <flux:error name="form.serial_number" />
                     </flux:field>
 
                     <flux:field>
                         <flux:label>IMEI</flux:label>
-                        <flux:input wire:model="form.imei" placeholder="Optional" />
+                        <flux:input wire:model="form.imei" placeholder="Optional"
+                            :invalid="$errors->has('form.imei')" />
                         <flux:error name="form.imei" />
                     </flux:field>
                 </div>
 
                 <flux:field>
                     <flux:label>Notes</flux:label>
-                    <flux:textarea wire:model="form.notes" rows="3"
-                        placeholder="Additional device information..." />
+                    <flux:textarea wire:model="form.notes" rows="3" placeholder="Additional device information..."
+                        :invalid="$errors->has('form.notes')" />
                     <flux:error name="form.notes" />
                 </flux:field>
 
