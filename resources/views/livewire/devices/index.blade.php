@@ -68,7 +68,9 @@
             @endif
         </div>
     @else
-        <div class="overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800">
+        <!-- Desktop Table View (hidden on mobile) -->
+        <div
+            class="hidden overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800 lg:block">
             <div class="overflow-x-auto">
                 <table class="w-full">
                     <thead class="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
@@ -153,6 +155,79 @@
 
         <div class="mt-6">
             {{ $devices->links() }}
+        </div>
+
+        <!-- Mobile Card View (visible on mobile) -->
+        <div class="space-y-4 lg:hidden">
+            @foreach ($devices as $device)
+                <div
+                    class="overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-sm transition-shadow hover:shadow-md dark:border-zinc-700 dark:bg-zinc-800">
+                    <!-- Device Header -->
+                    <div class="border-b border-zinc-200 bg-zinc-50 px-4 py-3 dark:border-zinc-700 dark:bg-zinc-900">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex-1">
+                                <a href="{{ route('devices.show', $device) }}"
+                                    class="text-sm font-semibold text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                                    {{ $device->device_name }}
+                                </a>
+                                <div class="mt-1">
+                                    <flux:badge>{{ $device->type }}</flux:badge>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Device Details -->
+                    <div class="px-4 py-3">
+                        <dl class="space-y-2.5">
+                            <div class="flex items-center justify-between text-sm">
+                                <dt class="font-medium text-zinc-500 dark:text-zinc-400">Customer</dt>
+                                <dd class="text-zinc-900 dark:text-white">
+                                    <a href="{{ route('customers.show', $device->customer) }}"
+                                        class="hover:text-blue-600 dark:hover:text-blue-400">
+                                        {{ $device->customer->full_name }}
+                                    </a>
+                                </dd>
+                            </div>
+                            <div class="flex items-center justify-between text-sm">
+                                <dt class="font-medium text-zinc-500 dark:text-zinc-400">Serial Number</dt>
+                                <dd class="text-zinc-900 dark:text-white">{{ $device->serial_number ?: '—' }}</dd>
+                            </div>
+                            <div class="flex items-center justify-between text-sm">
+                                <dt class="font-medium text-zinc-500 dark:text-zinc-400">Tickets</dt>
+                                <dd class="text-zinc-900 dark:text-white">{{ $device->tickets_count }}</dd>
+                            </div>
+                        </dl>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="border-t border-zinc-200 bg-zinc-50 px-4 py-3 dark:border-zinc-700 dark:bg-zinc-900">
+                        <div class="flex items-center justify-end gap-3">
+                            <flux:button href="{{ route('devices.show', $device) }}" variant="ghost" size="sm"
+                                icon="eye">
+                                View
+                            </flux:button>
+                            @can('update', $device)
+                                <flux:button href="{{ route('devices.edit', $device) }}" variant="ghost" size="sm"
+                                    icon="pencil">
+                                    Edit
+                                </flux:button>
+                            @endcan
+                            @can('delete', $device)
+                                <flux:button wire:click="delete('{{ $device->id }}')"
+                                    wire:confirm="Are you sure you want to delete this device?" variant="ghost"
+                                    size="sm" icon="trash" class="text-red-600 hover:text-red-700">
+                                    Delete
+                                </flux:button>
+                            @endcan
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+
+            <div class="mt-6">
+                {{ $devices->links() }}
+            </div>
         </div>
     @endif
 </div>

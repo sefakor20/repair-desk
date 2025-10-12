@@ -38,8 +38,9 @@
         @endif
     </div>
 
-    {{-- Invoices Table --}}
-    <div class="overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800">
+    {{-- Desktop Invoices Table (hidden on mobile) --}}
+    <div
+        class="hidden overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800 lg:block">
         @if ($invoices->isEmpty())
             <div class="p-6 text-center">
                 <flux:text class="text-zinc-500 dark:text-zinc-400">
@@ -147,6 +148,106 @@
             </table>
 
             <div class="border-t border-zinc-200 px-6 py-4 dark:border-zinc-700">
+                {{ $invoices->links() }}
+            </div>
+        @endif
+    </div>
+
+    {{-- Mobile Card View (visible on mobile) --}}
+    <div class="space-y-4 lg:hidden">
+        @if ($invoices->isEmpty())
+            <div
+                class="rounded-lg border border-zinc-200 bg-white p-6 text-center dark:border-zinc-700 dark:bg-zinc-800">
+                <flux:text class="text-zinc-500 dark:text-zinc-400">
+                    @if ($search || $status)
+                        {{ __('No invoices found matching your filters.') }}
+                    @else
+                        {{ __('No invoices yet.') }}
+                    @endif
+                </flux:text>
+            </div>
+        @else
+            @foreach ($invoices as $invoice)
+                <div
+                    class="overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-sm transition-shadow hover:shadow-md dark:border-zinc-700 dark:bg-zinc-800">
+                    <!-- Invoice Header -->
+                    <div class="border-b border-zinc-200 bg-zinc-50 px-4 py-3 dark:border-zinc-700 dark:bg-zinc-900">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex-1">
+                                <a href="{{ route('invoices.show', $invoice) }}"
+                                    class="text-sm font-semibold text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                                    wire:navigate>
+                                    {{ $invoice->invoice_number }}
+                                </a>
+                                <div class="mt-2">
+                                    <flux:badge :color="$invoice->status->color()" size="sm">
+                                        {{ $invoice->status->label() }}
+                                    </flux:badge>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-lg font-semibold text-zinc-900 dark:text-white">
+                                    ${{ number_format($invoice->total, 2) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Invoice Details -->
+                    <div class="px-4 py-3">
+                        <dl class="space-y-2.5">
+                            <div class="flex items-center justify-between text-sm">
+                                <dt class="font-medium text-zinc-500 dark:text-zinc-400">Customer</dt>
+                                <dd class="text-zinc-900 dark:text-white">{{ $invoice->customer->full_name }}</dd>
+                            </div>
+                            <div class="flex items-center justify-between text-sm">
+                                <dt class="font-medium text-zinc-500 dark:text-zinc-400">Ticket</dt>
+                                <dd class="text-zinc-900 dark:text-white">
+                                    <a href="{{ route('tickets.show', $invoice->ticket) }}"
+                                        class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                                        wire:navigate>
+                                        {{ $invoice->ticket->ticket_number }}
+                                    </a>
+                                </dd>
+                            </div>
+                            <div class="flex items-center justify-between text-sm">
+                                <dt class="font-medium text-zinc-500 dark:text-zinc-400">Date</dt>
+                                <dd class="text-zinc-900 dark:text-white">{{ $invoice->created_at->format('M d, Y') }}
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="border-t border-zinc-200 bg-zinc-50 px-4 py-3 dark:border-zinc-700 dark:bg-zinc-900">
+                        <div class="flex items-center justify-end gap-3">
+                            @can('update', $invoice)
+                                <a href="{{ route('invoices.edit', $invoice) }}" wire:navigate
+                                    class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                    Edit
+                                </a>
+                            @endcan
+
+                            @can('delete', $invoice)
+                                <button wire:click="confirmDelete('{{ $invoice->id }}')"
+                                    class="inline-flex items-center gap-2 rounded-lg border border-red-300 bg-white px-3 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 dark:border-red-600 dark:bg-zinc-800 dark:text-red-400 dark:hover:bg-red-900/20">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    Delete
+                                </button>
+                            @endcan
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+
+            <div class="rounded-lg border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-700 dark:bg-zinc-800">
                 {{ $invoices->links() }}
             </div>
         @endif
