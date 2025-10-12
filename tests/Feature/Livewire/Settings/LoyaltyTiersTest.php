@@ -206,7 +206,13 @@ test('admin can create tier successfully', function () {
 
 test('admin can update tier successfully', function () {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
-    $tier = LoyaltyTier::factory()->create();
+    $tier = LoyaltyTier::factory()->create([
+        'name' => 'Original',
+        'min_points' => 1000,
+        'points_multiplier' => 1.5,
+        'discount_percentage' => 10,
+        'priority' => 1,
+    ]);
 
     Livewire::actingAs($admin)
         ->test(LoyaltyTiers::class)
