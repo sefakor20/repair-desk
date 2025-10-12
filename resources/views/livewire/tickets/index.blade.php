@@ -104,8 +104,9 @@
         @endif
     </div>
 
-    <!-- Table -->
-    <div class="overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800">
+    <!-- Desktop Table View (hidden on mobile) -->
+    <div
+        class="hidden overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800 lg:block">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
                 <thead class="bg-zinc-50 dark:bg-zinc-900">
@@ -243,6 +244,126 @@
 
         @if ($tickets->hasPages())
             <div class="border-t border-zinc-200 bg-white px-4 py-3 dark:border-zinc-700 dark:bg-zinc-800">
+                {{ $tickets->links() }}
+            </div>
+        @endif
+    </div>
+
+    <!-- Mobile Card View (visible on mobile) -->
+    <div class="space-y-4 lg:hidden">
+        @forelse ($tickets as $ticket)
+            <div
+                class="overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-sm transition-shadow hover:shadow-md dark:border-zinc-700 dark:bg-zinc-800">
+                <!-- Ticket Header -->
+                <div class="border-b border-zinc-200 bg-zinc-50 px-4 py-3 dark:border-zinc-700 dark:bg-zinc-900">
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="flex-1">
+                            <div class="text-sm font-semibold text-zinc-900 dark:text-white">
+                                {{ $ticket->ticket_number }}
+                            </div>
+                            <div class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                                {{ Str::limit($ticket->problem_description, 60) }}
+                            </div>
+                            <div class="mt-2 flex flex-wrap gap-2">
+                                <x-status-badge :status="$ticket->status" />
+                                <x-status-badge :status="$ticket->priority" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ticket Details -->
+                <div class="px-4 py-3">
+                    <dl class="space-y-2.5">
+                        <div class="flex items-center justify-between text-sm">
+                            <dt class="font-medium text-zinc-500 dark:text-zinc-400">Customer</dt>
+                            <dd class="text-right text-zinc-900 dark:text-white">
+                                <div>{{ $ticket->customer->full_name }}</div>
+                                <div class="text-xs text-zinc-500 dark:text-zinc-400">{{ $ticket->customer->email }}
+                                </div>
+                            </dd>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <dt class="font-medium text-zinc-500 dark:text-zinc-400">Device</dt>
+                            <dd class="text-zinc-900 dark:text-white">{{ $ticket->device->device_name }}</dd>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <dt class="font-medium text-zinc-500 dark:text-zinc-400">Assigned To</dt>
+                            <dd class="text-zinc-900 dark:text-white">
+                                @if ($ticket->assignedTo)
+                                    <div class="flex items-center justify-end gap-2">
+                                        <span>{{ $ticket->assignedTo->name }}</span>
+                                        <div
+                                            class="flex h-6 w-6 items-center justify-center rounded-full bg-zinc-200 text-xs font-medium text-zinc-700 dark:bg-zinc-700 dark:text-zinc-300">
+                                            {{ strtoupper(substr($ticket->assignedTo->name, 0, 2)) }}
+                                        </div>
+                                    </div>
+                                @else
+                                    <span class="text-zinc-400 dark:text-zinc-500">Unassigned</span>
+                                @endif
+                            </dd>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <dt class="font-medium text-zinc-500 dark:text-zinc-400">Created</dt>
+                            <dd class="text-zinc-900 dark:text-white">{{ $ticket->created_at->diffForHumans() }}</dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <!-- Actions -->
+                <div class="border-t border-zinc-200 bg-zinc-50 px-4 py-3 dark:border-zinc-700 dark:bg-zinc-900">
+                    <div class="flex items-center justify-end gap-3">
+                        @can('view', $ticket)
+                            <a href="{{ route('tickets.show', $ticket) }}" wire:navigate
+                                class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                View
+                            </a>
+                        @endcan
+
+                        @can('update', $ticket)
+                            <a href="{{ route('tickets.edit', $ticket) }}" wire:navigate
+                                class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                                Edit
+                            </a>
+                        @endcan
+
+                        @can('delete', $ticket)
+                            <button wire:click="delete('{{ $ticket->id }}')"
+                                wire:confirm="Are you sure you want to delete this ticket?"
+                                class="inline-flex items-center gap-2 rounded-lg border border-red-300 bg-white px-3 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 dark:border-red-600 dark:bg-zinc-800 dark:text-red-400 dark:hover:bg-red-900/20">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                                Delete
+                            </button>
+                        @endcan
+                    </div>
+                </div>
+            </div>
+        @empty
+            @if ($search || $statusFilter || $priorityFilter || $assignedFilter)
+                <x-empty-state icon="search" title="{{ __('No tickets found') }}"
+                    description="{{ __('Try adjusting your search or filters') }}" />
+            @else
+                <x-empty-state icon="document" title="{{ __('No tickets found') }}"
+                    description="{{ __('Get started by creating a new ticket') }}" :action-route="route('tickets.create')"
+                    action-label="{{ __('New Ticket') }}" />
+            @endif
+        @endforelse
+
+        @if ($tickets->hasPages())
+            <div class="rounded-lg border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-700 dark:bg-zinc-800">
                 {{ $tickets->links() }}
             </div>
         @endif
