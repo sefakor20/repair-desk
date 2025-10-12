@@ -22,9 +22,9 @@ class KeyboardShortcutsHelp extends Component
         $this->isOpen = false;
     }
 
-    public function render()
+    public function getShortcuts(): array
     {
-        $shortcuts = [
+        return [
             'General' => [
                 ['keys' => ['Ctrl', 'K'], 'description' => 'Open command palette'],
                 ['keys' => ['/'], 'description' => 'Focus search'],
@@ -44,9 +44,12 @@ class KeyboardShortcutsHelp extends Component
                 ['keys' => ['E'], 'description' => 'Edit current item'],
             ],
         ];
+    }
 
+    public function render()
+    {
         return view('livewire.keyboard-shortcuts-help', [
-            'shortcuts' => $shortcuts,
+            'shortcuts' => $this->getShortcuts(),
         ]);
     }
 }

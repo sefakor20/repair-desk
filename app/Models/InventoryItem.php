@@ -56,8 +56,40 @@ class InventoryItem extends Model
         return $this->quantity <= $this->reorder_level;
     }
 
+    public function isCriticallyLowStock(): bool
+    {
+        return $this->quantity <= ($this->reorder_level / 2);
+    }
+
+    public function isOutOfStock(): bool
+    {
+        return $this->quantity === 0;
+    }
+
+    public function getStockPercentage(): float
+    {
+        if ($this->reorder_level === 0) {
+            return 100;
+        }
+
+        return min(100, ($this->quantity / $this->reorder_level) * 100);
+    }
+
     public function getTotalValueAttribute(): float
     {
         return (float) ($this->quantity * $this->cost_price);
+    }
+
+    public function scopeLowStock($query)
+    {
+        return $query->whereColumn('quantity', '<=', 'reorder_level')
+            ->where('quantity', '>', 0)
+            ->where('status', InventoryStatus::Active);
+    }
+
+    public function scopeOutOfStock($query)
+    {
+        return $query->where('quantity', 0)
+            ->where('status', InventoryStatus::Active);
     }
 }
