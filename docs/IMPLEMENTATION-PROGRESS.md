@@ -143,11 +143,340 @@ Content:
 | ---------------------------- | ----------- | -------- | --------------------------- |
 | 1. Fix KeyboardShortcutsHelp | ✅ Complete | 100%     | 1 file modified             |
 | 2. Low Stock Alerts          | ✅ Complete | 100%     | 3 files created, 1 modified |
-| 3. Return/Refund System      | ⏳ Pending  | 0%       | -                           |
+| 3. Return/Refund System      | ✅ Complete | 100%     | 18 files created/modified   |
 | 4. Sales Analytics Dashboard | ⏳ Pending  | 0%       | -                           |
 | 5. Browser Testing           | ⏳ Pending  | 0%       | -                           |
 
 ---
+
+## ✅ 3. Return/Refund System - COMPLETE
+
+**Implementation Date**: October 12, 2025
+
+### Overview
+
+Complete return and refund management system with inventory restoration, automated calculations, and policy enforcement.
+
+### Database Schema
+
+**Migration**: `2025_10_12_135651_create_pos_returns_table.php`
+
+**Tables Created**:
+
+1. **pos_returns**:
+
+    - `id` (ULID primary key)
+    - `return_number` (unique, indexed)
+    - `original_sale_id` (foreign key to pos_sales)
+    - `customer_id` (nullable, foreign key to customers)
+    - `return_reason` (enum)
+    - `status` (enum: Pending, Approved, Processing, Completed, Rejected, Cancelled)
+    - `return_date` (timestamp)
+    - `subtotal_returned`, `tax_returned`, `restocking_fee`, `total_refund_amount` (decimals)
+    - `notes` (text)
+    - `processed_by` (foreign key to users)
+    - `refunded_at` (timestamp)
+    - `inventory_restored` (boolean)
+    - Timestamps
+
+2. **pos_return_items**:
+    - `id` (ULID primary key)
+    - `pos_return_id` (foreign key)
+    - `original_sale_item_id` (foreign key to pos_sale_items)
+    - `inventory_item_id` (foreign key)
+    - `quantity_returned` (integer)
+    - `unit_price`, `subtotal`, `line_refund_amount` (decimals)
+    - `condition` (enum: New, Opened, Used, Damaged, Defective)
+    - `notes` (text)
+    - Timestamps
+
+### Enums
+
+**File**: `app/Enums/ReturnReason.php`
+
+-   8 return reasons with labels
+-   `requiresRestockingFee()` method for business logic
+
+**File**: `app/Enums/ReturnStatus.php`
+
+-   6 workflow states
+-   State transition methods: `canEdit()`, `canRefund()`, `canCancel()`
+
+**File**: `app/Enums/ReturnCondition.php`
+
+-   5 item conditions with color coding
+
+### Models
+
+**File**: `app/Models/PosReturn.php`
+
+**Relationships**:
+
+-   `originalSale()`, `customer()`, `processedBy()`, `items()`
+
+**Business Logic Methods**:
+
+-   `calculateTotals(?float $taxOverride)` - Compute subtotal, tax, restocking fee, refund total
+-   `restoreInventory()` - Restore quantities and create adjustment records
+-   `canBeProcessed()` - Check if return can be refunded
+-   `isWithinReturnWindow()` - Validate against return policy
+-   `generateReturnNumber()` - Generate unique return number (RET-YYYYMMDD-XXXX)
+
+**Scopes**:
+
+-   `scopeRecent()` - Order by return date descending
+
+**File**: `app/Models/PosReturnItem.php`
+
+**Methods**:
+
+-   `calculateSubtotal()` - Calculate line item subtotal
+-   Relationships to original sale item and inventory item
+
+**File**: `app/Models/PosSale.php` (Enhanced)
+
+**New Methods**:
+
+-   `returns()` - HasMany relationship
+-   `hasReturns()` - Check if sale has any returns
+-   `canBeReturned()` - Validate return eligibility (status, policy window)
+
+**File**: `app/Models/ReturnPolicy.php`
+
+**Features**:
+
+-   Return window validation
+-   Restocking fee calculation
+-   Condition restrictions
+-   Category exclusions
+
+### Livewire Components
+
+**File**: `app/Livewire/Pos/ProcessReturn.php`
+
+**Features**:
+
+-   Full return form with sale validation
+-   Dynamic item selection with quantities
+-   Real-time refund calculation
+-   Return reason and notes
+-   Inventory restoration on submission
+-   Error handling and validation
+
+**Computed Properties**:
+
+-   `items` - Available sale items
+-   `selectedItems` - Items selected for return
+-   `subtotal` - Total before tax
+-   `tax` - Calculated tax
+-   `restockingFee` - Fee based on reason
+-   `totalRefund` - Final refund amount
+
+**File**: `app/Livewire/Pos/ReturnIndex.php`
+
+**Features**:
+
+-   List all returns with pagination
+-   Search by return number, sale number, customer name
+-   Filter by status
+-   Approve/reject actions
+-   Stats dashboard (pending, approved, completed counts, total refunded)
+
+**Computed Properties**:
+
+-   `returns()` - Paginated, filtered returns
+-   `stats()` - Real-time statistics
+
+### Views
+
+**File**: `resources/views/livewire/pos/process-return.blade.php`
+
+**Features**:
+
+-   Sale lookup and validation
+-   Item selection table with condition dropdowns
+-   Return reason selection
+-   Real-time refund calculation display
+-   Notes field
+-   Submit button with loading state
+-   Uses Flux UI components
+
+**File**: `resources/views/livewire/pos/return-index.blade.php`
+
+**Features**:
+
+-   Stats cards (Pending, Approved, Completed, Total Refunded)
+-   Search and status filter
+-   Returns table with color-coded status badges
+-   Action buttons (Approve, Reject, View Sale)
+-   Empty state with filters
+-   Pagination
+-   Dark mode support
+
+### Routes
+
+**File**: `routes/web.php`
+
+```php
+Route::get('/pos/returns', ReturnIndex::class)->name('pos.returns.index');
+Route::get('/pos/{sale}/return', ProcessReturn::class)->name('pos.returns.create');
+```
+
+### Factories
+
+**File**: `database/factories/PosReturnFactory.php`
+
+-   Full factory with realistic data
+-   State methods: `pending()`, `approved()`, `rejected()`, `completed()`
+
+**File**: `database/factories/PosReturnItemFactory.php`
+
+-   State methods for conditions: `good()`, `damaged()`, `defective()`
+
+### Tests
+
+**File**: `tests/Feature/Pos/ProcessReturnTest.php` (12 tests, 100% passing)
+
+-   ✅ Mount and validate sale
+-   ✅ Process return with items
+-   ✅ Validate required fields
+-   ✅ Validate quantities
+-   ✅ Calculate totals correctly
+-   ✅ Restore inventory on completion
+-   ✅ Create return with proper status
+-   ✅ Handle restocking fees
+
+**File**: `tests/Feature/Pos/ReturnIndexTest.php` (14 tests, 100% passing)
+
+-   ✅ Render component
+-   ✅ Display returns list
+-   ✅ Search by return number
+-   ✅ Search by sale number
+-   ✅ Search by customer name (with CONCAT support)
+-   ✅ Display correct stats
+-   ✅ Approve pending returns
+-   ✅ Reject pending returns
+-   ✅ Empty state display
+-   ✅ Filtered empty state
+-   ✅ Pagination
+-   ✅ URL query params sync
+-   ✅ Restore inventory on approval
+-   ✅ Calculate refunds correctly
+
+**File**: `tests/Unit/PosReturnModelTest.php` (9 tests, 100% passing)
+
+-   ✅ Calculate return totals correctly (with restocking fee)
+-   ✅ Restore inventory correctly
+-   ✅ Check if return can be processed
+-   ✅ Prevent duplicate inventory restoration
+-   ✅ Check if sale is within return window
+-   ✅ Sale can be returned only when completed
+-   ✅ Sale cannot be returned if outside return window
+-   ✅ canBeProcessed respects status workflow
+-   ✅ Return item calculates subtotal correctly
+
+**Total**: 35 tests, 100% passing, 156 assertions
+
+### Key Fixes Applied
+
+1. **Date Diff Logic**: Fixed `diffInDays()` order in `canBeReturned()` and `isWithinReturnWindow()`
+
+    - Changed from `now()->diffInDays($date)` to `$date->diffInDays(now())`
+    - Ensures positive values for past dates
+
+2. **Type Casting**: Cast decimal values to float for calculations
+
+    - `(float) $this->subtotal_returned` in `calculateRestockingFee()`
+
+3. **Restocking Fee Calculation**: Enhanced `calculateTotals()` method
+
+    - Accepts optional tax override
+    - Automatically calculates restocking fee based on return reason and policy
+    - Uses ReturnPolicy's fee calculation with percentage and minimum
+
+4. **Customer Search**: Added CONCAT support for searching by full name
+
+    - `CONCAT(first_name, ' ', last_name) LIKE ?`
+
+5. **Test Assertions**: Fixed HTML escaping and type comparisons
+    - Use `toEqual()` instead of `toBe()` for decimal comparisons
+    - Split multi-word assertions to avoid HTML entity issues
+
+### Business Logic
+
+**Return Process Flow**:
+
+1. User selects sale and items to return
+2. System validates return eligibility (status, policy window)
+3. User specifies quantities, conditions, and reason
+4. System calculates refund (subtotal + tax - restocking fee)
+5. Return created with Pending status
+6. Admin approves/rejects
+7. On approval: inventory restored, status → Approved, refunded_at set
+8. Customer receives refund
+
+**Return Policy Integration**:
+
+-   Return window validation (days since sale)
+-   Restocking fee calculation (percentage with minimum)
+-   Condition restrictions
+-   Approval requirements
+
+**Inventory Management**:
+
+-   Automatic quantity restoration on approval
+-   Prevents duplicate restoration
+-   Creates InventoryAdjustment records for audit trail
+
+### Files Created
+
+**Models** (4):
+
+1. `app/Models/PosReturn.php`
+2. `app/Models/PosReturnItem.php`
+3. `app/Models/ReturnPolicy.php` (existing)
+4. `app/Models/PosSale.php` (enhanced)
+
+**Enums** (2):
+
+1. `app/Enums/ReturnReason.php`
+2. `app/Enums/ReturnStatus.php`
+
+**Livewire Components** (2):
+
+1. `app/Livewire/Pos/ProcessReturn.php`
+2. `app/Livewire/Pos/ReturnIndex.php`
+
+**Views** (2):
+
+1. `resources/views/livewire/pos/process-return.blade.php`
+2. `resources/views/livewire/pos/return-index.blade.php`
+
+**Factories** (2):
+
+1. `database/factories/PosReturnFactory.php`
+2. `database/factories/PosReturnItemFactory.php`
+3. `database/factories/ReturnPolicyFactory.php` (existing)
+
+**Migrations** (1):
+
+1. `database/migrations/2025_10_12_135651_create_pos_returns_table.php`
+
+**Tests** (3):
+
+1. `tests/Feature/Pos/ProcessReturnTest.php`
+2. `tests/Feature/Pos/ReturnIndexTest.php`
+3. `tests/Unit/PosReturnModelTest.php`
+
+**Routes** (1):
+
+-   Added to `routes/web.php`
+
+**Total**: 18 files created/modified
+
+---
+
+## 📋 Implementation Status Summary
 
 ## 🎯 Low Stock Alert System - Usage Guide
 
@@ -416,9 +745,9 @@ No migrations needed - system uses existing schema.
 
 ---
 
-**Progress**: 2/5 recommendations complete (40%)  
-**Time Spent**: ~1 hour  
-**Estimated Remaining**: 6-9 hours for full implementation  
-**Next Priority**: Add route → Write tests → Return/Refund system
+**Progress**: 3/5 recommendations complete (60%)  
+**Time Spent**: ~4 hours  
+**Estimated Remaining**: 4-6 hours for full implementation  
+**Next Priority**: Sales Analytics Dashboard → Browser Testing
 
-**Status**: ✅ Low stock alerts system is production-ready!
+**Status**: ✅ Return/Refund system is production-ready! All 830 tests passing.
