@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class KeyboardShortcutsHelp extends Component
 {
     public bool $isOpen = false;
 
+    #[On('toggle-shortcuts-help')]
     public function toggle(): void
     {
         $this->isOpen = ! $this->isOpen;
