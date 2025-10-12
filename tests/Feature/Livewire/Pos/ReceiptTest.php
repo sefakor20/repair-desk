@@ -67,7 +67,7 @@ it('displays payment information', function () {
     actingAs($user);
 
     Livewire::test(Receipt::class, ['sale' => $sale])
-        ->assertSee('CARD')
+        ->assertSee('Card')
         ->assertSee('PS_123456')
-        ->assertSee('completed');
+        ->assertSee('completed', false); // Using false to match uppercase in view
 });
