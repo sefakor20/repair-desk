@@ -69,7 +69,16 @@ class CommandPalette extends Component
         }
     }
 
-    public function execute(array $command): void
+    public function executeByIndex(int $index): void
+    {
+        $filtered = $this->getFilteredCommands();
+
+        if (isset($filtered[$index])) {
+            $this->execute($filtered[$index]);
+        }
+    }
+
+    private function execute(array $command): void
     {
         $this->close();
 

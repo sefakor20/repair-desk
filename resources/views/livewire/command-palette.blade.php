@@ -38,7 +38,7 @@
             <div class="max-h-96 overflow-y-auto p-2">
                 @if (count($filteredCommands) > 0)
                     @foreach ($filteredCommands as $index => $command)
-                        <button wire:click="execute({{ json_encode($command) }})" type="button"
+                        <button wire:click="executeByIndex({{ $index }})" type="button"
                             class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors {{ $selectedIndex === $index ? 'bg-blue-50 dark:bg-blue-900/20' : 'hover:bg-zinc-50 dark:hover:bg-zinc-700/50' }}">
                             <div
                                 class="flex h-8 w-8 items-center justify-center rounded-lg {{ $selectedIndex === $index ? 'bg-blue-100 dark:bg-blue-900/40' : 'bg-zinc-100 dark:bg-zinc-700' }}">

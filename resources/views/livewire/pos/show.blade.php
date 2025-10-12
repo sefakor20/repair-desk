@@ -12,7 +12,7 @@
                 </flux:button>
                 @can('refund', $sale)
                     @if ($sale->status === App\Enums\PosSaleStatus::Completed)
-                        <flux:button href="{{ route('pos.returns.create', $sale) }}" wire:navigate variant="warning">
+                        <flux:button href="{{ route('pos.returns.create', $sale) }}" wire:navigate variant="outline">
                             <flux:icon.arrow-path class="mr-2" />
                             {{ __('Process Return') }}
                         </flux:button>
