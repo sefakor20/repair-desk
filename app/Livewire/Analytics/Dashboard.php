@@ -176,16 +176,21 @@ class Dashboard extends Component
     #[Computed]
     public function dailySales(): array
     {
-        $startDate = $this->startDate ? Carbon::parse($this->startDate) : now()->subDays(30);
-        $endDate = $this->endDate ? Carbon::parse($this->endDate) : now();
+        $query = PosSale::where('status', PosSaleStatus::Completed);
 
-        $sales = PosSale::where('status', PosSaleStatus::Completed)
-            ->whereBetween('sale_date', [$startDate, $endDate])
-            ->select(
-                DB::raw('DATE(sale_date) as date'),
-                DB::raw('COUNT(*) as count'),
-                DB::raw('SUM(total_amount) as total'),
-            )
+        // For 'all' period, show all data; otherwise use date range
+        if ($this->startDate && $this->endDate) {
+            $query->whereBetween('sale_date', [
+                Carbon::parse($this->startDate),
+                Carbon::parse($this->endDate),
+            ]);
+        }
+
+        $sales = $query->select(
+            DB::raw('DATE(sale_date) as date'),
+            DB::raw('COUNT(*) as count'),
+            DB::raw('SUM(total_amount) as total'),
+        )
             ->groupBy('date')
             ->orderBy('date')
             ->get();
