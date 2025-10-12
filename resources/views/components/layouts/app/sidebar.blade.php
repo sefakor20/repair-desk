@@ -158,6 +158,29 @@
     {{-- Toast Notifications --}}
     <livewire:toast-manager />
 
+    {{-- Command Palette --}}
+    <livewire:command-palette />
+
+    {{-- Keyboard Shortcuts Help --}}
+    <livewire:keyboard-shortcuts-help />
+
+    {{-- Keyboard Shortcut Indicator (bottom-right corner) --}}
+    <div class="fixed bottom-4 right-4 z-40 hidden md:block">
+        <button onclick="window.dispatchEvent(new CustomEvent('toggle-shortcuts-help', {detail: {isOpen: true}}))"
+            type="button"
+            class="group flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs font-medium text-zinc-600 shadow-lg transition-all hover:border-zinc-300 hover:shadow-xl dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:border-zinc-600">
+            <svg class="h-3.5 w-3.5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>Press</span>
+            <kbd
+                class="rounded bg-zinc-100 px-1.5 py-0.5 font-mono text-xs font-semibold text-zinc-700 shadow-sm dark:bg-zinc-700 dark:text-zinc-300">?</kbd>
+            <span>for shortcuts</span>
+        </button>
+    </div>
+
     @fluxScripts
 </body>
 
