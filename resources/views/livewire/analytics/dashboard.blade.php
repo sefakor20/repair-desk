@@ -21,7 +21,7 @@
     </div>
 
     {{-- Key Metrics Cards --}}
-    <div class="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {{-- Total Revenue --}}
         <div class="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
             <div class="flex items-start justify-between">
@@ -121,6 +121,27 @@
                         viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        {{-- Total Discount --}}
+        <div class="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+            <div class="flex items-start justify-between">
+                <div class="flex-1">
+                    <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('Total Discount') }}</flux:text>
+                    <flux:heading size="lg" class="mt-2">{{ format_currency($this->totalDiscount) }}
+                    </flux:heading>
+                    <flux:text class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+                        {{ __('Discounts applied') }}
+                    </flux:text>
+                </div>
+                <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/20">
+                    <svg class="h-6 w-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                     </svg>
                 </div>
             </div>
