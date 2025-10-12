@@ -19,18 +19,6 @@
         @endcan
     </div>
 
-    @if (session('success'))
-        <div
-            class="animate-in fade-in slide-in-from-top-2 duration-300 rounded-lg bg-green-50 p-4 dark:bg-green-900/20">
-            <div class="flex items-center gap-2">
-                <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
-                <p class="text-sm text-green-800 dark:text-green-200">{{ session('success') }}</p>
-            </div>
-        </div>
-    @endif
-
     <!-- Search -->
     <div class="relative">
         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -148,8 +136,7 @@
                                             wire:confirm="Are you sure you want to delete this customer?"
                                             class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
                                             title="Delete">
-                                            <svg class="h-5 w-5" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                             </svg>

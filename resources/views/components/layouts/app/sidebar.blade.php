@@ -155,6 +155,9 @@
 
     {{ $slot }}
 
+    {{-- Toast Notifications --}}
+    <livewire:toast-manager />
+
     @fluxScripts
 </body>
 

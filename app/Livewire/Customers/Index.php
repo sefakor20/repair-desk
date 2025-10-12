@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Customers;
 
+use App\Livewire\Concerns\WithToast;
 use App\Models\Customer;
 use Livewire\Attributes\{Layout, Url};
 use Livewire\Component;
@@ -13,6 +14,7 @@ use Livewire\WithPagination;
 class Index extends Component
 {
     use WithPagination;
+    use WithToast;
 
     #[Url(as: 'q')]
     public string $search = '';
@@ -23,7 +25,7 @@ class Index extends Component
 
         $customer->delete();
 
-        session()->flash('success', 'Customer deleted successfully.');
+        $this->toastSuccess('Customer deleted successfully.');
     }
 
     public function updatedSearch(): void
