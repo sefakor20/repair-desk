@@ -29,7 +29,11 @@
                 <flux:navlist.item icon="document-text" :href="route('invoices.index')"
                     :current="request()->routeIs('invoices.*')" wire:navigate>{{ __('Invoices') }}</flux:navlist.item>
                 <flux:navlist.item icon="shopping-cart" :href="route('pos.index')"
-                    :current="request()->routeIs('pos.*')" wire:navigate>{{ __('POS') }}</flux:navlist.item>
+                    :current="request()->routeIs('pos.*') && !request()->routeIs('pos.returns.*')" wire:navigate>
+                    {{ __('POS') }}</flux:navlist.item>
+                <flux:navlist.item icon="arrow-path" :href="route('pos.returns.index')"
+                    :current="request()->routeIs('pos.returns.*')" wire:navigate>{{ __('Returns') }}
+                </flux:navlist.item>
                 <flux:navlist.item icon="banknotes" :href="route('cash-drawer.index')"
                     :current="request()->routeIs('cash-drawer.*')" wire:navigate>{{ __('Cash Drawer') }}
                 </flux:navlist.item>

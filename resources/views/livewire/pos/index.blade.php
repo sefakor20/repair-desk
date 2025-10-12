@@ -146,10 +146,18 @@
                                 {{ $sale->sale_date->format('M d, Y') }}
                             </td>
                             <td class="whitespace-nowrap px-6 py-4 text-right text-sm">
-                                <a href="{{ route('pos.show', $sale) }}" wire:navigate
-                                    class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                                    {{ __('View') }}
-                                </a>
+                                <div class="flex items-center justify-end gap-3">
+                                    <a href="{{ route('pos.show', $sale) }}" wire:navigate
+                                        class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                                        {{ __('View') }}
+                                    </a>
+                                    @if ($sale->status === App\Enums\PosSaleStatus::Completed && !$sale->hasReturns())
+                                        <a href="{{ route('pos.returns.create', $sale) }}" wire:navigate
+                                            class="text-amber-600 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-300">
+                                            {{ __('Return') }}
+                                        </a>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                     @endforeach
@@ -222,7 +230,17 @@
 
                     <!-- Actions -->
                     <div class="border-t border-zinc-200 bg-zinc-50 px-4 py-3 dark:border-zinc-700 dark:bg-zinc-900">
-                        <div class="flex items-center justify-end">
+                        <div class="flex items-center justify-end gap-2">
+                            @if ($sale->status === App\Enums\PosSaleStatus::Completed && !$sale->hasReturns())
+                                <a href="{{ route('pos.returns.create', $sale) }}" wire:navigate
+                                    class="inline-flex items-center gap-2 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-100 dark:border-amber-600 dark:bg-amber-900/20 dark:text-amber-300 dark:hover:bg-amber-900/40">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                    </svg>
+                                    {{ __('Return') }}
+                                </a>
+                            @endif
                             <a href="{{ route('pos.show', $sale) }}" wire:navigate
                                 class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
                                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
