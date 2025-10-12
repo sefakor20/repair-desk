@@ -9,7 +9,7 @@ test('registration screen can be rendered', function (): void {
     $response = $this->get('/register');
 
     $response->assertStatus(200);
-});
+})->skip('Registration is currently disabled');
 
 test('new users can register', function (): void {
     $response = Livewire::test(Register::class)
@@ -24,4 +24,4 @@ test('new users can register', function (): void {
         ->assertRedirect(route('dashboard', absolute: false));
 
     $this->assertAuthenticated();
-});
+})->skip('Registration is currently disabled');
