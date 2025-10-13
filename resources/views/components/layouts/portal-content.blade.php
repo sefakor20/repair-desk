@@ -16,14 +16,14 @@
                 {{-- Points Balance --}}
                 @if (isset($customer) && $customer->loyaltyAccount)
                     <div
-                        class="flex items-center gap-4 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 px-4 py-2 text-white shadow-sm">
+                        class="flex items-center gap-4 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 px-4 py-2 shadow-sm">
                         <div class="text-right">
-                            <flux:text class="text-xs font-medium opacity-90">Your Points</flux:text>
-                            <flux:heading size="lg">
+                            <div class="text-xs font-medium text-white/90">Your Points</div>
+                            <div class="text-2xl font-bold text-white">
                                 {{ number_format($customer->loyaltyAccount->total_points) }}
-                            </flux:heading>
+                            </div>
                         </div>
-                        <flux:icon.gift class="size-6" />
+                        <flux:icon.gift class="size-6 text-white" />
                     </div>
                 @endif
             </div>
