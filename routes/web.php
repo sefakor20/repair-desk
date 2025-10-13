@@ -28,6 +28,9 @@ use App\Livewire\Pos\ProcessReturn;
 use App\Livewire\Pos\Receipt;
 use App\Livewire\Pos\ReturnIndex;
 use App\Livewire\Pos\Show as PosShow;
+use App\Livewire\Portal\Loyalty\Dashboard as LoyaltyDashboard;
+use App\Livewire\Portal\Loyalty\History as LoyaltyHistory;
+use App\Livewire\Portal\Loyalty\Rewards as LoyaltyRewards;
 use App\Livewire\Reports\Index as ReportsIndex;
 use App\Livewire\CashDrawer\Index as CashDrawerIndex;
 use App\Livewire\CashDrawer\OpenDrawer;
@@ -36,7 +39,7 @@ use App\Livewire\Shifts\Index as ShiftsIndex;
 use App\Livewire\Shifts\OpenShift;
 use App\Livewire\Shifts\CloseShift;
 use App\Livewire\Settings\Appearance;
-use App\Livewire\Settings\LoyaltyRewards;
+use App\Livewire\Settings\LoyaltyRewards as SettingsLoyaltyRewards;
 use App\Livewire\Settings\LoyaltyTiers;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -132,7 +135,7 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('settings/shop', SettingsShop::class)->name('settings.shop');
     Route::get('settings/return-policies', ReturnPolicies::class)->name('settings.return-policies');
     Route::get('settings/loyalty-tiers', LoyaltyTiers::class)->name('settings.loyalty-tiers');
-    Route::get('settings/loyalty-rewards', LoyaltyRewards::class)->name('settings.loyalty-rewards');
+    Route::get('settings/loyalty-rewards', SettingsLoyaltyRewards::class)->name('settings.loyalty-rewards');
 
     Route::get('settings/two-factor', TwoFactor::class)
         ->middleware(
@@ -144,6 +147,13 @@ Route::middleware(['auth'])->group(function (): void {
             ),
         )
         ->name('two-factor.show');
+});
+
+// Customer Loyalty Portal Routes (public - no auth required)
+Route::prefix('portal/loyalty')->name('portal.loyalty.')->group(function (): void {
+    Route::get('/{customer}', LoyaltyDashboard::class)->name('dashboard');
+    Route::get('/{customer}/rewards', LoyaltyRewards::class)->name('rewards');
+    Route::get('/{customer}/history', LoyaltyHistory::class)->name('history');
 });
 
 require __DIR__ . '/auth.php';
