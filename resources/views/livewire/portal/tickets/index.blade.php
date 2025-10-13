@@ -5,7 +5,7 @@
         </div>
 
         <div class="w-full sm:w-48">
-            <flux:select wire:model.live="status">
+            <flux:select wire:model.live="filterStatus">
                 <option value="">All Statuses</option>
                 <option value="pending">Pending</option>
                 <option value="in_progress">In Progress</option>
@@ -28,12 +28,12 @@
                                 </h3>
                                 <flux:badge
                                     :variant="match($ticket->status->value) {
-                                                                        'pending' => 'warning',
-                                                                        'in_progress' => 'info',
-                                                                        'completed' => 'success',
-                                                                        'cancelled' => 'danger',
-                                                                        default => 'secondary'
-                                                                    }">
+                                                                                                            'pending' => 'warning',
+                                                                                                            'in_progress' => 'info',
+                                                                                                            'completed' => 'success',
+                                                                                                            'cancelled' => 'danger',
+                                                                                                            default => 'secondary'
+                                                                                                        }">
                                     {{ str($ticket->status->value)->replace('_', ' ')->title() }}
                                 </flux:badge>
                             </div>
@@ -80,7 +80,7 @@
             <flux:icon.inbox class="w-16 h-16 mx-auto text-gray-400 mb-4" />
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">No tickets found</h3>
             <p class="text-gray-600 dark:text-gray-400">
-                @if ($search || $status)
+                @if ($search || $filterStatus !== 'all')
                     Try adjusting your filters to find what you're looking for.
                 @else
                     You don't have any repair tickets yet.

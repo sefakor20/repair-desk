@@ -57,7 +57,7 @@
                                     <td class="px-6 py-4">
                                         <flux:text class="text-sm">{{ $transaction->description }}</flux:text>
                                         <flux:text class="text-xs text-zinc-500">
-                                            {{ ucfirst($transaction->type) }}
+                                            {{ str($transaction->type->value)->title() }}
                                         </flux:text>
                                     </td>
                                     <td class="whitespace-nowrap px-6 py-4 text-right">

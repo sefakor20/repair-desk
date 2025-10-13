@@ -24,7 +24,7 @@ class Dashboard extends Component
         }
 
         // Ensure customer has a loyalty account
-        $this->account = $customer->loyaltyAccount()->firstOrCreate(
+        $this->account = $customer->loyaltyAccount()->with('loyaltyTier')->firstOrCreate(
             ['customer_id' => $customer->id],
             [
                 'total_points' => 0,
@@ -36,6 +36,9 @@ class Dashboard extends Component
 
     public function render(): View
     {
+        // Refresh account to ensure tier is loaded
+        $this->account->load('loyaltyTier');
+
         $nextTier = null;
         $progress = 0;
 

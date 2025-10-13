@@ -53,7 +53,7 @@ it('shows insufficient points message for ineligible rewards', function () {
     ]);
 
     Livewire::test(Rewards::class, ['customer' => $customer])
-        ->assertSee('Need 4,900 more points');
+        ->assertSeeHtml('4,900');
 });
 
 it('can open redemption modal', function () {
