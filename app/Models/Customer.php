@@ -71,7 +71,7 @@ class Customer extends Model
     /**
      * Validate a portal access token for a customer.
      */
-    public static function validatePortalToken(string $token, int $customerId): ?self
+    public static function validatePortalToken(string $token, string|int $customerId): ?self
     {
         return self::where('id', $customerId)
             ->where('portal_access_token', $token)

@@ -8,10 +8,12 @@ use App\Mail\LoyaltyRewardRedeemed;
 use App\Models\{Customer, CustomerLoyaltyAccount, LoyaltyReward};
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
+use Livewire\Attributes\Layout;
 use Livewire\{Attributes\On, Component};
 use Livewire\WithPagination;
 use Exception;
 
+#[Layout('components.layouts.portal-fullpage')]
 class Rewards extends Component
 {
     use WithPagination;

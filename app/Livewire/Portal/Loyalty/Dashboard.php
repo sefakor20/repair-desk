@@ -6,8 +6,10 @@ namespace App\Livewire\Portal\Loyalty;
 
 use App\Models\{Customer, CustomerLoyaltyAccount, LoyaltyReward, LoyaltyTier};
 use Illuminate\View\View;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
+#[Layout('components.layouts.portal-fullpage')]
 class Dashboard extends Component
 {
     public Customer $customer;
