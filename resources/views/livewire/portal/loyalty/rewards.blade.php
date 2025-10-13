@@ -1,5 +1,5 @@
 <div>
-    <x-layouts.portal :customer="$customer" title="Rewards Catalog">
+    <x-layouts.portal-content :customer="$customer" title="Rewards Catalog">
         <div class="space-y-6">
             <div>
                 <flux:heading size="xl" class="mb-2">Rewards Catalog</flux:heading>
@@ -95,5 +95,5 @@
                 </div>
             </flux:modal>
         @endif
-    </x-layouts.portal>
+    </x-layouts.portal-content>
 </div>

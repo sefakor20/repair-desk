@@ -1,5 +1,5 @@
 <div>
-    <x-layouts.portal :customer="$customer" title="Loyalty Dashboard">
+    <x-layouts.portal-content :customer="$customer" title="Loyalty Dashboard">
         <div class="space-y-6">
             {{-- Welcome Section --}}
             <div>
@@ -211,5 +211,5 @@
                 </div>
             </div>
         </div>
-    </x-layouts.portal>
+    </x-layouts.portal-content>
 </div>

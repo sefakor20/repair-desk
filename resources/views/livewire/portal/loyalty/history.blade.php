@@ -1,5 +1,5 @@
 <div>
-    <x-layouts.portal :customer="$customer" title="Points History">
+    <x-layouts.portal-content :customer="$customer" title="Points History">
         <div class="space-y-6">
             <div>
                 <flux:heading size="xl" class="mb-2">Points History</flux:heading>
@@ -90,5 +90,5 @@
 
             {{ $transactions->links() }}
         </div>
-    </x-layouts.portal>
+    </x-layouts.portal-content>
 </div>

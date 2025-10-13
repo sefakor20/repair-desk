@@ -1,5 +1,5 @@
 <div>
-    <x-layouts.portal :customer="$customer" title="My Repairs">
+    <x-layouts.portal-content :customer="$customer" title="My Repairs">
         <div class="space-y-6">
             {{-- Header --}}
             <div>
@@ -37,12 +37,12 @@
                                         </h3>
                                         <flux:badge
                                             :variant="match($ticket->status->value) {
-                                                                                                                                                                                                    'pending' => 'warning',
-                                                                                                                                                                                                    'in_progress' => 'info',
-                                                                                                                                                                                                    'completed' => 'success',
-                                                                                                                                                                                                    'cancelled' => 'danger',
-                                                                                                                                                                                                    default => 'secondary'
-                                                                                                                                                                                                }">
+                                                                                                                                                                                                                                                'pending' => 'warning',
+                                                                                                                                                                                                                                                'in_progress' => 'info',
+                                                                                                                                                                                                                                                'completed' => 'success',
+                                                                                                                                                                                                                                                'cancelled' => 'danger',
+                                                                                                                                                                                                                                                default => 'secondary'
+                                                                                                                                                                                                                                            }">
                                             {{ str($ticket->status->value)->replace('_', ' ')->title() }}
                                         </flux:badge>
                                     </div>
@@ -98,5 +98,5 @@
                 </div>
             @endif
         </div>
-    </x-layouts.portal>
+    </x-layouts.portal-content>
 </div>
