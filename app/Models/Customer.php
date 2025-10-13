@@ -24,12 +24,15 @@ class Customer extends Model
         'address',
         'notes',
         'tags',
+        'portal_access_token',
+        'portal_token_created_at',
     ];
 
     protected function casts(): array
     {
         return [
             'tags' => 'array',
+            'portal_token_created_at' => 'datetime',
         ];
     }
 
@@ -51,6 +54,44 @@ class Customer extends Model
     public function loyaltyAccount(): HasOne
     {
         return $this->hasOne(CustomerLoyaltyAccount::class);
+    }
+
+    /**
+     * Generate a new portal access token for this customer.
+     */
+    public function generatePortalAccessToken(): string
+    {
+        $this->portal_access_token = bin2hex(random_bytes(32));
+        $this->portal_token_created_at = now();
+        $this->save();
+
+        return $this->portal_access_token;
+    }
+
+    /**
+     * Validate a portal access token for a customer.
+     */
+    public static function validatePortalToken(string $token, int $customerId): ?self
+    {
+        return self::where('id', $customerId)
+            ->where('portal_access_token', $token)
+            ->whereNotNull('portal_access_token')
+            ->first();
+    }
+
+    /**
+     * Get the portal URL for this customer.
+     */
+    public function getPortalUrlAttribute(): string
+    {
+        if (! $this->portal_access_token) {
+            $this->generatePortalAccessToken();
+        }
+
+        return route('portal.access', [
+            'customer' => $this->id,
+            'token' => $this->portal_access_token,
+        ]);
     }
 
     public function getFullNameAttribute(): string

@@ -28,6 +28,12 @@ use App\Livewire\Pos\ProcessReturn;
 use App\Livewire\Pos\Receipt;
 use App\Livewire\Pos\ReturnIndex;
 use App\Livewire\Pos\Show as PosShow;
+use App\Livewire\Portal\Auth\Login as PortalLogin;
+use App\Livewire\Portal\Loyalty\Dashboard as LoyaltyDashboard;
+use App\Livewire\Portal\Loyalty\History as LoyaltyHistory;
+use App\Livewire\Portal\Loyalty\Rewards as LoyaltyRewards;
+use App\Livewire\Portal\Tickets\Index as PortalTicketsIndex;
+use App\Livewire\Portal\Tickets\Show as PortalTicketsShow;
 use App\Livewire\Reports\Index as ReportsIndex;
 use App\Livewire\CashDrawer\Index as CashDrawerIndex;
 use App\Livewire\CashDrawer\OpenDrawer;
@@ -36,7 +42,7 @@ use App\Livewire\Shifts\Index as ShiftsIndex;
 use App\Livewire\Shifts\OpenShift;
 use App\Livewire\Shifts\CloseShift;
 use App\Livewire\Settings\Appearance;
-use App\Livewire\Settings\LoyaltyRewards;
+use App\Livewire\Settings\LoyaltyRewards as SettingsLoyaltyRewards;
 use App\Livewire\Settings\LoyaltyTiers;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -132,7 +138,7 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('settings/shop', SettingsShop::class)->name('settings.shop');
     Route::get('settings/return-policies', ReturnPolicies::class)->name('settings.return-policies');
     Route::get('settings/loyalty-tiers', LoyaltyTiers::class)->name('settings.loyalty-tiers');
-    Route::get('settings/loyalty-rewards', LoyaltyRewards::class)->name('settings.loyalty-rewards');
+    Route::get('settings/loyalty-rewards', SettingsLoyaltyRewards::class)->name('settings.loyalty-rewards');
 
     Route::get('settings/two-factor', TwoFactor::class)
         ->middleware(
@@ -145,5 +151,50 @@ Route::middleware(['auth'])->group(function (): void {
         )
         ->name('two-factor.show');
 });
+
+// Customer Loyalty Portal Routes (public - no auth required)
+Route::prefix('portal')->name('portal.')->group(function (): void {
+    // Portal login/access
+    Route::get('login', PortalLogin::class)->name('login');
+
+    // Protected portal routes with token validation
+    Route::middleware('customer.portal')->group(function (): void {
+        // Loyalty routes
+        Route::prefix('loyalty/{customer}/{token}')->name('loyalty.')->group(function (): void {
+            Route::get('/', LoyaltyDashboard::class)->name('dashboard');
+            Route::get('/rewards', LoyaltyRewards::class)->name('rewards');
+            Route::get('/history', LoyaltyHistory::class)->name('history');
+        });
+
+        // Ticket tracking routes
+        Route::prefix('tickets/{customer}/{token}')->name('tickets.')->group(function (): void {
+            Route::get('/', PortalTicketsIndex::class)->name('index');
+            Route::get('/{ticket}', PortalTicketsShow::class)->name('show');
+        });
+
+        // Legacy route redirects (backwards compatibility)
+        Route::get('{customer}', function ($customer) {
+            $customer = \App\Models\Customer::findOrFail($customer);
+            return redirect()->route('portal.loyalty.dashboard', [
+                'customer' => $customer->id,
+                'token' => $customer->portal_access_token ?? $customer->generatePortalAccessToken(),
+            ]);
+        });
+    });
+});
+
+// Create a portal access route (allows customers to access via emailed link)
+Route::get('portal/access/{customer}/{token}', function ($customer, $token) {
+    $customer = \App\Models\Customer::validatePortalToken($token, $customer);
+
+    if (! $customer) {
+        return redirect()->route('portal.login')->with('error', 'Invalid or expired access link.');
+    }
+
+    return redirect()->route('portal.loyalty.dashboard', [
+        'customer' => $customer->id,
+        'token' => $token,
+    ]);
+})->name('portal.access');
 
 require __DIR__ . '/auth.php';
