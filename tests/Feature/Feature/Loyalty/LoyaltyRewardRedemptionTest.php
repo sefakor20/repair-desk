@@ -23,9 +23,10 @@ test('customer can redeem reward with sufficient points', function () {
         'is_active' => true,
     ]);
 
-    $result = $reward->redeem($loyaltyAccount);
+    $transaction = $reward->redeem($loyaltyAccount);
 
-    expect($result)->toBeTrue();
+    expect($transaction)->toBeInstanceOf(\App\Models\LoyaltyTransaction::class)
+        ->and($transaction->points)->toBe(-500);
     $loyaltyAccount->refresh();
     expect($loyaltyAccount->total_points)->toBe(500)
         ->and($reward->fresh()->times_redeemed)->toBe(1);
@@ -42,9 +43,9 @@ test('customer cannot redeem reward with insufficient points', function () {
         'points_required' => 500,
     ]);
 
-    $result = $reward->redeem($loyaltyAccount);
+    expect(fn() => $reward->redeem($loyaltyAccount))
+        ->toThrow(Exception::class, 'You are not eligible to redeem this reward.');
 
-    expect($result)->toBeFalse();
     $loyaltyAccount->refresh();
     expect($loyaltyAccount->total_points)->toBe(300);
 });

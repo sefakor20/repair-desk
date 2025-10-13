@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Mail\{LoyaltyPointsEarned, LoyaltyTierUpgraded};
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Mail;
 use Exception;
 use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany};
 
@@ -58,13 +60,22 @@ class CustomerLoyaltyAccount extends Model
 
         $this->checkAndUpdateTier();
 
-        return $this->transactions()->create([
+        $transaction = $this->transactions()->create([
             'type' => $type,
             'points' => $points,
             'balance_after' => $this->total_points,
             'description' => $description,
             'metadata' => $metadata,
         ]);
+
+        // Send email notification for points earned
+        if ($points > 0 && $this->customer) {
+            Mail::to($this->customer->email)->send(
+                new LoyaltyPointsEarned($this->customer, $transaction),
+            );
+        }
+
+        return $transaction;
     }
 
     public function deductPoints(int $points, string $type, ?string $description = null, ?array $metadata = null): LoyaltyTransaction
@@ -87,6 +98,8 @@ class CustomerLoyaltyAccount extends Model
 
     public function checkAndUpdateTier(): void
     {
+        $previousTier = $this->loyaltyTier;
+
         $eligibleTier = LoyaltyTier::active()
             ->where('min_points', '<=', $this->total_points)
             ->orderBy('min_points', 'desc')
@@ -96,6 +109,16 @@ class CustomerLoyaltyAccount extends Model
             $this->loyalty_tier_id = $eligibleTier->id;
             $this->tier_achieved_at = now();
             $this->save();
+
+            // Refresh to get the new tier relationship
+            $this->load('loyaltyTier');
+
+            // Send email notification for tier upgrade
+            if ($this->customer) {
+                Mail::to($this->customer->email)->send(
+                    new LoyaltyTierUpgraded($this->customer, $this, $eligibleTier, $previousTier),
+                );
+            }
         }
     }
 

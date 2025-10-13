@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Exception;
 
 class LoyaltyReward extends Model
 {
@@ -98,13 +99,13 @@ class LoyaltyReward extends Model
         return true;
     }
 
-    public function redeem(CustomerLoyaltyAccount $account): bool
+    public function redeem(CustomerLoyaltyAccount $account): LoyaltyTransaction
     {
         if (! $this->canBeRedeemedBy($account)) {
-            return false;
+            throw new Exception('You are not eligible to redeem this reward.');
         }
 
-        $account->deductPoints(
+        $transaction = $account->deductPoints(
             $this->points_required,
             'redeemed',
             "Redeemed: {$this->name}",
@@ -117,6 +118,6 @@ class LoyaltyReward extends Model
 
         $this->increment('times_redeemed');
 
-        return true;
+        return $transaction;
     }
 }

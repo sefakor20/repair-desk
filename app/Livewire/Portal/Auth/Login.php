@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Livewire\Portal\Auth;
 
+use App\Mail\PortalAccessLink;
 use App\Models\Customer;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
@@ -24,8 +26,12 @@ class Login extends Component
         if ($customer) {
             $customer->generatePortalAccessToken();
 
-            // TODO: Send email with portal URL
-            // Mail::to($customer->email)->send(new PortalAccessLink($customer));
+            $portalUrl = route('portal.loyalty.dashboard', [
+                'customer' => $customer->id,
+                'token' => $customer->portal_access_token,
+            ]);
+
+            Mail::to($customer->email)->send(new PortalAccessLink($customer, $portalUrl));
         }
 
         // Always show success to prevent email enumeration
