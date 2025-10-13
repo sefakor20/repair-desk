@@ -25,6 +25,11 @@ class Rewards extends Component
     public function mount(Customer $customer): void
     {
         $this->customer = $customer;
+
+        // Ensure customer has a portal access token
+        if (! $customer->portal_access_token) {
+            $customer->generatePortalAccessToken();
+        }
         $this->account = $customer->loyaltyAccount ?? throw new Exception('Loyalty account not found');
     }
 

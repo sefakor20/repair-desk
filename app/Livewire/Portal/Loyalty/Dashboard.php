@@ -18,6 +18,11 @@ class Dashboard extends Component
     {
         $this->customer = $customer;
 
+        // Ensure customer has a portal access token
+        if (! $customer->portal_access_token) {
+            $customer->generatePortalAccessToken();
+        }
+
         // Ensure customer has a loyalty account
         $this->account = $customer->loyaltyAccount()->firstOrCreate(
             ['customer_id' => $customer->id],
@@ -45,7 +50,7 @@ class Dashboard extends Component
                 $currentTierPoints = $this->account->loyaltyTier->min_points;
                 $pointsNeeded = $nextTier->min_points - $currentTierPoints;
                 $pointsEarned = $this->account->total_points - $currentTierPoints;
-                $progress = min(100, ($pointsEarned / $pointsNeeded) * 100);
+                $progress = $pointsNeeded > 0 ? min(100, ($pointsEarned / $pointsNeeded) * 100) : 100;
             }
         } else {
             // No tier yet, show progress to first tier
@@ -53,7 +58,7 @@ class Dashboard extends Component
                 ->orderBy('min_points', 'asc')
                 ->first();
 
-            if ($nextTier) {
+            if ($nextTier && $nextTier->min_points > 0) {
                 $progress = min(100, ($this->account->total_points / $nextTier->min_points) * 100);
             }
         }
