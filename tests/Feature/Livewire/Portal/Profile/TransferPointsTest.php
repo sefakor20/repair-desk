@@ -3,17 +3,24 @@
 declare(strict_types=1);
 
 use App\Livewire\Portal\Profile\TransferPoints;
-use App\Models\{Customer, LoyaltyAccount, PointTransfer};
+use App\Models\{Customer, CustomerLoyaltyAccount, PointTransfer};
 use Livewire\Livewire;
 
 use function Pest\Laravel\{assertDatabaseHas};
 
+// Helper to create loyalty account
+function createLoyaltyAccount($customer, $points = 0)
+{
+    CustomerLoyaltyAccount::factory()->for($customer)->create([
+        'total_points' => $points,
+        'lifetime_points' => $points,
+    ]);
+    return $customer->fresh();
+}
+
 it('renders successfully', function () {
     $customer = Customer::factory()->create();
-    LoyaltyAccount::factory()->create([
-        'customer_id' => $customer->id,
-        'total_points' => 1000,
-    ]);
+    createLoyaltyAccount($customer, 1000);
 
     Livewire::test(TransferPoints::class, ['customer' => $customer])
         ->assertStatus(200);
@@ -21,7 +28,7 @@ it('renders successfully', function () {
 
 it('validates recipient email is required', function () {
     $customer = Customer::factory()->create();
-    LoyaltyAccount::factory()->create(['customer_id' => $customer->id, 'total_points' => 1000]);
+    createLoyaltyAccount($customer, 1000);
 
     Livewire::test(TransferPoints::class, ['customer' => $customer])
         ->call('openTransferModal')
@@ -33,7 +40,7 @@ it('validates recipient email is required', function () {
 
 it('validates recipient email exists', function () {
     $customer = Customer::factory()->create();
-    LoyaltyAccount::factory()->create(['customer_id' => $customer->id, 'total_points' => 1000]);
+    createLoyaltyAccount($customer, 1000);
 
     Livewire::test(TransferPoints::class, ['customer' => $customer])
         ->call('openTransferModal')
@@ -46,8 +53,8 @@ it('validates recipient email exists', function () {
 it('validates points are required', function () {
     $customer = Customer::factory()->create();
     $recipient = Customer::factory()->create(['email' => 'recipient@example.com']);
-    LoyaltyAccount::factory()->create(['customer_id' => $customer->id, 'total_points' => 1000]);
-    LoyaltyAccount::factory()->create(['customer_id' => $recipient->id]);
+    createLoyaltyAccount($customer, 1000);
+    createLoyaltyAccount($recipient, 0);
 
     Livewire::test(TransferPoints::class, ['customer' => $customer])
         ->call('openTransferModal')
@@ -59,7 +66,7 @@ it('validates points are required', function () {
 
 it('prevents transfer to self', function () {
     $customer = Customer::factory()->create(['email' => 'sender@example.com']);
-    LoyaltyAccount::factory()->create(['customer_id' => $customer->id, 'total_points' => 1000]);
+    createLoyaltyAccount($customer, 1000);
 
     Livewire::test(TransferPoints::class, ['customer' => $customer])
         ->call('openTransferModal')
@@ -72,8 +79,8 @@ it('prevents transfer to self', function () {
 it('validates minimum transfer amount', function () {
     $customer = Customer::factory()->create();
     $recipient = Customer::factory()->create(['email' => 'recipient@example.com']);
-    LoyaltyAccount::factory()->create(['customer_id' => $customer->id, 'total_points' => 1000]);
-    LoyaltyAccount::factory()->create(['customer_id' => $recipient->id]);
+    createLoyaltyAccount($customer, 1000);
+    createLoyaltyAccount($recipient, 0);
 
     Livewire::test(TransferPoints::class, ['customer' => $customer])
         ->call('openTransferModal')
@@ -86,8 +93,8 @@ it('validates minimum transfer amount', function () {
 it('validates sufficient balance', function () {
     $customer = Customer::factory()->create();
     $recipient = Customer::factory()->create(['email' => 'recipient@example.com']);
-    LoyaltyAccount::factory()->create(['customer_id' => $customer->id, 'total_points' => 100]);
-    LoyaltyAccount::factory()->create(['customer_id' => $recipient->id]);
+    createLoyaltyAccount($customer, 100);
+    createLoyaltyAccount($recipient, 0);
 
     Livewire::test(TransferPoints::class, ['customer' => $customer])
         ->call('openTransferModal')
@@ -100,8 +107,8 @@ it('validates sufficient balance', function () {
 it('successfully transfers points', function () {
     $customer = Customer::factory()->create();
     $recipient = Customer::factory()->create(['email' => 'recipient@example.com']);
-    LoyaltyAccount::factory()->create(['customer_id' => $customer->id, 'total_points' => 1000]);
-    LoyaltyAccount::factory()->create(['customer_id' => $recipient->id, 'total_points' => 0]);
+    createLoyaltyAccount($customer, 1000);
+    createLoyaltyAccount($recipient, 0);
 
     Livewire::test(TransferPoints::class, ['customer' => $customer])
         ->call('openTransferModal')
@@ -128,8 +135,8 @@ it('successfully transfers points', function () {
 it('can transfer without message', function () {
     $customer = Customer::factory()->create();
     $recipient = Customer::factory()->create(['email' => 'recipient@example.com']);
-    LoyaltyAccount::factory()->create(['customer_id' => $customer->id, 'total_points' => 1000]);
-    LoyaltyAccount::factory()->create(['customer_id' => $recipient->id]);
+    createLoyaltyAccount($customer, 1000);
+    createLoyaltyAccount($recipient, 0);
 
     Livewire::test(TransferPoints::class, ['customer' => $customer])
         ->call('openTransferModal')
@@ -142,8 +149,8 @@ it('can transfer without message', function () {
 it('displays transfer history', function () {
     $customer = Customer::factory()->create();
     $recipient = Customer::factory()->create();
-    LoyaltyAccount::factory()->create(['customer_id' => $customer->id]);
-    LoyaltyAccount::factory()->create(['customer_id' => $recipient->id]);
+    createLoyaltyAccount($customer, 1000);
+    createLoyaltyAccount($recipient, 0);
 
     PointTransfer::factory()->create([
         'sender_id' => $customer->id,
@@ -159,7 +166,7 @@ it('displays transfer history', function () {
 
 it('opens and closes transfer modal', function () {
     $customer = Customer::factory()->create();
-    LoyaltyAccount::factory()->create(['customer_id' => $customer->id, 'total_points' => 1000]);
+    createLoyaltyAccount($customer, 1000);
 
     Livewire::test(TransferPoints::class, ['customer' => $customer])
         ->assertSet('showTransferModal', false)
