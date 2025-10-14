@@ -7,8 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, BelongsToMany, HasMany, HasOne};
 
 class Customer extends Model
 {
@@ -26,6 +25,8 @@ class Customer extends Model
         'tags',
         'portal_access_token',
         'portal_token_created_at',
+        'referral_code',
+        'referred_by',
     ];
 
     protected function casts(): array
@@ -54,6 +55,58 @@ class Customer extends Model
     public function loyaltyAccount(): HasOne
     {
         return $this->hasOne(CustomerLoyaltyAccount::class);
+    }
+
+    public function preferences(): HasOne
+    {
+        return $this->hasOne(CustomerPreference::class);
+    }
+
+    public function referralsMade(): HasMany
+    {
+        return $this->hasMany(Referral::class, 'referrer_id');
+    }
+
+    public function referralsReceived(): HasMany
+    {
+        return $this->hasMany(Referral::class, 'referred_id');
+    }
+
+    public function referredBy(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class, 'referred_by');
+    }
+
+    public function achievements(): BelongsToMany
+    {
+        return $this->belongsToMany(Achievement::class, 'customer_achievements')
+            ->withPivot(['earned_at', 'is_displayed'])
+            ->withTimestamps();
+    }
+
+    public function sentTransfers(): HasMany
+    {
+        return $this->hasMany(PointTransfer::class, 'sender_id');
+    }
+
+    public function receivedTransfers(): HasMany
+    {
+        return $this->hasMany(PointTransfer::class, 'recipient_id');
+    }
+
+    /**
+     * Generate a unique referral code for this customer.
+     */
+    public function generateReferralCode(): string
+    {
+        if ($this->referral_code) {
+            return $this->referral_code;
+        }
+
+        $this->referral_code = Referral::generateCode($this);
+        $this->save();
+
+        return $this->referral_code;
     }
 
     /**
