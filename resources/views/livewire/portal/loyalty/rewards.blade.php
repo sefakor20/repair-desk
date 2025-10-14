@@ -38,8 +38,7 @@
                                 <flux:button class="w-full transition-all duration-200 hover:scale-105 active:scale-95"
                                     variant="primary" wire:click="selectReward('{{ $reward->id }}')"
                                     wire:loading.attr="disabled" wire:target="selectReward('{{ $reward->id }}')">
-                                    <span wire:loading.remove wire:target="selectReward('{{ $reward->id }}')">Redeem
-                                        Now</span>
+                                    <span wire:loading.remove wire:target="selectReward('{{ $reward->id }}')">Redeem Now</span>
                                     <span wire:loading
                                         wire:target="selectReward('{{ $reward->id }}')">Loading...</span>
                                 </flux:button>
