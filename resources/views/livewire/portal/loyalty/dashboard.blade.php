@@ -10,10 +10,12 @@
             {{-- Stats Grid --}}
             <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 {{-- Total Points --}}
-                <div class="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+                <div
+                    class="group rounded-lg border border-zinc-200 bg-white p-6 shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-lg dark:border-zinc-700 dark:bg-zinc-800 dark:hover:shadow-purple-500/20">
                     <div class="mb-2 flex items-center justify-between">
                         <flux:text class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Total Points</flux:text>
-                        <div class="rounded-lg bg-purple-50 p-2 dark:bg-purple-900/20">
+                        <div
+                            class="rounded-lg bg-purple-50 p-2 transition-transform duration-300 group-hover:scale-110 dark:bg-purple-900/20">
                             <flux:icon.sparkles class="size-5 text-purple-500" />
                         </div>
                     </div>
@@ -23,11 +25,13 @@
                 </div>
 
                 {{-- Lifetime Points --}}
-                <div class="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+                <div
+                    class="group rounded-lg border border-zinc-200 bg-white p-6 shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-lg dark:border-zinc-700 dark:bg-zinc-800 dark:hover:shadow-blue-500/20">
                     <div class="mb-2 flex items-center justify-between">
                         <flux:text class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Lifetime Points
                         </flux:text>
-                        <div class="rounded-lg bg-blue-50 p-2 dark:bg-blue-900/20">
+                        <div
+                            class="rounded-lg bg-blue-50 p-2 transition-transform duration-300 group-hover:scale-110 dark:bg-blue-900/20">
                             <flux:icon.chart-bar class="size-5 text-blue-500" />
                         </div>
                     </div>
@@ -37,10 +41,12 @@
                 </div>
 
                 {{-- Current Tier --}}
-                <div class="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+                <div
+                    class="group rounded-lg border border-zinc-200 bg-white p-6 shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-lg dark:border-zinc-700 dark:bg-zinc-800 dark:hover:shadow-amber-500/20">
                     <div class="mb-2 flex items-center justify-between">
                         <flux:text class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Current Tier</flux:text>
-                        <div class="rounded-lg bg-amber-50 p-2 dark:bg-amber-900/20">
+                        <div
+                            class="rounded-lg bg-amber-50 p-2 transition-transform duration-300 group-hover:scale-110 dark:bg-amber-900/20">
                             <flux:icon.star class="size-5 text-amber-500" />
                         </div>
                     </div>
@@ -60,7 +66,8 @@
                     <div class="mb-2 flex items-center justify-between">
                         <flux:text class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Available Rewards
                         </flux:text>
-                        <div class="rounded-lg bg-green-50 p-2 dark:bg-green-900/20">
+                        <div
+                            class="rounded-lg bg-green-50 p-2 transition-transform duration-300 group-hover:scale-110 dark:bg-green-900/20">
                             <flux:icon.gift class="size-5 text-green-500" />
                         </div>
                     </div>
@@ -71,7 +78,8 @@
 
             {{-- Tier Progress --}}
             @if ($nextTier)
-                <div class="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+                <div
+                    class="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
                     <div class="mb-4 flex items-center justify-between">
                         <div>
                             <flux:heading size="lg" class="mb-1">Progress to {{ $nextTier->name }}</flux:heading>
@@ -86,8 +94,11 @@
 
                     {{-- Progress Bar --}}
                     <div class="relative h-4 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-700">
-                        <div class="h-full bg-gradient-to-r from-purple-500 to-purple-600 transition-all duration-500"
+                        <div class="h-full bg-gradient-to-r from-purple-500 via-purple-400 to-purple-600 transition-all duration-1000 ease-out"
                             style="width: {{ $progress }}%">
+                            <div
+                                class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 animate-pulse">
+                            </div>
                         </div>
                     </div>
 
@@ -101,7 +112,8 @@
             {{-- Quick Actions Grid --}}
             <div class="grid gap-6 lg:grid-cols-2">
                 {{-- Available Rewards --}}
-                <div class="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+                <div
+                    class="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
                     <div class="mb-4 flex items-center justify-between">
                         <flux:heading size="lg">Available Rewards</flux:heading>
                         <flux:button variant="ghost" size="sm"
@@ -114,7 +126,7 @@
                         <div class="space-y-3">
                             @foreach ($availableRewards as $reward)
                                 <div
-                                    class="flex items-center justify-between rounded-lg border border-zinc-100 p-4 dark:border-zinc-700">
+                                    class="flex items-center justify-between rounded-lg border border-zinc-100 p-4 transition-all duration-200 hover:scale-105 hover:border-purple-200 hover:bg-purple-50/50 dark:border-zinc-700 dark:hover:border-purple-500/50 dark:hover:bg-purple-900/10">
                                     <div class="flex-1">
                                         <flux:heading size="sm" class="mb-1">{{ $reward->name }}</flux:heading>
                                         <flux:text class="text-xs text-zinc-500">
@@ -136,7 +148,8 @@
                 </div>
 
                 {{-- Recent Activity --}}
-                <div class="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+                <div
+                    class="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
                     <div class="mb-4 flex items-center justify-between">
                         <flux:heading size="lg">Recent Activity</flux:heading>
                         <flux:button variant="ghost" size="sm"
@@ -149,7 +162,7 @@
                         <div class="space-y-3">
                             @foreach ($recentTransactions as $transaction)
                                 <div
-                                    class="flex items-center justify-between border-b border-zinc-100 pb-3 last:border-0 dark:border-zinc-700">
+                                    class="flex items-center justify-between border-b border-zinc-100 pb-3 last:border-0 transition-all duration-200 hover:bg-zinc-50 hover:px-2 hover:-mx-2 dark:border-zinc-700 dark:hover:bg-zinc-900">
                                     <div class="flex-1">
                                         <flux:text class="mb-1 text-sm font-medium">{{ $transaction->description }}
                                         </flux:text>
@@ -174,11 +187,13 @@
             </div>
 
             {{-- How to Earn Points --}}
-            <div class="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+            <div
+                class="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
                 <flux:heading size="lg" class="mb-4">How to Earn Points</flux:heading>
                 <div class="grid gap-4 sm:grid-cols-3">
-                    <div class="flex items-start gap-3">
-                        <div class="rounded-lg bg-purple-50 p-2 dark:bg-purple-900/20">
+                    <div class="flex items-start gap-3 group transition-all duration-200 hover:scale-105">
+                        <div
+                            class="rounded-lg bg-purple-50 p-2 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12 dark:bg-purple-900/20">
                             <flux:icon.shopping-cart class="size-5 text-purple-500" />
                         </div>
                         <div>
@@ -187,8 +202,9 @@
                         </div>
                     </div>
 
-                    <div class="flex items-start gap-3">
-                        <div class="rounded-lg bg-blue-50 p-2 dark:bg-blue-900/20">
+                    <div class="flex items-start gap-3 group transition-all duration-200 hover:scale-105">
+                        <div
+                            class="rounded-lg bg-blue-50 p-2 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12 dark:bg-blue-900/20">
                             <flux:icon.star class="size-5 text-blue-500" />
                         </div>
                         <div>
@@ -198,8 +214,9 @@
                         </div>
                     </div>
 
-                    <div class="flex items-start gap-3">
-                        <div class="rounded-lg bg-amber-50 p-2 dark:bg-amber-900/20">
+                    <div class="flex items-start gap-3 group transition-all duration-200 hover:scale-105">
+                        <div
+                            class="rounded-lg bg-amber-50 p-2 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12 dark:bg-amber-900/20">
                             <flux:icon.gift class="size-5 text-amber-500" />
                         </div>
                         <div>

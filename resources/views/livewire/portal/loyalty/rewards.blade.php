@@ -9,7 +9,7 @@
             <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 @forelse($rewards as $reward)
                     <div
-                        class="group relative overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-sm transition-shadow hover:shadow-md dark:border-zinc-700 dark:bg-zinc-800">
+                        class="group relative overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-purple-500/10 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:border-purple-500/50">
                         <div class="p-6">
                             <div class="mb-4 flex items-start justify-between">
                                 <flux:badge color="{{ $reward->type->value === 'discount' ? 'green' : 'purple' }}">
@@ -35,14 +35,19 @@
                             </div>
 
                             @if ($reward->canBeRedeemedBy($account))
-                                <flux:button class="w-full" variant="primary"
-                                    wire:click="selectReward('{{ $reward->id }}')">
-                                    Redeem Now
+                                <flux:button class="w-full transition-all duration-200 hover:scale-105 active:scale-95"
+                                    variant="primary" wire:click="selectReward('{{ $reward->id }}')"
+                                    wire:loading.attr="disabled" wire:target="selectReward('{{ $reward->id }}')">
+                                    <span wire:loading.remove wire:target="selectReward('{{ $reward->id }}')">Redeem
+                                        Now</span>
+                                    <span wire:loading
+                                        wire:target="selectReward('{{ $reward->id }}')">Loading...</span>
                                 </flux:button>
                             @else
                                 <flux:button class="w-full" variant="ghost" disabled>
                                     @if ($account->total_points < $reward->points_required)
-                                        Need {{ number_format($reward->points_required - $account->total_points) }} more
+                                        Need {{ number_format($reward->points_required - $account->total_points) }}
+                                        more
                                         points
                                     @else
                                         Not Eligible
@@ -72,7 +77,8 @@
                         <flux:text>Are you sure you want to redeem this reward?</flux:text>
                     </div>
 
-                    <div class="rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-900">
+                    <div
+                        class="rounded-lg border border-zinc-200 bg-zinc-50 p-4 transition-all duration-300 hover:shadow-md dark:border-zinc-700 dark:bg-zinc-900">
                         <flux:heading size="md" class="mb-2">{{ $selectedReward->name }}</flux:heading>
                         <flux:text class="mb-3 text-sm text-zinc-500">{{ $selectedReward->description }}</flux:text>
                         <div class="flex items-center justify-between">
@@ -89,8 +95,14 @@
                     </div>
 
                     <div class="flex gap-2">
-                        <flux:button variant="ghost" wire:click="closeModal" class="flex-1">Cancel</flux:button>
-                        <flux:button variant="primary" wire:click="redeemReward" class="flex-1">Redeem</flux:button>
+                        <flux:button variant="ghost" wire:click="closeModal"
+                            class="flex-1 transition-all duration-200 hover:scale-105">Cancel</flux:button>
+                        <flux:button variant="primary" wire:click="redeemReward"
+                            class="flex-1 transition-all duration-200 hover:scale-105" wire:loading.attr="disabled"
+                            wire:target="redeemReward">
+                            <span wire:loading.remove wire:target="redeemReward">Redeem</span>
+                            <span wire:loading wire:target="redeemReward">Processing...</span>
+                        </flux:button>
                     </div>
                 </div>
             </flux:modal>
