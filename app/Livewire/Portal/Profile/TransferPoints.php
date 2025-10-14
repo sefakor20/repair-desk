@@ -6,10 +6,11 @@ namespace App\Livewire\Portal\Profile;
 
 use App\Models\{Customer, PointTransfer};
 use Illuminate\View\View;
-use Livewire\{Attributes\Validate, Component};
+use Livewire\{Attributes\Layout, Attributes\Validate, Component};
 use Livewire\WithPagination;
 use Exception;
 
+#[Layout('components.layouts.portal-fullpage')]
 class TransferPoints extends Component
 {
     use WithPagination;

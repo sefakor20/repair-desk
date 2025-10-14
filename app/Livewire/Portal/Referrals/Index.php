@@ -6,9 +6,9 @@ namespace App\Livewire\Portal\Referrals;
 
 use App\Models\{Customer, Referral};
 use Illuminate\View\View;
-use Livewire\{Attributes\Validate, Component};
-use Livewire\WithPagination;
+use Livewire\{Attributes\Layout, Attributes\Validate, Component, WithPagination};
 
+#[Layout('components.layouts.portal-fullpage')]
 class Index extends Component
 {
     use WithPagination;

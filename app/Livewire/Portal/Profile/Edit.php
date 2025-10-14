@@ -6,8 +6,9 @@ namespace App\Livewire\Portal\Profile;
 
 use App\Models\Customer;
 use Illuminate\View\View;
-use Livewire\{Attributes\Validate, Component};
+use Livewire\{Attributes\Layout, Attributes\Validate, Component};
 
+#[Layout('components.layouts.portal-fullpage')]
 class Edit extends Component
 {
     public Customer $customer;

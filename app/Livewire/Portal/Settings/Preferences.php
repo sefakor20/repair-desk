@@ -6,8 +6,9 @@ namespace App\Livewire\Portal\Settings;
 
 use App\Models\{Customer, CustomerPreference};
 use Illuminate\View\View;
-use Livewire\Component;
+use Livewire\{Attributes\Layout, Component};
 
+#[Layout('components.layouts.portal-fullpage')]
 class Preferences extends Component
 {
     public Customer $customer;
