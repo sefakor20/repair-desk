@@ -6,8 +6,10 @@ namespace App\Livewire\Portal\Tickets;
 
 use App\Models\{Customer, Ticket};
 use Illuminate\View\View;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
+#[Layout('components.layouts.portal-fullpage')]
 class Show extends Component
 {
     public Customer $customer;

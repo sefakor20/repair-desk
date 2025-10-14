@@ -18,12 +18,15 @@ class ValidateCustomerPortalAccess
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $customerId = $request->route('customer');
+        $customerParam = $request->route('customer');
         $token = $request->route('token');
 
-        if (! $customerId || ! $token) {
+        if (! $customerParam || ! $token) {
             return redirect()->route('portal.login')->with('error', 'Invalid portal access.');
         }
+
+        // Extract customer ID if route model binding resolved it to a Customer instance
+        $customerId = $customerParam instanceof Customer ? $customerParam->id : $customerParam;
 
         $customer = Customer::validatePortalToken($token, $customerId);
 

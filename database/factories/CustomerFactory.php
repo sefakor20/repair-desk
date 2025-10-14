@@ -26,6 +26,7 @@ class CustomerFactory extends Factory
             'address' => fake()->address(),
             'notes' => fake()->optional()->sentence(),
             'tags' => fake()->optional()->randomElements(['VIP', 'Regular', 'Wholesale', 'Retail'], fake()->numberBetween(0, 2)),
+            'portal_access_token' => fake()->uuid(),
         ];
     }
 }

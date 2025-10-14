@@ -6,10 +6,12 @@ namespace App\Livewire\Portal\Loyalty;
 
 use App\Models\{Customer, CustomerLoyaltyAccount};
 use Illuminate\View\View;
+use Livewire\Attributes\Layout;
 use Livewire\{Attributes\Url, Component};
 use Livewire\WithPagination;
 use Exception;
 
+#[Layout('components.layouts.portal-fullpage')]
 class History extends Component
 {
     use WithPagination;

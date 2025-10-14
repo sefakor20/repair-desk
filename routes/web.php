@@ -32,6 +32,10 @@ use App\Livewire\Portal\Auth\Login as PortalLogin;
 use App\Livewire\Portal\Loyalty\Dashboard as LoyaltyDashboard;
 use App\Livewire\Portal\Loyalty\History as LoyaltyHistory;
 use App\Livewire\Portal\Loyalty\Rewards as LoyaltyRewards;
+use App\Livewire\Portal\Profile\Edit as PortalProfileEdit;
+use App\Livewire\Portal\Profile\TransferPoints;
+use App\Livewire\Portal\Referrals\Index as PortalReferralsIndex;
+use App\Livewire\Portal\Settings\Preferences as PortalPreferences;
 use App\Livewire\Portal\Tickets\Index as PortalTicketsIndex;
 use App\Livewire\Portal\Tickets\Show as PortalTicketsShow;
 use App\Livewire\Reports\Index as ReportsIndex;
@@ -164,6 +168,22 @@ Route::prefix('portal')->name('portal.')->group(function (): void {
             Route::get('/', LoyaltyDashboard::class)->name('dashboard');
             Route::get('/rewards', LoyaltyRewards::class)->name('rewards');
             Route::get('/history', LoyaltyHistory::class)->name('history');
+        });
+
+        // Profile routes
+        Route::prefix('profile/{customer}/{token}')->name('profile.')->group(function (): void {
+            Route::get('/edit', PortalProfileEdit::class)->name('edit');
+            Route::get('/transfer-points', TransferPoints::class)->name('transfer-points');
+        });
+
+        // Settings routes
+        Route::prefix('settings/{customer}/{token}')->name('settings.')->group(function (): void {
+            Route::get('/preferences', PortalPreferences::class)->name('preferences');
+        });
+
+        // Referral routes
+        Route::prefix('referrals/{customer}/{token}')->name('referrals.')->group(function (): void {
+            Route::get('/', PortalReferralsIndex::class)->name('index');
         });
 
         // Ticket tracking routes

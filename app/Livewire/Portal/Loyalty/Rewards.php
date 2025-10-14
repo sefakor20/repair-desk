@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace App\Livewire\Portal\Loyalty;
 
+use App\Mail\LoyaltyRewardRedeemed;
 use App\Models\{Customer, CustomerLoyaltyAccount, LoyaltyReward};
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
+use Livewire\Attributes\Layout;
 use Livewire\{Attributes\On, Component};
 use Livewire\WithPagination;
 use Exception;
 
+#[Layout('components.layouts.portal-fullpage')]
 class Rewards extends Component
 {
     use WithPagination;
@@ -67,7 +71,11 @@ class Rewards extends Component
         }
 
         try {
-            $this->selectedReward->redeem($this->account);
+            $transaction = $this->selectedReward->redeem($this->account);
+
+            Mail::to($this->customer->email)->send(
+                new LoyaltyRewardRedeemed($this->customer, $this->selectedReward, $transaction),
+            );
 
             $this->dispatch('toast', [
                 'type' => 'success',

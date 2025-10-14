@@ -6,9 +6,11 @@ namespace App\Livewire\Portal\Tickets;
 
 use App\Models\Customer;
 use Illuminate\View\View;
+use Livewire\Attributes\Layout;
 use Livewire\{Attributes\Url, Component};
 use Livewire\WithPagination;
 
+#[Layout('components.layouts.portal-fullpage')]
 class Index extends Component
 {
     use WithPagination;

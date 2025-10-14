@@ -1,5 +1,5 @@
 <div>
-    <x-layouts.portal :customer="$customer" title="Points History">
+    <x-layouts.portal-content :customer="$customer" title="Points History">
         <div class="space-y-6">
             <div>
                 <flux:heading size="xl" class="mb-2">Points History</flux:heading>
@@ -7,22 +7,28 @@
             </div>
 
             {{-- Filters --}}
-            <div class="flex flex-wrap items-center gap-3">
-                <flux:button variant="{{ $filterType === 'all' ? 'primary' : 'ghost' }}"
-                    wire:click="$set('filterType', 'all')">
-                    All
+            <div class="flex flex-wrap items-center gap-3" wire:loading.class="opacity-50 pointer-events-none">
+                <flux:button class="transition-all duration-200 hover:scale-105"
+                    variant="{{ $filterType === 'all' ? 'primary' : 'ghost' }}" wire:click="$set('filterType', 'all')">
+                    <span wire:loading.remove wire:target="$set('filterType', 'all')">All</span>
+                    <span wire:loading wire:target="$set('filterType', 'all')">Loading...</span>
                 </flux:button>
-                <flux:button variant="{{ $filterType === 'earned' ? 'primary' : 'ghost' }}"
+                <flux:button class="transition-all duration-200 hover:scale-105"
+                    variant="{{ $filterType === 'earned' ? 'primary' : 'ghost' }}"
                     wire:click="$set('filterType', 'earned')">
-                    Earned
+                    <span wire:loading.remove wire:target="$set('filterType', 'earned')">Earned</span>
+                    <span wire:loading wire:target="$set('filterType', 'earned')">Loading...</span>
                 </flux:button>
-                <flux:button variant="{{ $filterType === 'redeemed' ? 'primary' : 'ghost' }}"
+                <flux:button class="transition-all duration-200 hover:scale-105"
+                    variant="{{ $filterType === 'redeemed' ? 'primary' : 'ghost' }}"
                     wire:click="$set('filterType', 'redeemed')">
-                    Redeemed
+                    <span wire:loading.remove wire:target="$set('filterType', 'redeemed')">Redeemed</span>
+                    <span wire:loading wire:target="$set('filterType', 'redeemed')">Loading...</span>
                 </flux:button>
 
                 @if ($filterType !== 'all')
-                    <flux:button variant="ghost" wire:click="clearFilters">
+                    <flux:button class="transition-all duration-200 hover:scale-105" variant="ghost"
+                        wire:click="clearFilters">
                         Clear Filters
                     </flux:button>
                 @endif
@@ -45,7 +51,8 @@
                         </thead>
                         <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
                             @forelse($transactions as $transaction)
-                                <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-900">
+                                <tr
+                                    class="transition-all duration-200 hover:bg-zinc-50 dark:hover:bg-zinc-900 hover:scale-[1.01]">
                                     <td class="whitespace-nowrap px-6 py-4">
                                         <flux:text class="text-sm font-medium">
                                             {{ $transaction->created_at->format('M d, Y') }}
@@ -90,5 +97,5 @@
 
             {{ $transactions->links() }}
         </div>
-    </x-layouts.portal>
+    </x-layouts.portal-content>
 </div>

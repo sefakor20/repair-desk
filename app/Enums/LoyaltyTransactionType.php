@@ -12,6 +12,8 @@ enum LoyaltyTransactionType: string
     case Adjusted = 'adjusted';
     case Bonus = 'bonus';
     case Refunded = 'refunded';
+    case TransferSent = 'transfer_sent';
+    case TransferReceived = 'transfer_received';
 
     public function label(): string
     {
@@ -22,11 +24,13 @@ enum LoyaltyTransactionType: string
             self::Adjusted => 'Manual Adjustment',
             self::Bonus => 'Bonus Points',
             self::Refunded => 'Points Refunded',
+            self::TransferSent => 'Transfer Sent',
+            self::TransferReceived => 'Transfer Received',
         };
     }
 
     public function isPositive(): bool
     {
-        return in_array($this, [self::Earned, self::Bonus, self::Refunded]);
+        return in_array($this, [self::Earned, self::Bonus, self::Refunded, self::TransferReceived]);
     }
 }
