@@ -9,7 +9,7 @@
             <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">Manage repair tickets and track progress</p>
         </div>
 
-        @can('create', Ticket::class)
+        @can('create', App\Models\Ticket::class)
             <a href="{{ route('tickets.create') }}" wire:navigate
                 class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100 dark:focus:ring-white">
                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
