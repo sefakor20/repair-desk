@@ -44,6 +44,16 @@
                     <flux:icon.wrench class="size-5 transition-transform duration-200 group-hover:scale-110" />
                     My Repairs
                 </a>
+                <a href="{{ route('portal.invoices.index', ['customer' => $customer->id, 'token' => $customer->portal_access_token]) }}"
+                    class="{{ request()->routeIs('portal.invoices.*') ? 'border-purple-500 text-purple-600 dark:border-purple-400 dark:text-purple-400' : 'border-transparent text-zinc-500 hover:border-zinc-300 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200' }} -mb-px flex items-center gap-2 border-b-2 px-1 py-4 text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95 whitespace-nowrap">
+                    <flux:icon.document-text class="size-5 transition-transform duration-200 group-hover:scale-110" />
+                    Invoices
+                </a>
+                <a href="{{ route('portal.devices.index', ['customer' => $customer->id, 'token' => $customer->portal_access_token]) }}"
+                    class="{{ request()->routeIs('portal.devices.*') ? 'border-purple-500 text-purple-600 dark:border-purple-400 dark:text-purple-400' : 'border-transparent text-zinc-500 hover:border-zinc-300 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200' }} -mb-px flex items-center gap-2 border-b-2 px-1 py-4 text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95 whitespace-nowrap">
+                    <flux:icon.device-phone-mobile class="size-5 transition-transform duration-200 group-hover:scale-110" />
+                    Devices
+                </a>
                 <a href="{{ route('portal.loyalty.rewards', ['customer' => $customer->id, 'token' => $customer->portal_access_token]) }}"
                     class="{{ request()->routeIs('portal.loyalty.rewards') ? 'border-purple-500 text-purple-600 dark:border-purple-400 dark:text-purple-400' : 'border-transparent text-zinc-500 hover:border-zinc-300 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200' }} -mb-px flex items-center gap-2 border-b-2 px-1 py-4 text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95 whitespace-nowrap">
                     <flux:icon.gift class="size-5 transition-transform duration-200 group-hover:scale-110" />
