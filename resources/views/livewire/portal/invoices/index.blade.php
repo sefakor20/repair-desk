@@ -80,13 +80,13 @@
                                         </h3>
                                         <flux:badge
                                             :variant="match($invoice->status->value) {
-                                                                                            'draft' => 'secondary',
-                                                                                            'pending' => 'warning',
-                                                                                            'paid' => 'success',
-                                                                                            'overdue' => 'danger',
-                                                                                            'cancelled' => 'secondary',
-                                                                                            default => 'secondary'
-                                                                                        }">
+                                                                                                                                                                                    'draft' => 'secondary',
+                                                                                                                                                                                    'pending' => 'warning',
+                                                                                                                                                                                    'paid' => 'success',
+                                                                                                                                                                                    'overdue' => 'danger',
+                                                                                                                                                                                    'cancelled' => 'secondary',
+                                                                                                                                                                                    default => 'secondary'
+                                                                                                                                                                                }">
                                             {{ str($invoice->status->label())->title() }}
                                         </flux:badge>
                                     </div>
@@ -135,13 +135,17 @@
                                 </div>
 
                                 <div class="flex gap-2">
-                                    @if ($invoice->status->value === 'pending' && $invoice->balance_due > 0)
-                                        <flux:button variant="primary" size="sm">
+                                    @if (in_array($invoice->status->value, ['pending', 'overdue']) && $invoice->balance_due > 0)
+                                        <flux:button
+                                            href="{{ route('portal.invoices.pay', ['customer' => $customer->id, 'token' => $customer->portal_access_token, 'invoice' => $invoice->id]) }}"
+                                            variant="primary" size="sm">
                                             Pay Now
                                         </flux:button>
                                     @endif
 
-                                    <flux:button variant="ghost" size="sm">
+                                    <flux:button
+                                        href="{{ route('portal.invoices.pdf', ['customer' => $customer->id, 'token' => $customer->portal_access_token, 'invoice' => $invoice->id]) }}"
+                                        variant="ghost" size="sm">
                                         <flux:icon.arrow-down-tray class="w-4 h-4" />
                                         Download
                                     </flux:button>

@@ -1,6 +1,29 @@
 <div>
     <x-layouts.portal-content :customer="$customer" :title="'Ticket #' . $ticket->ticket_number">
         <div class="space-y-6">
+            {{-- Payment Success Message --}}
+            @if (session('success') && session('show_receipt') && session('payment_id'))
+                <div
+                    class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+                    <div class="flex items-start gap-3">
+                        <flux:icon.check-circle
+                            class="w-6 h-6 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-green-900 dark:text-green-100 mb-1">{{ session('success') }}
+                            </h3>
+                            <p class="text-sm text-green-700 dark:text-green-300 mb-3">Your payment receipt is ready to
+                                download.</p>
+                            <flux:button
+                                href="{{ route('portal.invoices.receipt', ['customer' => $customer->id, 'token' => $customer->portal_access_token, 'payment' => session('payment_id')]) }}"
+                                variant="primary" size="sm">
+                                <flux:icon.arrow-down-tray class="w-4 h-4" />
+                                Download Receipt
+                            </flux:button>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             {{-- Back Button --}}
             <div>
                 <flux:button
@@ -19,12 +42,12 @@
                         </h1>
                         <flux:badge
                             :variant="match($ticket->status->value) {
-                                                                                                                            'pending' => 'warning',
-                                                                                                                            'in_progress' => 'info',
-                                                                                                                            'completed' => 'success',
-                                                                                                                            'cancelled' => 'danger',
-                                                                                                                            default => 'secondary'
-                                                                                                                        }"
+                                                                                                                                                                                                                'pending' => 'warning',
+                                                                                                                                                                                                                'in_progress' => 'info',
+                                                                                                                                                                                                                'completed' => 'success',
+                                                                                                                                                                                                                'cancelled' => 'danger',
+                                                                                                                                                                                                                default => 'secondary'
+                                                                                                                                                                                                            }"
                             size="lg">
                             {{ str($ticket->status->value)->replace('_', ' ')->title() }}
                         </flux:badge>
@@ -74,11 +97,11 @@
                         <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">Priority</h3>
                         <flux:badge
                             :variant="match($ticket->priority->value) {
-                                                                                                                            'high' => 'danger',
-                                                                                                                            'medium' => 'warning',
-                                                                                                                            'low' => 'secondary',
-                                                                                                                            default => 'secondary'
-                                                                                                                        }">
+                                                                                                                                                                                                                'high' => 'danger',
+                                                                                                                                                                                                                'medium' => 'warning',
+                                                                                                                                                                                                                'low' => 'secondary',
+                                                                                                                                                                                                                default => 'secondary'
+                                                                                                                                                                                                            }">
                             {{ str($ticket->priority->value)->title() }}
                         </flux:badge>
                     </div>
@@ -146,24 +169,81 @@
                         </div>
                         <div>
                             <span class="text-gray-500 dark:text-gray-400">Total Amount:</span>
-                            <span
-                                class="ml-2 text-gray-900 dark:text-white font-medium">${{ number_format($ticket->invoice->total_amount, 2) }}</span>
+                            <span class="ml-2 text-gray-900 dark:text-white font-medium">GH₵
+                                {{ number_format($ticket->invoice->total, 2) }}</span>
                         </div>
                         <div>
                             <span class="text-gray-500 dark:text-gray-400">Status:</span>
-                            <flux:badge :variant="$ticket->invoice->status === 'paid' ? 'success' : 'warning'"
+                            <flux:badge
+                                :variant="$ticket->invoice->status->value === 'paid' ? 'success' : 'warning'"
                                 class="ml-2">
-                                {{ str($ticket->invoice->status)->title() }}
+                                {{ str($ticket->invoice->status->value)->title() }}
                             </flux:badge>
                         </div>
                         @if ($ticket->invoice->payments->count() > 0)
                             <div>
                                 <span class="text-gray-500 dark:text-gray-400">Paid Amount:</span>
-                                <span
-                                    class="ml-2 text-gray-900 dark:text-white font-medium">${{ number_format($ticket->invoice->payments->sum('amount'), 2) }}</span>
+                                <span class="ml-2 text-gray-900 dark:text-white font-medium">GH₵
+                                    {{ number_format($ticket->invoice->payments->sum('amount'), 2) }}</span>
                             </div>
                         @endif
                     </div>
+
+                    {{-- Payment History --}}
+                    @if ($ticket->invoice->payments->count() > 0)
+                        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Payment History</h3>
+                            <div class="space-y-2">
+                                @foreach ($ticket->invoice->payments as $payment)
+                                    <div class="flex items-center justify-between text-sm">
+                                        <div class="flex items-center gap-3">
+                                            <flux:icon.check-circle
+                                                class="w-4 h-4 text-green-600 dark:text-green-400" />
+                                            <div>
+                                                <span class="text-gray-900 dark:text-white font-medium">GH₵
+                                                    {{ number_format($payment->amount, 2) }}</span>
+                                                <span
+                                                    class="text-gray-500 dark:text-gray-400 ml-2">{{ $payment->payment_date->format('M d, Y') }}</span>
+                                            </div>
+                                        </div>
+                                        <flux:button
+                                            href="{{ route('portal.invoices.receipt', ['customer' => $customer->id, 'token' => $customer->portal_access_token, 'payment' => $payment->id]) }}"
+                                            variant="ghost" size="xs">
+                                            <flux:icon.arrow-down-tray class="w-3 h-3" />
+                                            Receipt
+                                        </flux:button>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
+                    @if (in_array($ticket->invoice->status->value, ['pending', 'overdue']) && $ticket->invoice->balance_due > 0)
+                        <div class="mt-4 flex gap-2">
+                            <flux:button
+                                href="{{ route('portal.invoices.pay', ['customer' => $customer->id, 'token' => $customer->portal_access_token, 'invoice' => $ticket->invoice->id]) }}"
+                                variant="primary">
+                                <flux:icon.credit-card class="w-4 h-4" />
+                                Pay Now - GH₵ {{ number_format($ticket->invoice->balance_due, 2) }}
+                            </flux:button>
+
+                            <flux:button
+                                href="{{ route('portal.invoices.pdf', ['customer' => $customer->id, 'token' => $customer->portal_access_token, 'invoice' => $ticket->invoice->id]) }}"
+                                variant="ghost">
+                                <flux:icon.arrow-down-tray class="w-4 h-4" />
+                                Download Invoice
+                            </flux:button>
+                        </div>
+                    @else
+                        <div class="mt-4">
+                            <flux:button
+                                href="{{ route('portal.invoices.pdf', ['customer' => $customer->id, 'token' => $customer->portal_access_token, 'invoice' => $ticket->invoice->id]) }}"
+                                variant="ghost">
+                                <flux:icon.arrow-down-tray class="w-4 h-4" />
+                                Download Invoice
+                            </flux:button>
+                        </div>
+                    @endif
                 </div>
             @endif
         </div>
