@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace App\Livewire\Invoices;
 
 use App\Enums\{InvoiceStatus, PaymentMethod};
+use App\Mail\PaymentReceiptMail;
 use App\Models\{Invoice, Payment};
-use Illuminate\Support\Facades\{Auth, DB};
+use Illuminate\Support\Facades\{Auth, DB, Mail};
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -74,6 +75,11 @@ class Show extends Component
             // Update invoice status if fully paid
             if ($this->invoice->fresh()->balance_due <= 0) {
                 $this->invoice->update(['status' => InvoiceStatus::Paid]);
+            }
+
+            // Send receipt email if customer has email
+            if ($this->invoice->customer->email) {
+                Mail::to($this->invoice->customer->email)->send(new PaymentReceiptMail($payment));
             }
         });
 

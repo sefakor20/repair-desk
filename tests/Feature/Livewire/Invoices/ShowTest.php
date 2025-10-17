@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 use App\Enums\{InvoiceStatus, PaymentMethod};
 use App\Livewire\Invoices\Show;
+use App\Mail\PaymentReceiptMail;
 use App\Models\{Invoice, Payment, User};
+use Illuminate\Support\Facades\Mail;
 use Livewire\Livewire;
 
 use function Pest\Laravel\{actingAs, get};
@@ -202,4 +204,41 @@ test('displays balance due correctly', function () {
         ->assertSee('30.00') // Total Paid
         ->assertSee('GHS', false)
         ->assertSee('70.00'); // Balance Due
+});
+
+test('sends receipt email after recording payment', function () {
+    Mail::fake();
+
+    $invoice = Invoice::factory()->create([
+        'total' => 100.00,
+    ]);
+
+    Livewire::test(Show::class, ['invoice' => $invoice])
+        ->call('openPaymentModal')
+        ->set('amount', '50.00')
+        ->set('paymentMethod', 'cash')
+        ->call('recordPayment')
+        ->assertHasNoErrors();
+
+    Mail::assertQueued(PaymentReceiptMail::class, function ($mail) use ($invoice) {
+        return $mail->hasTo($invoice->customer->email);
+    });
+});
+
+test('does not send receipt email when customer has no email', function () {
+    Mail::fake();
+
+    $invoice = Invoice::factory()->create([
+        'total' => 100.00,
+    ]);
+    $invoice->customer->update(['email' => null]);
+
+    Livewire::test(Show::class, ['invoice' => $invoice])
+        ->call('openPaymentModal')
+        ->set('amount', '50.00')
+        ->set('paymentMethod', 'cash')
+        ->call('recordPayment')
+        ->assertHasNoErrors();
+
+    Mail::assertNothingSent();
 });
