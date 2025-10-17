@@ -39,6 +39,8 @@ use App\Livewire\Portal\Settings\Preferences as PortalPreferences;
 use App\Livewire\Portal\Tickets\Index as PortalTicketsIndex;
 use App\Livewire\Portal\Tickets\Show as PortalTicketsShow;
 use App\Livewire\Portal\Invoices\Index as PortalInvoicesIndex;
+use App\Livewire\Portal\Invoices\PayInvoice as PortalPayInvoice;
+use App\Http\Controllers\Portal\InvoicePaymentCallbackController;
 use App\Livewire\Portal\Devices\Index as PortalDevicesIndex;
 use App\Livewire\Portal\Devices\Show as PortalDevicesShow;
 use App\Livewire\Reports\Index as ReportsIndex;
@@ -198,6 +200,8 @@ Route::prefix('portal')->name('portal.')->group(function (): void {
         // Invoice routes
         Route::prefix('invoices/{customer}/{token}')->name('invoices.')->group(function (): void {
             Route::get('/', PortalInvoicesIndex::class)->name('index');
+            Route::get('/{invoice}/pay', PortalPayInvoice::class)->name('pay');
+            Route::get('/{invoice}/payment/callback', InvoicePaymentCallbackController::class)->name('payment.callback');
         });
 
         // Device routes
