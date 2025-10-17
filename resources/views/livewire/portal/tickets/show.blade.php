@@ -19,12 +19,12 @@
                         </h1>
                         <flux:badge
                             :variant="match($ticket->status->value) {
-                                                                                                                            'pending' => 'warning',
-                                                                                                                            'in_progress' => 'info',
-                                                                                                                            'completed' => 'success',
-                                                                                                                            'cancelled' => 'danger',
-                                                                                                                            default => 'secondary'
-                                                                                                                        }"
+                                                                                                                                                        'pending' => 'warning',
+                                                                                                                                                        'in_progress' => 'info',
+                                                                                                                                                        'completed' => 'success',
+                                                                                                                                                        'cancelled' => 'danger',
+                                                                                                                                                        default => 'secondary'
+                                                                                                                                                    }"
                             size="lg">
                             {{ str($ticket->status->value)->replace('_', ' ')->title() }}
                         </flux:badge>
@@ -74,11 +74,11 @@
                         <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">Priority</h3>
                         <flux:badge
                             :variant="match($ticket->priority->value) {
-                                                                                                                            'high' => 'danger',
-                                                                                                                            'medium' => 'warning',
-                                                                                                                            'low' => 'secondary',
-                                                                                                                            default => 'secondary'
-                                                                                                                        }">
+                                                                                                                                                        'high' => 'danger',
+                                                                                                                                                        'medium' => 'warning',
+                                                                                                                                                        'low' => 'secondary',
+                                                                                                                                                        default => 'secondary'
+                                                                                                                                                    }">
                             {{ str($ticket->priority->value)->title() }}
                         </flux:badge>
                     </div>
@@ -151,9 +151,10 @@
                         </div>
                         <div>
                             <span class="text-gray-500 dark:text-gray-400">Status:</span>
-                            <flux:badge :variant="$ticket->invoice->status === 'paid' ? 'success' : 'warning'"
+                            <flux:badge
+                                :variant="$ticket->invoice->status->value === 'paid' ? 'success' : 'warning'"
                                 class="ml-2">
-                                {{ str($ticket->invoice->status)->title() }}
+                                {{ str($ticket->invoice->status->value)->title() }}
                             </flux:badge>
                         </div>
                         @if ($ticket->invoice->payments->count() > 0)
