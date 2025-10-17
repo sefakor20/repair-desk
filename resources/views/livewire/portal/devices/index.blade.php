@@ -97,14 +97,11 @@
                                 </div>
 
                                 {{-- Action Button --}}
-                                @if (false)
-                                    {{-- TODO: Add device details page --}}
-                                    <flux:button
-                                        href="{{ route('portal.devices.show', ['customer' => $customer->id, 'token' => $customer->portal_access_token, 'device' => $device->id]) }}"
-                                        variant="outline" class="w-full">
-                                        View Details
-                                    </flux:button>
-                                @endif
+                                <flux:button
+                                    href="{{ route('portal.devices.show', ['customer' => $customer->id, 'token' => $customer->portal_access_token, 'device' => $device->id]) }}"
+                                    variant="outline" class="w-full">
+                                    View Details
+                                </flux:button>
                             </div>
                         </div>
                     @endforeach

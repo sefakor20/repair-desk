@@ -40,6 +40,7 @@ use App\Livewire\Portal\Tickets\Index as PortalTicketsIndex;
 use App\Livewire\Portal\Tickets\Show as PortalTicketsShow;
 use App\Livewire\Portal\Invoices\Index as PortalInvoicesIndex;
 use App\Livewire\Portal\Devices\Index as PortalDevicesIndex;
+use App\Livewire\Portal\Devices\Show as PortalDevicesShow;
 use App\Livewire\Reports\Index as ReportsIndex;
 use App\Livewire\CashDrawer\Index as CashDrawerIndex;
 use App\Livewire\CashDrawer\OpenDrawer;
@@ -202,6 +203,7 @@ Route::prefix('portal')->name('portal.')->group(function (): void {
         // Device routes
         Route::prefix('devices/{customer}/{token}')->name('devices.')->group(function (): void {
             Route::get('/', PortalDevicesIndex::class)->name('index');
+            Route::get('/{device}', PortalDevicesShow::class)->name('show');
         });
 
         // Legacy route redirects (backwards compatibility)
