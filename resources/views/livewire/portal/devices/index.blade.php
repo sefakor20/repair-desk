@@ -15,7 +15,7 @@
                     <flux:input wire:model.live.debounce.300ms="search" placeholder="Search devices..." type="search" />
                 </div>
 
-                @if($search)
+                @if ($search)
                     <flux:button wire:click="clearSearch" variant="ghost">
                         Clear Search
                     </flux:button>
@@ -52,7 +52,8 @@
                         <div class="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition">
                             <div class="p-6">
                                 {{-- Device Icon --}}
-                                <div class="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg mb-4">
+                                <div
+                                    class="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg mb-4">
                                     <flux:icon.device-phone-mobile class="w-8 h-8 text-white" />
                                 </div>
 
@@ -60,22 +61,24 @@
                                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">
                                     {{ $device->brand }} {{ $device->model }}
                                 </h3>
-                                
+
                                 <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">{{ $device->type }}</p>
 
                                 {{-- Device Info --}}
                                 <div class="space-y-2 mb-4">
-                                    @if($device->serial_number)
+                                    @if ($device->serial_number)
                                         <div class="flex items-center justify-between text-sm">
                                             <span class="text-gray-500 dark:text-gray-400">Serial:</span>
-                                            <span class="font-mono text-gray-900 dark:text-white">{{ $device->serial_number }}</span>
+                                            <span
+                                                class="font-mono text-gray-900 dark:text-white">{{ $device->serial_number }}</span>
                                         </div>
                                     @endif
 
-                                    @if($device->imei)
+                                    @if ($device->imei)
                                         <div class="flex items-center justify-between text-sm">
                                             <span class="text-gray-500 dark:text-gray-400">IMEI:</span>
-                                            <span class="font-mono text-gray-900 dark:text-white">{{ $device->imei }}</span>
+                                            <span
+                                                class="font-mono text-gray-900 dark:text-white">{{ $device->imei }}</span>
                                         </div>
                                     @endif
 
@@ -88,19 +91,19 @@
 
                                     <div class="flex items-center justify-between text-sm">
                                         <span class="text-gray-500 dark:text-gray-400">Registered:</span>
-                                        <span class="text-gray-600 dark:text-gray-300">{{ $device->created_at->format('M d, Y') }}</span>
+                                        <span
+                                            class="text-gray-600 dark:text-gray-300">{{ $device->created_at->format('M d, Y') }}</span>
                                     </div>
                                 </div>
 
                                 {{-- Action Button --}}
-                                @if(false)
-                                {{-- TODO: Add device details page --}}
-                                <flux:button 
-                                    href="{{ route('portal.devices.show', ['customer' => $customer->id, 'token' => $customer->portal_access_token, 'device' => $device->id]) }}" 
-                                    variant="outline" 
-                                    class="w-full">
-                                    View Details
-                                </flux:button>
+                                @if (false)
+                                    {{-- TODO: Add device details page --}}
+                                    <flux:button
+                                        href="{{ route('portal.devices.show', ['customer' => $customer->id, 'token' => $customer->portal_access_token, 'device' => $device->id]) }}"
+                                        variant="outline" class="w-full">
+                                        View Details
+                                    </flux:button>
                                 @endif
                             </div>
                         </div>

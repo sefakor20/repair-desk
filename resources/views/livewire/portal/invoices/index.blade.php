@@ -24,7 +24,7 @@
                     </flux:select>
                 </div>
 
-                @if($search || $filterStatus !== 'all')
+                @if ($search || $filterStatus !== 'all')
                     <flux:button wire:click="clearFilters" variant="ghost">
                         Clear Filters
                     </flux:button>
@@ -47,7 +47,8 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-green-100 text-sm mb-1">Paid</p>
-                            <p class="text-3xl font-bold">GH₵ {{ number_format($customer->invoices()->where('status', 'paid')->sum('total'), 2) }}</p>
+                            <p class="text-3xl font-bold">GH₵
+                                {{ number_format($customer->invoices()->where('status', 'paid')->sum('total'), 2) }}</p>
                         </div>
                         <flux:icon.check-circle class="w-12 h-12 text-green-200 opacity-50" />
                     </div>
@@ -57,7 +58,9 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-orange-100 text-sm mb-1">Pending</p>
-                            <p class="text-3xl font-bold">GH₵ {{ number_format($customer->invoices()->where('status', 'pending')->sum('total'), 2) }}</p>
+                            <p class="text-3xl font-bold">GH₵
+                                {{ number_format($customer->invoices()->where('status', 'pending')->sum('total'), 2) }}
+                            </p>
                         </div>
                         <flux:icon.clock class="w-12 h-12 text-orange-200 opacity-50" />
                     </div>
@@ -77,13 +80,13 @@
                                         </h3>
                                         <flux:badge
                                             :variant="match($invoice->status->value) {
-                                                'draft' => 'secondary',
-                                                'pending' => 'warning',
-                                                'paid' => 'success',
-                                                'overdue' => 'danger',
-                                                'cancelled' => 'secondary',
-                                                default => 'secondary'
-                                            }">
+                                                                                            'draft' => 'secondary',
+                                                                                            'pending' => 'warning',
+                                                                                            'paid' => 'success',
+                                                                                            'overdue' => 'danger',
+                                                                                            'cancelled' => 'secondary',
+                                                                                            default => 'secondary'
+                                                                                        }">
                                             {{ str($invoice->status->label())->title() }}
                                         </flux:badge>
                                     </div>
@@ -91,8 +94,9 @@
                                     @if ($invoice->ticket)
                                         <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
                                             Ticket #{{ $invoice->ticket->ticket_number }}
-                                            @if($invoice->ticket->device)
-                                                - {{ $invoice->ticket->device->brand }} {{ $invoice->ticket->device->model }}
+                                            @if ($invoice->ticket->device)
+                                                - {{ $invoice->ticket->device->brand }}
+                                                {{ $invoice->ticket->device->model }}
                                             @endif
                                         </p>
                                     @endif
@@ -105,7 +109,7 @@
                                             </span>
                                         </div>
 
-                                        @if($invoice->payments->count() > 0)
+                                        @if ($invoice->payments->count() > 0)
                                             <div>
                                                 <span class="text-gray-500 dark:text-gray-400">Paid:</span>
                                                 <span class="font-semibold text-green-600 dark:text-green-400 ml-1">
@@ -114,7 +118,7 @@
                                             </div>
                                         @endif
 
-                                        @if($invoice->balance_due > 0)
+                                        @if ($invoice->balance_due > 0)
                                             <div>
                                                 <span class="text-gray-500 dark:text-gray-400">Balance:</span>
                                                 <span class="font-semibold text-orange-600 dark:text-orange-400 ml-1">
@@ -131,12 +135,12 @@
                                 </div>
 
                                 <div class="flex gap-2">
-                                    @if($invoice->status->value === 'pending' && $invoice->balance_due > 0)
+                                    @if ($invoice->status->value === 'pending' && $invoice->balance_due > 0)
                                         <flux:button variant="primary" size="sm">
                                             Pay Now
                                         </flux:button>
                                     @endif
-                                    
+
                                     <flux:button variant="ghost" size="sm">
                                         <flux:icon.arrow-down-tray class="w-4 h-4" />
                                         Download
