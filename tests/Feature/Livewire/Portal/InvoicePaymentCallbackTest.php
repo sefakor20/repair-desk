@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 use App\Enums\{InvoiceStatus, PaymentMethod};
+use App\Mail\PaymentReceiptMail;
 use App\Models\{Customer, Device, Invoice, Payment, Ticket, User};
 use App\Services\PaystackService;
+use Illuminate\Support\Facades\Mail;
 
 use function Pest\Laravel\{get, mock};
 
@@ -321,4 +323,68 @@ test('uses correct payment method enum', function (): void {
     expect($payment)->not->toBeNull()
         ->and($payment->payment_method)->toBeInstanceOf(PaymentMethod::class)
         ->and($payment->payment_method->value)->toBe('card');
+});
+
+test('sends receipt email after successful payment', function (): void {
+    Mail::fake();
+
+    $paystackMock = mock(PaystackService::class);
+    $paystackMock->shouldReceive('verifyTransaction')
+        ->once()
+        ->andReturn([
+            'status' => true,
+            'data' => [
+                'amount' => 11000,
+                'reference' => 'PS_TEST_EMAIL',
+                'status' => 'success',
+            ],
+        ]);
+
+    get(route('portal.invoices.payment.callback', [
+        'customer' => $this->customer->id,
+        'token' => 'valid-token-123',
+        'invoice' => $this->invoice->id,
+        'reference' => 'PS_TEST_EMAIL',
+    ]));
+
+    Mail::assertQueued(PaymentReceiptMail::class, function ($mail) {
+        return $mail->hasTo($this->customer->email)
+            && $mail->payment->transaction_reference === 'PS_TEST_EMAIL';
+    });
+});
+
+test('does not send receipt email when customer has no email', function (): void {
+    Mail::fake();
+
+    $customerWithoutEmail = Customer::factory()->create([
+        'email' => null,
+        'portal_access_token' => 'token-456',
+    ]);
+
+    $invoiceForCustomerWithoutEmail = Invoice::factory()->create([
+        'customer_id' => $customerWithoutEmail->id,
+        'ticket_id' => null,
+        'total' => 50.00,
+    ]);
+
+    $paystackMock = mock(PaystackService::class);
+    $paystackMock->shouldReceive('verifyTransaction')
+        ->once()
+        ->andReturn([
+            'status' => true,
+            'data' => [
+                'amount' => 5000,
+                'reference' => 'PS_NO_EMAIL',
+                'status' => 'success',
+            ],
+        ]);
+
+    get(route('portal.invoices.payment.callback', [
+        'customer' => $customerWithoutEmail->id,
+        'token' => 'token-456',
+        'invoice' => $invoiceForCustomerWithoutEmail->id,
+        'reference' => 'PS_NO_EMAIL',
+    ]));
+
+    Mail::assertNothingSent();
 });

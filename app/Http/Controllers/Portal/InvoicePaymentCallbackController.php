@@ -6,10 +6,12 @@ namespace App\Http\Controllers\Portal;
 
 use App\Enums\{InvoiceStatus, PaymentMethod};
 use App\Http\Controllers\Controller;
+use App\Mail\PaymentReceiptMail;
 use App\Models\{Customer, Invoice, Payment, User};
 use App\Services\PaystackService;
 use Exception;
 use Illuminate\Http\{RedirectResponse, Request};
+use Illuminate\Support\Facades\Mail;
 
 class InvoicePaymentCallbackController extends Controller
 {
@@ -68,6 +70,11 @@ class InvoicePaymentCallbackController extends Controller
                 // Update invoice status if fully paid
                 if ($invoice->fresh()->balance_due <= 0) {
                     $invoice->update(['status' => InvoiceStatus::Paid]);
+                }
+
+                // Send receipt email if customer has email
+                if ($customer->email) {
+                    Mail::to($customer->email)->send(new PaymentReceiptMail($payment));
                 }
 
                 // Redirect to ticket show with success message and receipt link
