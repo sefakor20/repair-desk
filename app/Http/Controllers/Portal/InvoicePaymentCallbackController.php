@@ -54,7 +54,7 @@ class InvoicePaymentCallbackController extends Controller
                 // Use first user as system processor for automated payments
                 $systemUser = User::first();
 
-                Payment::create([
+                $payment = Payment::create([
                     'invoice_id' => $invoice->id,
                     'ticket_id' => $invoice->ticket_id,
                     'amount' => $amountPaid,
@@ -68,6 +68,19 @@ class InvoicePaymentCallbackController extends Controller
                 // Update invoice status if fully paid
                 if ($invoice->fresh()->balance_due <= 0) {
                     $invoice->update(['status' => InvoiceStatus::Paid]);
+                }
+
+                // Redirect to ticket show with success message and receipt link
+                if ($invoice->ticket_id) {
+                    return redirect()
+                        ->route('portal.tickets.show', [
+                            'customer' => $customer->id,
+                            'token' => $token,
+                            'ticket' => $invoice->ticket_id,
+                        ])
+                        ->with('success', 'Payment completed successfully! GH₵ ' . number_format($amountPaid, 2) . ' has been paid.')
+                        ->with('payment_id', $payment->id)
+                        ->with('show_receipt', true);
                 }
 
                 return redirect()
