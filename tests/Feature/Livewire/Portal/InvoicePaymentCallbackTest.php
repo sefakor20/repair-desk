@@ -54,12 +54,15 @@ test('handles successful payment verification', function (): void {
         'reference' => 'PS_TEST_123',
     ]));
 
-    $response->assertRedirect(route('portal.invoices.index', [
+    $response->assertRedirect(route('portal.tickets.show', [
         'customer' => $this->customer->id,
         'token' => 'valid-token-123',
+        'ticket' => $this->ticket->id,
     ]));
 
     $response->assertSessionHas('success');
+    $response->assertSessionHas('payment_id');
+    $response->assertSessionHas('show_receipt', true);
 
     expect(Payment::where('invoice_id', $this->invoice->id)->count())->toBe(1);
 

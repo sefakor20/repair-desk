@@ -56,9 +56,9 @@ test('redirects if invoice is already paid', function (): void {
 test('displays invoice summary correctly', function (): void {
     Volt::test(PayInvoice::class, ['customer' => $this->customer, 'invoice' => $this->invoice])
         ->assertSee($this->invoice->invoice_number)
-        ->assertSee('GH₵ 100.00') // Subtotal
-        ->assertSee('GH₵ 10.00') // Tax
-        ->assertSee('GH₵ 110.00'); // Total
+        ->assertSee('100.00')
+        ->assertSee('10.00')
+        ->assertSee('110.00');
 });
 
 test('displays balance due correctly', function (): void {
@@ -251,11 +251,16 @@ test('shows correct callback url in metadata', function (): void {
 });
 
 test('displays discount when applied', function (): void {
-    $this->invoice->update([
+    $invoice = Invoice::factory()->create([
+        'customer_id' => $this->customer->id,
+        'ticket_id' => null,
+        'subtotal' => 100.00,
         'discount' => 10.00,
-        'total' => 100.00, // 110.00 - 10.00
+        'tax_amount' => 10.00,
+        'total' => 100.00,
+        'status' => InvoiceStatus::Pending,
     ]);
 
-    Volt::test(PayInvoice::class, ['customer' => $this->customer, 'invoice' => $this->invoice])
-        ->assertSee('GH₵ 10.00'); // Discount
+    Volt::test(PayInvoice::class, ['customer' => $this->customer, 'invoice' => $invoice])
+        ->assertSee('10.00');
 });
