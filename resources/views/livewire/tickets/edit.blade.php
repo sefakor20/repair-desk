@@ -99,21 +99,22 @@
                     <div class="mt-1.5 grid grid-cols-2 gap-3 sm:grid-cols-5">
                         @foreach ($statuses as $status)
                             <label
-                                class="relative flex cursor-pointer rounded-lg border border-zinc-200 bg-white p-4 hover:bg-zinc-50 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700/50">
-                                <input type="radio" wire:model="form.status" value="{{ $status->value }}"
+                                class="relative flex cursor-pointer rounded-lg border p-4 transition-all focus:outline-none {{ $form['status'] === $status->value ? 'border-zinc-900 bg-zinc-50 dark:border-white dark:bg-zinc-700' : 'border-zinc-200 bg-white hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700/50' }}">
+                                <input type="radio" wire:model.live="form.status" value="{{ $status->value }}"
                                     class="sr-only" />
                                 <span class="flex flex-1 items-center">
                                     <span class="flex flex-col text-sm">
                                         <x-status-badge :status="$status" />
                                     </span>
                                 </span>
-                                <svg class="h-5 w-5 text-zinc-900 dark:text-white"
-                                    :class="{ 'hidden': @js($form['status'] ?? '') !== '{{ $status->value }}' }"
-                                    fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                        clip-rule="evenodd" />
-                                </svg>
+                                @if ($form['status'] === $status->value)
+                                    <svg class="h-5 w-5 text-zinc-900 dark:text-white" fill="currentColor"
+                                        viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                @endif
                             </label>
                         @endforeach
                     </div>
@@ -130,21 +131,22 @@
                     <div class="mt-1.5 grid grid-cols-2 gap-3 sm:grid-cols-4">
                         @foreach ($priorities as $priority)
                             <label
-                                class="relative flex cursor-pointer rounded-lg border border-zinc-200 bg-white p-4 hover:bg-zinc-50 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700/50">
-                                <input type="radio" wire:model="form.priority" value="{{ $priority->value }}"
+                                class="relative flex cursor-pointer rounded-lg border p-4 transition-all focus:outline-none {{ $form['priority'] === $priority->value ? 'border-zinc-900 bg-zinc-50 dark:border-white dark:bg-zinc-700' : 'border-zinc-200 bg-white hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700/50' }}">
+                                <input type="radio" wire:model.live="form.priority" value="{{ $priority->value }}"
                                     class="sr-only" />
                                 <span class="flex flex-1 items-center">
                                     <span class="flex flex-col text-sm">
                                         <x-status-badge :status="$priority" />
                                     </span>
                                 </span>
-                                <svg class="h-5 w-5 text-zinc-900 dark:text-white"
-                                    :class="{ 'hidden': @js($form['priority'] ?? '') !== '{{ $priority->value }}' }"
-                                    fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                        clip-rule="evenodd" />
-                                </svg>
+                                @if ($form['priority'] === $priority->value)
+                                    <svg class="h-5 w-5 text-zinc-900 dark:text-white" fill="currentColor"
+                                        viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                @endif
                             </label>
                         @endforeach
                     </div>
