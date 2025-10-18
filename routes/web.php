@@ -85,6 +85,11 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('customers/{customer}', CustomersShow::class)->name('customers.show');
     Route::get('customers/{customer}/edit', CustomersEdit::class)->name('customers.edit');
 
+    // Branch Management Routes
+    Route::get('branches', \App\Livewire\Branches\Index::class)->name('branches.index');
+    Route::get('branches/create', \App\Livewire\Branches\Create::class)->name('branches.create');
+    Route::get('branches/{branch}', \App\Livewire\Branches\Show::class)->name('branches.show');
+    Route::get('branches/{branch}/edit', \App\Livewire\Branches\Edit::class)->name('branches.edit');
     // Device Management Routes
     Route::get('devices', DevicesIndex::class)->name('devices.index');
     Route::get('devices/create', DevicesCreate::class)->name('devices.create');

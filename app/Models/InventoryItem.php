@@ -18,6 +18,7 @@ class InventoryItem extends Model
 
     protected $fillable = [
         'name',
+        'branch_id',
         'sku',
         'barcode',
         'description',
@@ -49,6 +50,11 @@ class InventoryItem extends Model
     public function adjustments(): HasMany
     {
         return $this->hasMany(InventoryAdjustment::class);
+    }
+
+    public function branch(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
     }
 
     public function isLowStock(): bool

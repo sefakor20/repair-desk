@@ -23,6 +23,7 @@ class Ticket extends Model
         'ticket_number',
         'customer_id',
         'device_id',
+        'branch_id',
         'problem_description',
         'diagnosis',
         'status',
@@ -51,6 +52,11 @@ class Ticket extends Model
     public function device(): BelongsTo
     {
         return $this->belongsTo(Device::class);
+    }
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
     }
 
     public function assignedTo(): BelongsTo

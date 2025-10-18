@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Pos;
 
 use App\Models\PosSale;
+use App\Models\Branch;
 use Livewire\Attributes\{Layout, Url};
 use Livewire\{Component, WithPagination};
 
@@ -23,6 +24,9 @@ class Index extends Component
     public string $paymentMethodFilter = '';
 
     #[Url]
+    public string $branchFilter = '';
+
+    #[Url]
     public ?string $success = null;
 
     public bool $showSuccessMessage = false;
@@ -39,6 +43,7 @@ class Index extends Component
 
     public function render()
     {
+        $branches = Branch::active()->orderBy('name')->get();
         $sales = PosSale::query()
             ->with(['customer', 'soldBy', 'items'])
             ->when($this->searchTerm, function ($query) {
@@ -56,11 +61,16 @@ class Index extends Component
             ->when($this->paymentMethodFilter, function ($query) {
                 $query->where('payment_method', $this->paymentMethodFilter);
             })
+            ->when($this->branchFilter, function ($query) {
+                $query->where('branch_id', $this->branchFilter);
+            })
             ->latest('sale_date')
             ->paginate(15);
 
         return view('livewire.pos.index', [
             'sales' => $sales,
+            'branches' => $branches,
+            'branchFilter' => $this->branchFilter,
         ]);
     }
 
@@ -84,6 +94,7 @@ class Index extends Component
         $this->searchTerm = '';
         $this->statusFilter = '';
         $this->paymentMethodFilter = '';
+        $this->branchFilter = '';
         $this->resetPage();
     }
 }

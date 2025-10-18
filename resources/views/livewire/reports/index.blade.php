@@ -71,6 +71,21 @@
         </div>
     </div>
 
+    {{-- Branch Filter (for tabs that support it) --}}
+    @if (in_array($tab, ['sales', 'payments', 'pos']))
+        <div class="mb-6">
+            <div class="max-w-xs">
+                <select wire:model.live="branchFilter"
+                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
+                    <option value="">{{ __('All Branches') }}</option>
+                    @foreach ($branches as $branch)
+                        <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+    @endif
+
     {{-- Sales Report --}}
     @if ($tab === 'sales')
         <div class="space-y-6">

@@ -20,6 +20,7 @@ class PosSale extends Model
         'shift_id',
         'return_policy_id',
         'sale_number',
+        'branch_id',
         'customer_id',
         'subtotal',
         'tax_rate',
@@ -69,6 +70,11 @@ class PosSale extends Model
     public function returnPolicy(): BelongsTo
     {
         return $this->belongsTo(ReturnPolicy::class);
+    }
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
     }
 
     public function items(): HasMany
