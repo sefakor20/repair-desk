@@ -34,9 +34,18 @@
 
     {{-- Search and Filters --}}
     <div class="mb-6 space-y-4">
-        <div class="grid gap-4 sm:grid-cols-3">
+        <div class="grid gap-4 sm:grid-cols-4">
             <flux:input wire:model.live.debounce.300ms="searchTerm"
                 placeholder="{{ __('Search by sale number or customer...') }}" />
+
+            <!-- Branch Filter -->
+            <select wire:model.live="branchFilter"
+                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
+                <option value="">{{ __('All Branches') }}</option>
+                @foreach ($branches as $branch)
+                    <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                @endforeach
+            </select>
 
             <select wire:model.live="statusFilter"
                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
@@ -54,7 +63,7 @@
             </select>
         </div>
 
-        @if ($searchTerm || $statusFilter || $paymentMethodFilter)
+        @if ($searchTerm || $statusFilter || $paymentMethodFilter || $branchFilter)
             <div class="flex justify-end">
                 <flux:button variant="ghost" size="sm" wire:click="clearFilters">
                     {{ __('Clear filters') }}

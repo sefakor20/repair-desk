@@ -32,4 +32,21 @@ class PosSaleItemFactory extends Factory
             'line_discount_amount' => 0,
         ];
     }
+
+    /**
+     * Configure the model factory.
+     *
+     * @return $this
+     */
+    public function configure()
+    {
+        return $this->afterMaking(function (\App\Models\PosSaleItem $posSaleItem) {
+            // Recalculate subtotal after all attributes are set
+            $posSaleItem->subtotal = $posSaleItem->quantity * $posSaleItem->unit_price;
+        })->afterCreating(function (\App\Models\PosSaleItem $posSaleItem) {
+            // Recalculate subtotal after all attributes are set
+            $posSaleItem->subtotal = $posSaleItem->quantity * $posSaleItem->unit_price;
+            $posSaleItem->save();
+        });
+    }
 }

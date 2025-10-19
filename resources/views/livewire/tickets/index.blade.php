@@ -33,7 +33,7 @@
     @endif
 
     <!-- Filters -->
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <!-- Search -->
         <div class="sm:col-span-2">
             <div class="relative">
@@ -55,6 +55,17 @@
                 <input type="search" wire:model.live.debounce.300ms="search" placeholder="Search tickets, customers..."
                     class="block w-full rounded-lg border border-zinc-200 bg-white py-2.5 pl-10 pr-3 text-sm text-zinc-900 placeholder-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:placeholder-zinc-500 dark:focus:border-white dark:focus:ring-white">
             </div>
+        </div>
+
+        <!-- Branch Filter -->
+        <div>
+            <select wire:model.live="branchFilter"
+                class="block w-full rounded-lg border border-zinc-200 bg-white py-2.5 px-3 text-sm text-zinc-900 focus:border-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:focus:border-white dark:focus:ring-white">
+                <option value="">All Branches</option>
+                @foreach ($branches as $branch)
+                    <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                @endforeach
+            </select>
         </div>
 
         <!-- Status Filter -->
@@ -93,7 +104,7 @@
             </select>
         </div>
 
-        @if ($search || $statusFilter || $priorityFilter || $assignedFilter)
+        @if ($search || $statusFilter || $priorityFilter || $assignedFilter || $branchFilter)
             <button wire:click="clearFilters"
                 class="inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-700 transition-all hover:bg-zinc-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -12,8 +12,11 @@ use Illuminate\View\View;
 use Livewire\Attributes\{Layout, Url};
 use Livewire\Component;
 use Livewire\WithPagination;
+use App\Models\Branch;
 
 #[Layout('components.layouts.app', ['title' => 'Tickets'])]
+
+
 class Index extends Component
 {
     use WithPagination;
@@ -29,6 +32,9 @@ class Index extends Component
 
     #[Url]
     public string $assignedFilter = '';
+
+    #[Url]
+    public string $branchFilter = '';
 
     public function delete(Ticket $ticket): void
     {
@@ -59,14 +65,20 @@ class Index extends Component
         $this->resetPage();
     }
 
+    public function updatedBranchFilter(): void
+    {
+        $this->resetPage();
+    }
+
     public function clearFilters(): void
     {
-        $this->reset(['search', 'statusFilter', 'priorityFilter', 'assignedFilter']);
+        $this->reset(['search', 'statusFilter', 'priorityFilter', 'assignedFilter', 'branchFilter']);
         $this->resetPage();
     }
 
     public function render(): View
     {
+        $branches = Branch::active()->orderBy('name')->get();
         return view('livewire.tickets.index', [
             'tickets' => Ticket::query()
                 ->with(['customer', 'device', 'assignedTo'])
@@ -94,11 +106,15 @@ class Index extends Component
                         $query->where('assigned_to', $this->assignedFilter);
                     }
                 })
+                ->when($this->branchFilter, function ($query) {
+                    $query->where('branch_id', $this->branchFilter);
+                })
                 ->latest()
                 ->paginate(15),
             'statuses' => TicketStatus::cases(),
             'priorities' => TicketPriority::cases(),
             'technicians' => User::whereIn('role', ['admin', 'manager', 'technician'])->get(),
+            'branches' => $branches,
         ])->with('Ticket', Ticket::class);
     }
 }

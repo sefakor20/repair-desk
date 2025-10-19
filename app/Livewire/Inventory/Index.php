@@ -6,6 +6,7 @@ namespace App\Livewire\Inventory;
 
 use App\Enums\InventoryStatus;
 use App\Models\InventoryItem;
+use App\Models\Branch;
 use Livewire\Attributes\{Layout, Url};
 use Livewire\{Component, WithPagination};
 
@@ -26,10 +27,14 @@ class Index extends Component
     #[Url]
     public bool $lowStock = false;
 
+    #[Url]
+    public string $branchFilter = '';
+
     public ?string $deletingItemId = null;
 
     public function render()
     {
+        $branches = Branch::active()->orderBy('name')->get();
         $items = InventoryItem::query()
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
@@ -43,6 +48,7 @@ class Index extends Component
             })
             ->when($this->category, fn($query) => $query->where('category', $this->category))
             ->when($this->lowStock, fn($query) => $query->whereColumn('quantity', '<=', 'reorder_level'))
+            ->when($this->branchFilter, fn($query) => $query->where('branch_id', $this->branchFilter))
             ->latest()
             ->paginate(15);
 
@@ -51,6 +57,7 @@ class Index extends Component
         return view('livewire.inventory.index', [
             'items' => $items,
             'categories' => $categories,
+            'branches' => $branches,
         ]);
     }
 
@@ -76,7 +83,7 @@ class Index extends Component
 
     public function clearFilters(): void
     {
-        $this->reset(['search', 'status', 'category', 'lowStock']);
+        $this->reset(['search', 'status', 'category', 'lowStock', 'branchFilter']);
         $this->resetPage();
     }
 
