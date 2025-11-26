@@ -1,10 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Branches;
 
 use Livewire\Component;
-
-
 use App\Models\Branch;
 use Illuminate\View\View;
 use Livewire\Attributes\Layout;

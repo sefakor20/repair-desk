@@ -57,7 +57,7 @@ class Edit extends Component
 
     public function addTag(): void
     {
-        $tag = trim($this->tagsInput);
+        $tag = mb_trim($this->tagsInput);
 
         if ($tag && !in_array($tag, $this->form['tags'])) {
             $this->form['tags'][] = $tag;

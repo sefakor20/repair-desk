@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\{User, Branch, Ticket, InventoryItem, PosSale};
 use Livewire\Livewire;
+
 use function Pest\Laravel\actingAs;
 
 beforeEach(function () {
