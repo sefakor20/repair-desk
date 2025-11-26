@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\{PaymentMethod, PosSaleStatus};
+use App\Traits\BranchScoped;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -115,6 +116,9 @@ class PosSale extends Model
     protected static function boot(): void
     {
         parent::boot();
+
+        // Apply branch scoping globally
+        static::addGlobalScope(new BranchScoped());
 
         static::creating(function ($sale) {
             if (empty($sale->sale_number)) {

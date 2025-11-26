@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\PaymentMethod;
+use App\Traits\BranchScoped;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -19,6 +20,7 @@ class Payment extends Model
     protected $fillable = [
         'invoice_id',
         'ticket_id',
+        'branch_id',
         'amount',
         'payment_method',
         'payment_date',
@@ -49,5 +51,18 @@ class Payment extends Model
     public function processedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'processed_by');
+    }
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        // Apply branch scoping globally
+        static::addGlobalScope(new BranchScoped());
     }
 }

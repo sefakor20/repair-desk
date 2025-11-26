@@ -93,6 +93,27 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if user is a super admin
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === UserRole::Admin && ! $this->branch_id;
+    }
+
+    /**
+     * Check if user can manage the given branch
+     */
+    public function canManageBranch(Branch|string $branch): bool
+    {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
+        $branchId = $branch instanceof Branch ? $branch->id : $branch;
+        return $this->branch_id === $branchId;
+    }
+
+    /**
      * Get the user's initials
      */
     public function initials(): string
