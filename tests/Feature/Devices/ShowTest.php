@@ -120,8 +120,11 @@ test('displays delete button for admin', function () {
 test('does not display delete button for technician', function () {
     $device = Device::factory()->create();
 
-    Livewire::test(Show::class, ['device' => $device])
-        ->assertDontSee('Delete');
+    $response = Livewire::test(Show::class, ['device' => $device]);
+
+    // Should not see the main device delete button (but may see photo delete buttons)
+    expect($response->html())->not->toContain('Delete</flux:button>')
+        ->and($response->html())->not->toContain('wire:click="delete"');
 });
 
 test('admin can delete device', function () {

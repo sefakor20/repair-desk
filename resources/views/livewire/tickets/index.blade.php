@@ -168,13 +168,13 @@
                                 </div>
                             </td>
                             <td class="whitespace-nowrap px-6 py-4">
-                                <div class="text-sm text-zinc-900 dark:text-white">{{ $ticket->customer->full_name }}
+                                <div class="text-sm text-zinc-900 dark:text-white">{{ $ticket->customer?->full_name }}
                                 </div>
-                                <div class="text-sm text-zinc-500 dark:text-zinc-400">{{ $ticket->customer->email }}
+                                <div class="text-sm text-zinc-500 dark:text-zinc-400">{{ $ticket->customer?->email }}
                                 </div>
                             </td>
                             <td class="whitespace-nowrap px-6 py-4 text-sm text-zinc-500 dark:text-zinc-400">
-                                {{ $ticket->device->device_name }}
+                                {{ $ticket->device?->device_name }}
                             </td>
                             <td class="whitespace-nowrap px-6 py-4 text-sm text-zinc-500 dark:text-zinc-400">
                                 <div class="text-xs text-zinc-500 dark:text-zinc-400">
@@ -298,7 +298,7 @@
                         </div>
                         <div class="flex items-center justify-between text-sm">
                             <dt class="font-medium text-zinc-500 dark:text-zinc-400">Device</dt>
-                            <dd class="text-zinc-900 dark:text-white">{{ $ticket->device->device_name }}</dd>
+                            <dd class="text-zinc-900 dark:text-white">{{ $ticket->device?->device_name }}</dd>
                         </div>
                         <div class="flex items-center justify-between text-sm">
                             <dt class="font-medium text-zinc-500 dark:text-zinc-400">Assigned To</dt>

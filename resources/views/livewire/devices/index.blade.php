@@ -89,7 +89,11 @@
                             </th>
                             <th
                                 class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-                                Serial Number
+                                Condition
+                            </th>
+                            <th
+                                class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                                Warranty
                             </th>
                             <th
                                 class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
@@ -109,6 +113,11 @@
                                         class="font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
                                         {{ $device->device_name }}
                                     </a>
+                                    @if ($device->storage_capacity)
+                                        <div class="text-xs text-zinc-500 dark:text-zinc-400">
+                                            {{ $device->storage_capacity }}
+                                        </div>
+                                    @endif
                                 </td>
                                 <td class="whitespace-nowrap px-6 py-4">
                                     <a href="{{ route('customers.show', $device->customer) }}"
@@ -119,8 +128,25 @@
                                 <td class="whitespace-nowrap px-6 py-4">
                                     <flux:badge>{{ $device->type }}</flux:badge>
                                 </td>
-                                <td class="whitespace-nowrap px-6 py-4 text-sm text-zinc-500 dark:text-zinc-400">
-                                    {{ $device->serial_number ?: '—' }}
+                                <td class="whitespace-nowrap px-6 py-4">
+                                    @if ($device->condition)
+                                        <flux:badge variant="{{ $device->condition->color() }}">
+                                            {{ $device->condition->label() }}
+                                        </flux:badge>
+                                    @else
+                                        <span class="text-sm text-zinc-400">—</span>
+                                    @endif
+                                </td>
+                                <td class="whitespace-nowrap px-6 py-4">
+                                    @if ($device->warranty_status)
+                                        @if ($device->isUnderWarranty())
+                                            <flux:badge variant="success" size="sm">Active</flux:badge>
+                                        @else
+                                            <flux:badge variant="danger" size="sm">Expired</flux:badge>
+                                        @endif
+                                    @else
+                                        <span class="text-sm text-zinc-400">—</span>
+                                    @endif
                                 </td>
                                 <td class="whitespace-nowrap px-6 py-4 text-sm text-zinc-500 dark:text-zinc-400">
                                     {{ $device->tickets_count }}
@@ -189,10 +215,34 @@
                                     </a>
                                 </dd>
                             </div>
-                            <div class="flex items-center justify-between text-sm">
-                                <dt class="font-medium text-zinc-500 dark:text-zinc-400">Serial Number</dt>
-                                <dd class="text-zinc-900 dark:text-white">{{ $device->serial_number ?: '—' }}</dd>
-                            </div>
+                            @if ($device->storage_capacity)
+                                <div class="flex items-center justify-between text-sm">
+                                    <dt class="font-medium text-zinc-500 dark:text-zinc-400">Storage</dt>
+                                    <dd class="text-zinc-900 dark:text-white">{{ $device->storage_capacity }}</dd>
+                                </div>
+                            @endif
+                            @if ($device->condition)
+                                <div class="flex items-center justify-between text-sm">
+                                    <dt class="font-medium text-zinc-500 dark:text-zinc-400">Condition</dt>
+                                    <dd>
+                                        <flux:badge variant="{{ $device->condition->color() }}">
+                                            {{ $device->condition->label() }}
+                                        </flux:badge>
+                                    </dd>
+                                </div>
+                            @endif
+                            @if ($device->warranty_status)
+                                <div class="flex items-center justify-between text-sm">
+                                    <dt class="font-medium text-zinc-500 dark:text-zinc-400">Warranty</dt>
+                                    <dd>
+                                        @if ($device->isUnderWarranty())
+                                            <flux:badge variant="success" size="sm">Active</flux:badge>
+                                        @else
+                                            <flux:badge variant="danger" size="sm">Expired</flux:badge>
+                                        @endif
+                                    </dd>
+                                </div>
+                            @endif
                             <div class="flex items-center justify-between text-sm">
                                 <dt class="font-medium text-zinc-500 dark:text-zinc-400">Tickets</dt>
                                 <dd class="text-zinc-900 dark:text-white">{{ $device->tickets_count }}</dd>
