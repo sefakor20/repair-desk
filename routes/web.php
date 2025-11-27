@@ -81,10 +81,10 @@ Route::get('dashboard', Dashboard::class)
 
 Route::middleware(['auth'])->group(function (): void {
     // Customer Management Routes
-    Route::get('customers', CustomersIndex::class)->name('customers.index');
-    Route::get('customers/create', CustomersCreate::class)->name('customers.create');
-    Route::get('customers/{customer}', CustomersShow::class)->name('customers.show');
-    Route::get('customers/{customer}/edit', CustomersEdit::class)->name('customers.edit');
+    Route::get('customers', CustomersIndex::class)->name('customers.index')->middleware('staff.permission:manage_customers');
+    Route::get('customers/create', CustomersCreate::class)->name('customers.create')->middleware('staff.permission:manage_customers');
+    Route::get('customers/{customer}', CustomersShow::class)->name('customers.show')->middleware('staff.permission:manage_customers');
+    Route::get('customers/{customer}/edit', CustomersEdit::class)->name('customers.edit')->middleware('staff.permission:manage_customers');
 
     // Branch Management Routes
     Route::get('branches', \App\Livewire\Branches\Index::class)->name('branches.index');
@@ -98,56 +98,56 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('devices/{device}/edit', DevicesEdit::class)->name('devices.edit');
 
     // Ticket routes
-    Route::get('tickets', TicketsIndex::class)->name('tickets.index');
-    Route::get('tickets/create', TicketsCreate::class)->name('tickets.create');
-    Route::get('tickets/{ticket}', TicketsShow::class)->name('tickets.show');
-    Route::get('tickets/{ticket}/edit', TicketsEdit::class)->name('tickets.edit');
+    Route::get('tickets', TicketsIndex::class)->name('tickets.index')->middleware('staff.permission:manage_tickets');
+    Route::get('tickets/create', TicketsCreate::class)->name('tickets.create')->middleware('staff.permission:create_tickets');
+    Route::get('tickets/{ticket}', TicketsShow::class)->name('tickets.show')->middleware('staff.permission:view_assigned_tickets');
+    Route::get('tickets/{ticket}/edit', TicketsEdit::class)->name('tickets.edit')->middleware('staff.permission:manage_tickets');
 
     // Inventory routes
-    Route::get('inventory', InventoryIndex::class)->name('inventory.index');
-    Route::get('inventory/create', InventoryCreate::class)->name('inventory.create');
-    Route::get('inventory/{item}', InventoryShow::class)->name('inventory.show');
-    Route::get('inventory/{item}/edit', InventoryEdit::class)->name('inventory.edit');
+    Route::get('inventory', InventoryIndex::class)->name('inventory.index')->middleware('staff.permission:view_inventory');
+    Route::get('inventory/create', InventoryCreate::class)->name('inventory.create')->middleware('staff.permission:manage_inventory');
+    Route::get('inventory/{item}', InventoryShow::class)->name('inventory.show')->middleware('staff.permission:view_inventory');
+    Route::get('inventory/{item}/edit', InventoryEdit::class)->name('inventory.edit')->middleware('staff.permission:manage_inventory');
 
     // Invoice routes
-    Route::get('invoices', InvoicesIndex::class)->name('invoices.index');
-    Route::get('invoices/create', InvoicesCreate::class)->name('invoices.create');
-    Route::get('invoices/{invoice}', InvoicesShow::class)->name('invoices.show');
-    Route::get('invoices/{invoice}/edit', InvoicesEdit::class)->name('invoices.edit');
+    Route::get('invoices', InvoicesIndex::class)->name('invoices.index')->middleware('staff.permission:view_sales');
+    Route::get('invoices/create', InvoicesCreate::class)->name('invoices.create')->middleware('staff.permission:create_invoices');
+    Route::get('invoices/{invoice}', InvoicesShow::class)->name('invoices.show')->middleware('staff.permission:view_sales');
+    Route::get('invoices/{invoice}/edit', InvoicesEdit::class)->name('invoices.edit')->middleware('staff.permission:create_invoices');
 
     // POS routes
-    Route::get('pos', PosIndex::class)->name('pos.index');
-    Route::get('pos/create', PosCreate::class)->name('pos.create');
-    Route::get('pos/returns', ReturnIndex::class)->name('pos.returns.index');
-    Route::get('pos/{sale}', PosShow::class)->name('pos.show');
-    Route::get('pos/{sale}/receipt', Receipt::class)->name('pos.receipt');
-    Route::get('pos/{sale}/return', ProcessReturn::class)->name('pos.returns.create');
-    Route::get('pos/{sale}/paystack', PaystackPayment::class)->name('pos.paystack');
-    Route::get('pos/{sale}/paystack/callback', PaystackCallbackController::class)->name('pos.paystack.callback');
+    Route::get('pos', PosIndex::class)->name('pos.index')->middleware('staff.permission:view_sales');
+    Route::get('pos/create', PosCreate::class)->name('pos.create')->middleware('staff.permission:create_sales');
+    Route::get('pos/returns', ReturnIndex::class)->name('pos.returns.index')->middleware('staff.permission:process_payments');
+    Route::get('pos/{sale}', PosShow::class)->name('pos.show')->middleware('staff.permission:view_sales');
+    Route::get('pos/{sale}/receipt', Receipt::class)->name('pos.receipt')->middleware('staff.permission:view_sales');
+    Route::get('pos/{sale}/return', ProcessReturn::class)->name('pos.returns.create')->middleware('staff.permission:process_payments');
+    Route::get('pos/{sale}/paystack', PaystackPayment::class)->name('pos.paystack')->middleware('staff.permission:process_payments');
+    Route::get('pos/{sale}/paystack/callback', PaystackCallbackController::class)->name('pos.paystack.callback')->middleware('staff.permission:process_payments');
 
     // Reports routes
-    Route::get('reports', ReportsIndex::class)->name('reports.index');
+    Route::get('reports', ReportsIndex::class)->name('reports.index')->middleware('staff.permission:view_reports');
 
     // Analytics routes
-    Route::get('analytics', AnalyticsDashboard::class)->name('analytics.dashboard');
+    Route::get('analytics', AnalyticsDashboard::class)->name('analytics.dashboard')->middleware('staff.permission:view_reports');
 
     // Cash Drawer routes
-    Route::get('cash-drawer', CashDrawerIndex::class)->name('cash-drawer.index');
-    Route::get('cash-drawer/open', OpenDrawer::class)->name('cash-drawer.open');
-    Route::get('cash-drawer/close', CloseDrawer::class)->name('cash-drawer.close');
+    Route::get('cash-drawer', CashDrawerIndex::class)->name('cash-drawer.index')->middleware('staff.permission:manage_cash_drawer');
+    Route::get('cash-drawer/open', OpenDrawer::class)->name('cash-drawer.open')->middleware('staff.permission:manage_cash_drawer');
+    Route::get('cash-drawer/close', CloseDrawer::class)->name('cash-drawer.close')->middleware('staff.permission:manage_cash_drawer');
 
     // Shifts routes
-    Route::get('shifts', ShiftsIndex::class)->name('shifts.index');
-    Route::get('shifts/open', OpenShift::class)->name('shifts.open');
-    Route::get('shifts/close', CloseShift::class)->name('shifts.close');
+    Route::get('shifts', ShiftsIndex::class)->name('shifts.index')->middleware('staff.permission:view_reports');
+    Route::get('shifts/open', OpenShift::class)->name('shifts.open')->middleware('staff.permission:manage_cash_drawer');
+    Route::get('shifts/close', CloseShift::class)->name('shifts.close')->middleware('staff.permission:manage_cash_drawer');
 
     // User management routes
-    Route::get('users', UsersIndex::class)->name('users.index');
-    Route::get('users/create', UsersCreate::class)->name('users.create');
-    Route::get('users/{user}/edit', UsersEdit::class)->name('users.edit');
+    Route::get('users', UsersIndex::class)->name('users.index')->middleware('staff.permission:manage_settings');
+    Route::get('users/create', UsersCreate::class)->name('users.create')->middleware('staff.permission:manage_settings');
+    Route::get('users/{user}/edit', UsersEdit::class)->name('users.edit')->middleware('staff.permission:manage_settings');
 
     // Staff management routes
-    Route::get('staff', StaffIndex::class)->name('staff.index');
+    Route::get('staff', StaffIndex::class)->name('staff.index')->middleware('staff.permission:manage_staff');
 
     // Settings Routes
     Route::redirect('settings', 'settings/profile');
@@ -155,10 +155,10 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('settings/profile', Profile::class)->name('settings.profile');
     Route::get('settings/password', Password::class)->name('settings.password');
     Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
-    Route::get('settings/shop', SettingsShop::class)->name('settings.shop');
-    Route::get('settings/return-policies', ReturnPolicies::class)->name('settings.return-policies');
-    Route::get('settings/loyalty-tiers', LoyaltyTiers::class)->name('settings.loyalty-tiers');
-    Route::get('settings/loyalty-rewards', SettingsLoyaltyRewards::class)->name('settings.loyalty-rewards');
+    Route::get('settings/shop', SettingsShop::class)->name('settings.shop')->middleware('staff.permission:manage_settings');
+    Route::get('settings/return-policies', ReturnPolicies::class)->name('settings.return-policies')->middleware('staff.permission:manage_settings');
+    Route::get('settings/loyalty-tiers', LoyaltyTiers::class)->name('settings.loyalty-tiers')->middleware('staff.permission:manage_settings');
+    Route::get('settings/loyalty-rewards', SettingsLoyaltyRewards::class)->name('settings.loyalty-rewards')->middleware('staff.permission:manage_settings');
 
     Route::get('settings/two-factor', TwoFactor::class)
         ->middleware(

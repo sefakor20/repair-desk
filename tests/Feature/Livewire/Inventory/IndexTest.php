@@ -10,7 +10,7 @@ use Livewire\Volt\Volt;
 use function Pest\Laravel\{actingAs, get};
 
 beforeEach(function () {
-    $this->user = User::factory()->create();
+    $this->user = createAdmin();
     actingAs($this->user);
 });
 

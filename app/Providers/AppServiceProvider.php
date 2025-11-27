@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -23,6 +24,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Register Blade directives for staff permissions
+        $this->registerBladeDirectives();
+
         // Automatically eager load relationships
         Model::automaticallyEagerLoadRelationships();
 
@@ -43,6 +47,32 @@ class AppServiceProvider extends ServiceProvider
                 ->isProduction()
                 ? $rule->mixedCase()->letters()->numbers()->symbols()->uncompromised()
                 : $rule;
+        });
+    }
+
+    /**
+     * Register custom Blade directives for staff permissions.
+     */
+    protected function registerBladeDirectives(): void
+    {
+        // @canStaff('permission') ... @endcanStaff
+        Blade::if('canStaff', function (string $permission) {
+            return auth()->check() && auth()->user()->hasStaffPermission($permission);
+        });
+
+        // @hasStaffPermission('permission') ... @endhasStaffPermission
+        Blade::if('hasStaffPermission', function (string $permission) {
+            return auth()->check() && auth()->user()->hasStaffPermission($permission);
+        });
+
+        // @hasAnyStaffPermission(['perm1', 'perm2']) ... @endhasAnyStaffPermission
+        Blade::if('hasAnyStaffPermission', function (array $permissions) {
+            return auth()->check() && auth()->user()->hasAnyStaffPermission($permissions);
+        });
+
+        // @hasAllStaffPermissions(['perm1', 'perm2']) ... @endhasAllStaffPermissions
+        Blade::if('hasAllStaffPermissions', function (array $permissions) {
+            return auth()->check() && auth()->user()->hasAllStaffPermissions($permissions);
         });
     }
 }

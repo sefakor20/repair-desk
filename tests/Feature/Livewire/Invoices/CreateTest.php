@@ -10,7 +10,7 @@ use Livewire\Livewire;
 use function Pest\Laravel\{actingAs, get};
 
 beforeEach(function () {
-    $this->user = User::factory()->create(); // Default role is FrontDesk
+    $this->user = createAdmin(); // Default role is FrontDesk
     actingAs($this->user);
 });
 

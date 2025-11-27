@@ -51,7 +51,49 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something(): void
+use App\Enums\StaffRole;
+use App\Models\{Branch, Staff, User};
+
+/**
+ * Create a user with staff permissions for testing
+ */
+function createUserWithPermissions(array $permissions = [], array $userAttributes = []): User
 {
-    // ..
+    $branch = Branch::factory()->create();
+    $user = User::factory()->create(array_merge(['branch_id' => $branch->id], $userAttributes));
+
+    // Determine role based on permissions needed
+    $role = match (true) {
+        empty($permissions) => StaffRole::BranchManager, // Default to branch manager (all permissions)
+        in_array('manage_staff', $permissions) => StaffRole::BranchManager,
+        in_array('view_assigned_tickets', $permissions) => StaffRole::Technician,
+        in_array('create_tickets', $permissions) => StaffRole::Receptionist,
+        in_array('view_inventory', $permissions) && !in_array('manage_inventory', $permissions) => StaffRole::Inventory,
+        in_array('create_sales', $permissions) => StaffRole::Cashier,
+        default => StaffRole::BranchManager,
+    };
+
+    Staff::factory()
+        ->for($user)
+        ->for($branch)
+        ->role($role)
+        ->create();
+
+    return $user->fresh();
+}
+
+/**
+ * Create an admin user for testing (bypasses staff permissions)
+ */
+function createAdmin(array $attributes = []): User
+{
+    return User::factory()->admin()->create($attributes);
+}
+
+/**
+ * Create a manager user for testing (bypasses staff permissions)
+ */
+function createManager(array $attributes = []): User
+{
+    return User::factory()->manager()->create($attributes);
 }

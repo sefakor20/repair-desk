@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'customer.portal' => \App\Http\Middleware\ValidateCustomerPortalAccess::class,
+            'staff.permission' => \App\Http\Middleware\CheckStaffPermission::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

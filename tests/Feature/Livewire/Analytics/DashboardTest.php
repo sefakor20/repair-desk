@@ -6,14 +6,14 @@ namespace Tests\Feature\Livewire\Analytics;
 
 use App\Enums\{PaymentMethod};
 use App\Livewire\Analytics\Dashboard;
-use App\Models\{InventoryItem, PosSale, PosSaleItem, User};
+use App\Models\{InventoryItem, PosSale, PosSaleItem};
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 
 uses(RefreshDatabase::class);
 
 beforeEach(function (): void {
-    $this->user = User::factory()->create();
+    $this->user = createAdmin();
     $this->actingAs($this->user);
 });
 

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 use App\Enums\{PaymentMethod, PosSaleStatus};
 use App\Livewire\Pos\Create;
-use App\Models\{Customer, InventoryItem, PosSale, PosSaleItem, User};
+use App\Models\{Customer, InventoryItem, PosSale, PosSaleItem};
 use Livewire\Livewire;
 
 use function Pest\Laravel\{actingAs, get};
 
 test('pos create page can be rendered', function () {
-    actingAs(User::factory()->create());
+    actingAs(createAdmin());
 
     get(route('pos.create'))
         ->assertSuccessful();
@@ -22,7 +22,7 @@ test('unauthorized user cannot access pos create page', function () {
 });
 
 test('can add item to cart', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     $item = InventoryItem::factory()->create([
@@ -37,7 +37,7 @@ test('can add item to cart', function () {
 });
 
 test('cannot add out of stock item to cart', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     $item = InventoryItem::factory()->create([
@@ -51,7 +51,7 @@ test('cannot add out of stock item to cart', function () {
 });
 
 test('adding same item increases quantity', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     $item = InventoryItem::factory()->create([
@@ -66,7 +66,7 @@ test('adding same item increases quantity', function () {
 });
 
 test('cannot add more than available stock', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     $item = InventoryItem::factory()->create([
@@ -82,7 +82,7 @@ test('cannot add more than available stock', function () {
 });
 
 test('can remove item from cart', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     $item = InventoryItem::factory()->create([
@@ -97,7 +97,7 @@ test('can remove item from cart', function () {
 });
 
 test('can update item quantity in cart', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     $item = InventoryItem::factory()->create([
@@ -112,7 +112,7 @@ test('can update item quantity in cart', function () {
 });
 
 test('setting quantity to zero removes item', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     $item = InventoryItem::factory()->create([
@@ -127,7 +127,7 @@ test('setting quantity to zero removes item', function () {
 });
 
 test('can clear cart', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     $item1 = InventoryItem::factory()->create(['quantity' => 10, 'status' => 'active']);
@@ -144,7 +144,7 @@ test('can clear cart', function () {
 });
 
 test('subtotal calculates correctly', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     $item1 = InventoryItem::factory()->create([
@@ -166,7 +166,7 @@ test('subtotal calculates correctly', function () {
 });
 
 test('tax amount calculates correctly', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     // Create shop settings for tax rate
@@ -191,7 +191,7 @@ test('tax amount calculates correctly', function () {
 });
 
 test('total calculates correctly with discount', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     // Create shop settings for tax rate
@@ -222,7 +222,7 @@ test('total calculates correctly with discount', function () {
 });
 
 test('cannot checkout with empty cart', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     Livewire::test(Create::class)
@@ -232,7 +232,7 @@ test('cannot checkout with empty cart', function () {
 });
 
 test('payment method is required for checkout', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     $item = InventoryItem::factory()->create(['quantity' => 10, 'status' => 'active']);
@@ -245,7 +245,7 @@ test('payment method is required for checkout', function () {
 });
 
 test('payment method must be valid', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     $item = InventoryItem::factory()->create(['quantity' => 10, 'status' => 'active']);
@@ -258,7 +258,7 @@ test('payment method must be valid', function () {
 });
 
 test('discount cannot exceed subtotal', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     $item = InventoryItem::factory()->create([
@@ -276,7 +276,7 @@ test('discount cannot exceed subtotal', function () {
 });
 
 test('can complete sale', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create();
     actingAs($user);
 
@@ -317,7 +317,7 @@ test('can complete sale', function () {
 });
 
 test('inventory is deducted after sale', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create(); // Add a customer like the working test
     actingAs($user);
 
@@ -349,7 +349,7 @@ test('inventory is deducted after sale', function () {
 });
 
 test('can complete sale without customer', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     // Create sale directly to test the feature without triggering SQLite FK constraint issue
     $sale = PosSale::factory()->completed()->create([
@@ -363,7 +363,7 @@ test('can complete sale without customer', function () {
 });
 
 test('sale number is auto-generated', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     // Create sale to test auto-generated sale number
     $sale = PosSale::factory()->create([

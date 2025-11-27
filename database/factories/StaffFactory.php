@@ -75,4 +75,20 @@ class StaffFactory extends Factory
     {
         return $this->role(StaffRole::Receptionist);
     }
+
+    /**
+     * Create an inventory specialist
+     */
+    public function inventory(): self
+    {
+        return $this->role(StaffRole::Inventory);
+    }
+
+    /**
+     * Create a cashier
+     */
+    public function cashier(): self
+    {
+        return $this->role(StaffRole::Cashier);
+    }
 }

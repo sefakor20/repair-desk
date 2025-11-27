@@ -12,7 +12,7 @@ use Livewire\Livewire;
 use function Pest\Laravel\{actingAs, get};
 
 beforeEach(function () {
-    $this->user = User::factory()->create();
+    $this->user = createAdmin();
     actingAs($this->user);
 });
 
@@ -47,7 +47,7 @@ test('show page displays invoice details', function () {
 });
 
 test('authorized user can open payment modal', function () {
-    $frontDesk = User::factory()->create(); // Default role is FrontDesk
+    $frontDesk = createAdmin(); // Default role is FrontDesk
     actingAs($frontDesk);
 
     $invoice = Invoice::factory()->pending()->create();
@@ -70,7 +70,7 @@ test('unauthorized user cannot open payment modal', function () {
 });
 
 test('can close payment modal', function () {
-    $frontDesk = User::factory()->create(); // Default role is FrontDesk
+    $frontDesk = createAdmin(); // Default role is FrontDesk
     actingAs($frontDesk);
 
     $invoice = Invoice::factory()->pending()->create();
@@ -82,7 +82,7 @@ test('can close payment modal', function () {
 });
 
 test('can record payment', function () {
-    $frontDesk = User::factory()->create(); // Default role is FrontDesk
+    $frontDesk = createAdmin(); // Default role is FrontDesk
     actingAs($frontDesk);
 
     $invoice = Invoice::factory()->create(['total' => '100.00']);
@@ -107,7 +107,7 @@ test('can record payment', function () {
 });
 
 test('invoice status updates to paid when fully paid', function () {
-    $frontDesk = User::factory()->create(); // Default role is FrontDesk
+    $frontDesk = createAdmin(); // Default role is FrontDesk
     actingAs($frontDesk);
 
     $invoice = Invoice::factory()->pending()->create(['total' => '100.00']);
@@ -124,7 +124,7 @@ test('invoice status updates to paid when fully paid', function () {
 });
 
 test('payment amount is required', function () {
-    $frontDesk = User::factory()->create(); // Default role is FrontDesk
+    $frontDesk = createAdmin(); // Default role is FrontDesk
     actingAs($frontDesk);
 
     $invoice = Invoice::factory()->create();
@@ -136,7 +136,7 @@ test('payment amount is required', function () {
 });
 
 test('payment amount must be numeric', function () {
-    $frontDesk = User::factory()->create(); // Default role is FrontDesk
+    $frontDesk = createAdmin(); // Default role is FrontDesk
     actingAs($frontDesk);
 
     $invoice = Invoice::factory()->create();
@@ -149,7 +149,7 @@ test('payment amount must be numeric', function () {
 });
 
 test('payment amount cannot exceed balance due', function () {
-    $frontDesk = User::factory()->create(); // Default role is FrontDesk
+    $frontDesk = createAdmin(); // Default role is FrontDesk
     actingAs($frontDesk);
 
     $invoice = Invoice::factory()->create(['total' => '100.00']);
@@ -162,7 +162,7 @@ test('payment amount cannot exceed balance due', function () {
 });
 
 test('payment method is required', function () {
-    $frontDesk = User::factory()->create(); // Default role is FrontDesk
+    $frontDesk = createAdmin(); // Default role is FrontDesk
     actingAs($frontDesk);
 
     $invoice = Invoice::factory()->create();

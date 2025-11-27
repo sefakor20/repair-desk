@@ -10,7 +10,7 @@ use Livewire\Livewire;
 use function Pest\Laravel\actingAs;
 
 test('user can view cash drawer index page', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     actingAs($user)
         ->get(route('cash-drawer.index'))
@@ -19,7 +19,7 @@ test('user can view cash drawer index page', function () {
 });
 
 test('index page shows open button when no active session', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     actingAs($user)
         ->get(route('cash-drawer.index'))
@@ -27,7 +27,7 @@ test('index page shows open button when no active session', function () {
 });
 
 test('index page shows close button when session is active', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     CashDrawerSession::factory()->open()->create();
 
     actingAs($user)
@@ -36,7 +36,7 @@ test('index page shows close button when session is active', function () {
 });
 
 test('index page displays active session details', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $session = CashDrawerSession::factory()->open()->create([
         'opened_by' => $user->id,
         'opening_balance' => 500.00,
@@ -52,7 +52,7 @@ test('index page displays active session details', function () {
 });
 
 test('index page shows empty state when no sessions exist', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     actingAs($user)
         ->get(route('cash-drawer.index'))
@@ -60,7 +60,7 @@ test('index page shows empty state when no sessions exist', function () {
 });
 
 test('index page lists all sessions', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $sessions = CashDrawerSession::factory()->count(3)->closed()->create();
 
     actingAs($user)
@@ -71,7 +71,7 @@ test('index page lists all sessions', function () {
 });
 
 test('search filters sessions by user name', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $targetUser = User::factory()->create(['name' => 'John Doe']);
     $otherUser = User::factory()->create(['name' => 'Jane Smith']);
 
@@ -86,7 +86,7 @@ test('search filters sessions by user name', function () {
 });
 
 test('index displays discrepancy for closed sessions', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $session = CashDrawerSession::factory()->closed()->create([
         'expected_balance' => 500.00,
         'actual_balance' => 490.00,
@@ -99,7 +99,7 @@ test('index displays discrepancy for closed sessions', function () {
 });
 
 test('pagination works correctly', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     CashDrawerSession::factory()->count(20)->closed()->create();
 
     Livewire::actingAs($user)
@@ -109,7 +109,7 @@ test('pagination works correctly', function () {
 });
 
 test('active session shows expected balance', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     CashDrawerSession::factory()->open()->create([
         'opening_balance' => 100.00,
         'cash_sales' => 50.00,
@@ -125,7 +125,7 @@ test('active session shows expected balance', function () {
 });
 
 test('closed session shows all balance details', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     CashDrawerSession::factory()->closed()->create([
         'opening_balance' => 100.00,
         'expected_balance' => 150.00,
