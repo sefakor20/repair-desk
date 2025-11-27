@@ -14,10 +14,21 @@
         </a>
 
         <flux:navlist variant="outline">
-            <flux:navlist.group :heading="__('Platform')" class="grid">
+            <flux:navlist.group :heading="__('Overview')" class="grid">
                 <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
                     wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
 
+                <flux:navlist.item icon="chart-pie" :href="route('analytics.dashboard')"
+                    :current="request()->routeIs('analytics.*')" wire:navigate>{{ __('Analytics') }}
+                </flux:navlist.item>
+
+                @hasAnyStaffPermission(['view_reports', 'manage_settings'])
+                    <flux:navlist.item icon="chart-bar" :href="route('reports.index')"
+                        :current="request()->routeIs('reports.*')" wire:navigate>{{ __('Reports') }}</flux:navlist.item>
+                @endhasAnyStaffPermission
+            </flux:navlist.group>
+
+            <flux:navlist.group :heading="__('Operations')" class="grid">
                 @hasAnyStaffPermission(['manage_customers', 'create_tickets', 'view_assigned_tickets'])
                     <flux:navlist.item icon="user-group" :href="route('customers.index')"
                         :current="request()->routeIs('customers.*')" wire:navigate>{{ __('Customers') }}</flux:navlist.item>
@@ -36,12 +47,9 @@
                         :current="request()->routeIs('inventory.*')" wire:navigate>{{ __('Inventory') }}
                     </flux:navlist.item>
                 @endhasAnyStaffPermission
+            </flux:navlist.group>
 
-                @can('viewAny', App\Models\Branch::class)
-                    <flux:navlist.item icon="store" :href="route('branches.index')"
-                        :current="request()->routeIs('branches.*')" wire:navigate>{{ __('Branches') }}</flux:navlist.item>
-                @endcan
-
+            <flux:navlist.group :heading="__('Sales & Payments')" class="grid">
                 @hasAnyStaffPermission(['create_invoices', 'view_sales', 'process_payments'])
                     <flux:navlist.item icon="document-text" :href="route('invoices.index')"
                         :current="request()->routeIs('invoices.*')" wire:navigate>{{ __('Invoices') }}</flux:navlist.item>
@@ -68,26 +76,24 @@
                 <flux:navlist.item icon="clock" :href="route('shifts.index')"
                     :current="request()->routeIs('shifts.*')" wire:navigate>{{ __('Shifts') }}
                 </flux:navlist.item>
+            </flux:navlist.group>
 
-                @hasAnyStaffPermission(['view_reports', 'manage_settings'])
-                    <flux:navlist.item icon="chart-bar" :href="route('reports.index')"
-                        :current="request()->routeIs('reports.*')" wire:navigate>{{ __('Reports') }}</flux:navlist.item>
-                @endhasAnyStaffPermission
+            <flux:navlist.group :heading="__('Management')" class="grid">
+                @can('viewAny', App\Models\Branch::class)
+                    <flux:navlist.item icon="store" :href="route('branches.index')"
+                        :current="request()->routeIs('branches.*')" wire:navigate>{{ __('Branches') }}</flux:navlist.item>
+                @endcan
 
-                <flux:navlist.item icon="chart-pie" :href="route('analytics.dashboard')"
-                    :current="request()->routeIs('analytics.*')" wire:navigate>{{ __('Analytics') }}
-                </flux:navlist.item>
+                @can('viewAny', App\Models\User::class)
+                    <flux:navlist.item icon="users" :href="route('users.index')"
+                        :current="request()->routeIs('users.*')" wire:navigate>{{ __('Users') }}</flux:navlist.item>
+                @endcan
 
                 @hasAnyStaffPermission(['manage_settings', 'view_reports'])
                     <flux:navlist.item icon="chat-bubble-left-right" :href="route('admin.sms-monitoring')"
                         :current="request()->routeIs('admin.sms-monitoring')" wire:navigate>{{ __('SMS Monitoring') }}
                     </flux:navlist.item>
                 @endhasAnyStaffPermission
-
-                @can('viewAny', App\Models\User::class)
-                    <flux:navlist.item icon="users" :href="route('users.index')"
-                        :current="request()->routeIs('users.*')" wire:navigate>{{ __('Users') }}</flux:navlist.item>
-                @endcan
             </flux:navlist.group>
         </flux:navlist>
 
