@@ -15,8 +15,13 @@ class StaffPermissionService
      */
     public function hasPermission(User $user, string $permission): bool
     {
-        // Super admins have all permissions
+        // Super admins (Admin role without branch) have all permissions
         if ($user->isSuperAdmin()) {
+            return true;
+        }
+
+        // Regular admins (Admin role with branch) also have all permissions
+        if ($user->role === \App\Enums\UserRole::Admin) {
             return true;
         }
 
@@ -63,7 +68,8 @@ class StaffPermissionService
      */
     public function getPermissions(User $user): array
     {
-        if ($user->isSuperAdmin()) {
+        // Super admins and regular admins have all permissions
+        if ($user->isSuperAdmin() || $user->role === \App\Enums\UserRole::Admin) {
             return $this->getAllPermissions();
         }
 
