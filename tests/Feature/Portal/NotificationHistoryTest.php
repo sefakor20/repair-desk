@@ -79,7 +79,7 @@ it('searches SMS logs by message content', function () {
     SmsDeliveryLog::factory()->create([
         'notifiable_type' => Customer::class,
         'notifiable_id' => $customer->id,
-        'message' => 'Your repair is complete',
+        'message' => 'Your device has been fixed and ready for pickup',
     ]);
 
     SmsDeliveryLog::factory()->create([
@@ -89,8 +89,8 @@ it('searches SMS logs by message content', function () {
     ]);
 
     Livewire::test(NotificationHistory::class, ['customer' => $customer])
-        ->set('search', 'repair')
-        ->assertSee('Your repair is complete')
+        ->set('search', 'device')
+        ->assertSee('Your device has been fixed')
         ->assertDontSee('Invoice payment reminder');
 });
 

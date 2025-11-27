@@ -160,6 +160,9 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('settings/loyalty-tiers', LoyaltyTiers::class)->name('settings.loyalty-tiers')->middleware('staff.permission:manage_settings');
     Route::get('settings/loyalty-rewards', SettingsLoyaltyRewards::class)->name('settings.loyalty-rewards')->middleware('staff.permission:manage_settings');
 
+    // SMS Monitoring
+    Route::get('admin/sms-monitoring', \App\Livewire\Admin\SmsMonitoring::class)->name('admin.sms-monitoring')->middleware('staff.permission:manage_settings');
+
     Route::get('settings/two-factor', TwoFactor::class)
         ->middleware(
             when(
@@ -252,5 +255,9 @@ Route::get('portal/access/{customer}/{token}', function ($customer, $token) {
         'token' => $token,
     ]);
 })->name('portal.access');
+
+// SMS Webhook - No authentication required as it's called by TextTango
+Route::post('webhooks/sms/delivery-status', [\App\Http\Controllers\Api\SmsWebhookController::class, 'handleDeliveryStatus'])
+    ->name('webhooks.sms.delivery-status');
 
 require __DIR__ . '/auth.php';

@@ -78,6 +78,12 @@
                     :current="request()->routeIs('analytics.*')" wire:navigate>{{ __('Analytics') }}
                 </flux:navlist.item>
 
+                @hasAnyStaffPermission(['manage_settings', 'view_reports'])
+                    <flux:navlist.item icon="chat-bubble-left-right" :href="route('admin.sms-monitoring')"
+                        :current="request()->routeIs('admin.sms-monitoring')" wire:navigate>{{ __('SMS Monitoring') }}
+                    </flux:navlist.item>
+                @endhasAnyStaffPermission
+
                 @can('viewAny', App\Models\User::class)
                     <flux:navlist.item icon="users" :href="route('users.index')"
                         :current="request()->routeIs('users.*')" wire:navigate>{{ __('Users') }}</flux:navlist.item>

@@ -16,6 +16,7 @@ class SmsDeliveryLog extends Model
     use HasUlids;
 
     protected $fillable = [
+        'external_id',
         'notifiable_type',
         'notifiable_id',
         'phone',

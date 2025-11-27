@@ -82,8 +82,18 @@ class SmsService
             if ($response->successful()) {
                 $responseData = $response->json();
 
-                // Mark all logs as sent
-                $logs->each(function ($log) use ($responseData) {
+                // Extract message IDs if provided by TextTango
+                $messageIds = $responseData['message_ids'] ?? $responseData['data']['message_ids'] ?? [];
+
+                // Mark all logs as sent and store external_id
+                $logs->each(function ($log, $index) use ($responseData, $messageIds) {
+                    $externalId = $messageIds[$index] ?? $responseData['message_id'] ?? null;
+
+                    if ($externalId) {
+                        $log->external_id = $externalId;
+                        $log->save();
+                    }
+
                     $log->markAsSent($responseData);
                 });
 
