@@ -17,28 +17,44 @@
             <flux:navlist.group :heading="__('Platform')" class="grid">
                 <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
                     wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
+                @canStaff('manage_customers')
                 <flux:navlist.item icon="user-group" :href="route('customers.index')"
                     :current="request()->routeIs('customers.*')" wire:navigate>{{ __('Customers') }}</flux:navlist.item>
+                @endcanStaff
                 <flux:navlist.item icon="device-phone-mobile" :href="route('devices.index')"
                     :current="request()->routeIs('devices.*')" wire:navigate>{{ __('Devices') }}</flux:navlist.item>
-                <flux:navlist.item icon="wrench-screwdriver" :href="route('tickets.index')"
-                    :current="request()->routeIs('tickets.*')" wire:navigate>{{ __('Tickets') }}</flux:navlist.item>
-                <flux:navlist.item icon="cube" :href="route('inventory.index')"
-                    :current="request()->routeIs('inventory.*')" wire:navigate>{{ __('Inventory') }}
-                </flux:navlist.item>
-                <flux:navlist.item icon="store" :href="route('branches.index')"
-                    :current="request()->routeIs('branches.*')" wire:navigate>{{ __('Branches') }}</flux:navlist.item>
-                <flux:navlist.item icon="document-text" :href="route('invoices.index')"
-                    :current="request()->routeIs('invoices.*')" wire:navigate>{{ __('Invoices') }}</flux:navlist.item>
+                @hasAnyStaffPermission(['manage_tickets', 'view_assigned_tickets'])
+                    <flux:navlist.item icon="wrench-screwdriver" :href="route('tickets.index')"
+                        :current="request()->routeIs('tickets.*')" wire:navigate>{{ __('Tickets') }}</flux:navlist.item>
+                @endhasAnyStaffPermission
+                @hasAnyStaffPermission(['manage_inventory', 'view_inventory', 'use_inventory'])
+                    <flux:navlist.item icon="cube" :href="route('inventory.index')"
+                        :current="request()->routeIs('inventory.*')" wire:navigate>{{ __('Inventory') }}
+                    </flux:navlist.item>
+                @endhasAnyStaffPermission
+                @can('viewAny', App\Models\Branch::class)
+                    <flux:navlist.item icon="store" :href="route('branches.index')"
+                        :current="request()->routeIs('branches.*')" wire:navigate>{{ __('Branches') }}</flux:navlist.item>
+                @endcan
+                @hasAnyStaffPermission(['create_invoices', 'view_sales'])
+                    <flux:navlist.item icon="document-text" :href="route('invoices.index')"
+                        :current="request()->routeIs('invoices.*')" wire:navigate>{{ __('Invoices') }}</flux:navlist.item>
+                @endhasAnyStaffPermission
+                @canStaff('create_sales')
                 <flux:navlist.item icon="shopping-cart" :href="route('pos.index')"
                     :current="request()->routeIs('pos.*') && !request()->routeIs('pos.returns.*')" wire:navigate>
                     {{ __('POS') }}</flux:navlist.item>
+                @endcanStaff
+                @canStaff('create_sales')
                 <flux:navlist.item icon="arrow-path" :href="route('pos.returns.index')"
                     :current="request()->routeIs('pos.returns.*')" wire:navigate>{{ __('Returns') }}
                 </flux:navlist.item>
-                <flux:navlist.item icon="banknotes" :href="route('cash-drawer.index')"
-                    :current="request()->routeIs('cash-drawer.*')" wire:navigate>{{ __('Cash Drawer') }}
-                </flux:navlist.item>
+                @endcanStaff
+                @hasAnyStaffPermission(['manage_cash_drawer', 'process_payments'])
+                    <flux:navlist.item icon="banknotes" :href="route('cash-drawer.index')"
+                        :current="request()->routeIs('cash-drawer.*')" wire:navigate>{{ __('Cash Drawer') }}
+                    </flux:navlist.item>
+                @endhasAnyStaffPermission
                 <flux:navlist.item icon="clock" :href="route('shifts.index')"
                     :current="request()->routeIs('shifts.*')" wire:navigate>{{ __('Shifts') }}
                 </flux:navlist.item>

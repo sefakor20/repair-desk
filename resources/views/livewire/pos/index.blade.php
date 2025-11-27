@@ -23,12 +23,14 @@
                 <flux:heading size="xl" class="mb-2">{{ __('Point of Sale') }}</flux:heading>
                 <flux:text>{{ __('Quick sales and checkout') }}</flux:text>
             </div>
-            @can('create', App\Models\PosSale::class)
+            @if (auth()->check() &&
+                    auth()->user()->hasStaffPermission('create_sales') &&
+                    auth()->user()->can('create', App\Models\PosSale::class))
                 <flux:button :href="route('pos.create')" wire:navigate>
                     <flux:icon.plus class="-ml-1 mr-2 size-5" />
                     {{ __('New Sale') }}
                 </flux:button>
-            @endcan
+            @endif
         </div>
     </div>
 
