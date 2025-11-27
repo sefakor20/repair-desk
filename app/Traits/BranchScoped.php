@@ -24,7 +24,12 @@ class BranchScoped implements Scope
 
         $user = auth()->user();
 
-        // Skip scoping if user has no branch assigned
+        // Skip scoping for super admins (admins without branch_id can see all data)
+        if ($user->isSuperAdmin()) {
+            return;
+        }
+
+        // Skip scoping if user has no branch assigned (shouldn't happen for non-admins)
         if (! $user->branch_id) {
             return;
         }

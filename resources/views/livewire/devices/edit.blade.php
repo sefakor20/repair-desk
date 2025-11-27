@@ -1,20 +1,10 @@
 <div>
     <div class="mb-6">
-        <flux:breadcrumbs>
-            <flux:breadcrumbs.item href="{{ route('devices.index') }}" icon="device-phone-mobile">Devices
-            </flux:breadcrumbs.item>
-            <flux:breadcrumbs.item href="{{ route('devices.show', $device) }}">{{ $device->device_name }}
-            </flux:breadcrumbs.item>
-            <flux:breadcrumbs.item>Edit</flux:breadcrumbs.item>
-        </flux:breadcrumbs>
-    </div>
-
-    <div class="mb-6">
         <flux:heading size="xl">Edit Device</flux:heading>
         <flux:text class="mt-1">Update device information and details.</flux:text>
     </div>
 
-    <div class="mx-auto max-w-4xl">
+    <div class="max-w-4xl">
         <form wire:submit="save"
             class="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
             <div class="space-y-8">
