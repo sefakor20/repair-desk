@@ -62,6 +62,10 @@ class Staff extends Model
      */
     public function hasPermission(string $permission): bool
     {
+        if (! $this->is_active) {
+            return false;
+        }
+
         return in_array($permission, $this->getPermissions(), true);
     }
 
