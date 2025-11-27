@@ -23,6 +23,10 @@ class CustomerPreference extends Model
         'notify_referral_success',
         'marketing_emails',
         'newsletter',
+        'sms_enabled',
+        'sms_ticket_updates',
+        'sms_repair_completed',
+        'sms_invoice_reminders',
     ];
 
     protected function casts(): array
@@ -35,6 +39,10 @@ class CustomerPreference extends Model
             'notify_referral_success' => 'boolean',
             'marketing_emails' => 'boolean',
             'newsletter' => 'boolean',
+            'sms_enabled' => 'boolean',
+            'sms_ticket_updates' => 'boolean',
+            'sms_repair_completed' => 'boolean',
+            'sms_invoice_reminders' => 'boolean',
         ];
     }
 

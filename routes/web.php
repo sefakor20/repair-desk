@@ -197,6 +197,11 @@ Route::prefix('portal')->name('portal.')->group(function (): void {
             Route::get('/preferences', PortalPreferences::class)->name('preferences');
         });
 
+        // Notifications routes
+        Route::prefix('notifications/{customer}/{token}')->name('notifications.')->group(function (): void {
+            Route::get('/history', \App\Livewire\Portal\NotificationHistory::class)->name('history');
+        });
+
         // Referral routes
         Route::prefix('referrals/{customer}/{token}')->name('referrals.')->group(function (): void {
             Route::get('/', PortalReferralsIndex::class)->name('index');

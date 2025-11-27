@@ -7,7 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\{BelongsTo, BelongsToMany, HasMany, HasOne};
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, BelongsToMany, HasMany, HasOne, MorphMany};
 use Illuminate\Notifications\Notifiable;
 
 class Customer extends Model
@@ -62,6 +62,11 @@ class Customer extends Model
     public function preferences(): HasOne
     {
         return $this->hasOne(CustomerPreference::class);
+    }
+
+    public function smsDeliveryLogs(): MorphMany
+    {
+        return $this->morphMany(SmsDeliveryLog::class, 'notifiable');
     }
 
     public function referralsMade(): HasMany
