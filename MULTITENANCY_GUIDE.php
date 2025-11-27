@@ -1,9 +1,11 @@
 #!/usr/bin/env php
 <?php
 
+declare(strict_types=1);
+
 /**
  * Branch-Level Multi-Tenancy Implementation Summary
- * 
+ *
  * This guide demonstrates how the multi-tenancy system works in your application.
  */
 
@@ -23,7 +25,7 @@ $implementations = [
         "File" => "app/Traits/BranchScoped.php",
         "Purpose" => "Implements Illuminate\\Database\\Eloquent\\Scope",
         "Effect" => "Automatically filters all queries to user's branch",
-        "Applied To" => "Ticket, InventoryItem, PosSale, Invoice, Payment"
+        "Applied To" => "Ticket, InventoryItem, PosSale, Invoice, Payment",
     ],
     "BranchContextService" => [
         "File" => "app/Services/BranchContextService.php",
@@ -33,28 +35,28 @@ $implementations = [
             "canAccessBranch(\$branch)" => "Check access permission",
             "getAccessibleBranches()" => "Get all accessible branches",
             "isBranchActive(\$branch)" => "Check if branch is active",
-            "clearCache()" => "Clear branch cache"
-        ]
+            "clearCache()" => "Clear branch cache",
+        ],
     ],
     "EnsureBranchContext Middleware" => [
         "File" => "app/Http/Middleware/EnsureBranchContext.php",
         "Purpose" => "Establishes branch context for each request",
         "Registered" => "bootstrap/app.php (web middleware stack)",
-        "Runs On" => "Every web request"
+        "Runs On" => "Every web request",
     ],
     "BranchScopedPolicy" => [
         "File" => "app/Policies/BranchScopedPolicy.php",
         "Purpose" => "Base authorization policy class",
         "Provides" => "canViewBranch(), canCreateInBranch(), canUpdateInBranch(), canDeleteInBranch()",
-        "Usage" => "Extend in resource policies"
+        "Usage" => "Extend in resource policies",
     ],
     "User Model Extensions" => [
         "Methods" => [
             "isSuperAdmin()" => "Check if user is super admin (admin with no branch_id)",
-            "canManageBranch(\$branch)" => "Check if user can manage branch"
+            "canManageBranch(\$branch)" => "Check if user can manage branch",
         ],
-        "Behavior" => "Super admins bypass all branch restrictions"
-    ]
+        "Behavior" => "Super admins bypass all branch restrictions",
+    ],
 ];
 
 foreach ($implementations as $name => $details) {
@@ -106,34 +108,34 @@ $flow = [
     "1. User Authenticates" => [
         "User logs in with credentials",
         "Laravel creates session with authenticated user",
-        "User has 'branch_id' attribute set"
+        "User has 'branch_id' attribute set",
     ],
     "2. Request Arrives" => [
         "HTTP request hits application",
-        "Laravel middleware stack executes"
+        "Laravel middleware stack executes",
     ],
     "3. EnsureBranchContext Middleware" => [
         "Checks if user is authenticated",
         "Loads user's branch relationship",
-        "Sets branch context via BranchContextService"
+        "Sets branch context via BranchContextService",
     ],
     "4. Branch Context Established" => [
         "BranchContextService->setCurrentBranch(\$branch) called",
         "Service caches branch for 1 hour",
-        "Context available throughout request lifecycle"
+        "Context available throughout request lifecycle",
     ],
     "5. Query Execution" => [
         "When code queries: Ticket::all()",
         "BranchScoped global scope applies automatically",
         "SQL WHERE clause added: WHERE branch_id = ?",
-        "Only user's branch data returned"
+        "Only user's branch data returned",
     ],
     "6. Authorization Checks" => [
         "If policy check: authorize('update', \$ticket)",
         "BranchScopedPolicy methods called",
         "Verifies user can access ticket's branch",
-        "Returns 403 if unauthorized"
-    ]
+        "Returns 403 if unauthorized",
+    ],
 ];
 
 foreach ($flow as $step => $details) {
@@ -158,41 +160,41 @@ $behaviors = [
             "All inventory items in their branch",
             "All POS sales in their branch",
             "All invoices in their branch",
-            "All payments in their branch"
+            "All payments in their branch",
         ],
         "Cannot Query" => [
             "Any data from other branches (automatic filtering)",
-            "Data returns empty if from different branch"
+            "Data returns empty if from different branch",
         ],
         "Authorization" => [
             "Can only update/delete their own branch data",
-            "403 Forbidden if attempting other branch"
-        ]
+            "403 Forbidden if attempting other branch",
+        ],
     ],
     "Super Admin (admin, no branch_id)" => [
         "Can Query" => [
             "ALL data from ALL branches",
             "No automatic filtering applied",
-            "Full system overview"
+            "Full system overview",
         ],
         "Cannot Query" => [
-            "Nothing - unrestricted access"
+            "Nothing - unrestricted access",
         ],
         "Authorization" => [
             "Can update/delete any branch data",
-            "Can manage branch settings"
-        ]
+            "Can manage branch settings",
+        ],
     ],
     "Unauthenticated" => [
         "Can Query" => [
             "No scoping applied (but should be protected by auth middleware)",
-            "May see partial data depending on route"
+            "May see partial data depending on route",
         ],
         "Best Practice" => [
             "All routes should require authentication",
-            "Unauthenticated requests redirected to login"
-        ]
-    ]
+            "Unauthenticated requests redirected to login",
+        ],
+    ],
 ];
 
 foreach ($behaviors as $userType => $details) {
@@ -341,7 +343,7 @@ $checklist = [
     "✅ Branch cache invalidation implemented" => true,
     "⚠️ API endpoints - verify auth is required" => false,
     "⚠️ Reports - confirm cross-branch queries use withoutGlobalScopes()" => false,
-    "⚠️ New models - must include branch_id column and BranchScoped scope" => false
+    "⚠️ New models - must include branch_id column and BranchScoped scope" => false,
 ];
 
 echo "✅ = Automatically enforced\n";
@@ -366,7 +368,7 @@ $nextSteps = [
     "3. Reports & Analytics" => "Build cross-branch comparison reports",
     "4. POS Configuration" => "Per-branch POS settings and workflows",
     "5. Customer Portal" => "Allow customers to access all branches they've used",
-    "6. Settings" => "Per-branch configuration (hours, policies, etc.)"
+    "6. Settings" => "Per-branch configuration (hours, policies, etc.)",
 ];
 
 foreach ($nextSteps as $step => $description) {
@@ -394,8 +396,8 @@ $reference = [
         "app/Models/PosSale.php",
         "app/Models/Invoice.php",
         "app/Models/Payment.php",
-        "app/Models/User.php"
-    ]
+        "app/Models/User.php",
+    ],
 ];
 
 foreach ($reference as $category => $value) {
@@ -412,5 +414,3 @@ foreach ($reference as $category => $value) {
 echo "\n═══════════════════════════════════════════════════════════════════════════════\n";
 echo "  IMPLEMENTATION COMPLETE - All 1075 tests passing\n";
 echo "═══════════════════════════════════════════════════════════════════════════════\n\n";
-
-?>

@@ -24,22 +24,25 @@ static::addGlobalScope(new BranchScoped());
 ```
 
 **Behavior:**
-- If user is not authenticated: No scoping applied
-- If user is super admin (role=admin, branch_id=null): No scoping applied
-- Otherwise: Automatically filters queries where `branch_id = user.branch_id`
+
+-   If user is not authenticated: No scoping applied
+-   If user is super admin (role=admin, branch_id=null): No scoping applied
+-   Otherwise: Automatically filters queries where `branch_id = user.branch_id`
 
 **Models with BranchScoped:**
-- `App\Models\Ticket`
-- `App\Models\InventoryItem`
-- `App\Models\PosSale`
-- `App\Models\Invoice`
-- `App\Models\Payment`
+
+-   `App\Models\Ticket`
+-   `App\Models\InventoryItem`
+-   `App\Models\PosSale`
+-   `App\Models\Invoice`
+-   `App\Models\Payment`
 
 #### 2. **BranchContextService** (`app/Services/BranchContextService.php`)
 
 Centralized service for managing branch context throughout the application.
 
 **Key Methods:**
+
 ```php
 // Get current branch for authenticated user
 $branch = $branchContext->getCurrentBranch();
@@ -64,20 +67,23 @@ $branchContext->clearCache($branchId);
 ```
 
 **Caching:**
-- Branches are cached for 1 hour (3600 seconds)
-- Cache key format: `branch_context_{branch_id}`
-- Call `clearCache()` when branch data changes
+
+-   Branches are cached for 1 hour (3600 seconds)
+-   Cache key format: `branch_context_{branch_id}`
+-   Call `clearCache()` when branch data changes
 
 #### 3. **EnsureBranchContext Middleware** (`app/Http/Middleware/EnsureBranchContext.php`)
 
 Executed on every request to establish the branch context.
 
 **Flow:**
+
 1. Checks if user is authenticated
 2. Retrieves user's assigned branch relationship
 3. Sets branch context if branch exists
 
 **Registration:**
+
 ```php
 // bootstrap/app.php
 $middleware->web(append: [
@@ -90,6 +96,7 @@ $middleware->web(append: [
 Base policy class providing common authorization logic for branch-scoped resources.
 
 **Methods:**
+
 ```php
 // Check view permission
 $this->canViewBranch($user, $branch);
@@ -107,6 +114,7 @@ $this->canDeleteInBranch($user, $branch);
 ### User Model Extensions
 
 #### Super Admin Detection
+
 ```php
 // Check if user is a super admin (admin with no branch)
 $user->isSuperAdmin(); // Returns: bool
@@ -210,6 +218,7 @@ Comprehensive test coverage in `tests/Feature/BranchDataIsolationTest.php`:
 ```
 
 Run tests:
+
 ```bash
 php artisan test tests/Feature/BranchDataIsolationTest.php
 ```
@@ -241,9 +250,9 @@ php artisan test tests/Feature/BranchDataIsolationTest.php
 
 ### Branch Context Cache
 
-- **TTL**: 1 hour (3600 seconds)
-- **Key**: `branch_context_{branch_id}`
-- **Invalidation**: Call `BranchContextService::clearCache($branchId)`
+-   **TTL**: 1 hour (3600 seconds)
+-   **Key**: `branch_context_{branch_id}`
+-   **Invalidation**: Call `BranchContextService::clearCache($branchId)`
 
 ### When to Clear Cache
 
@@ -276,38 +285,42 @@ For branch-scoped users, the dropdown automatically shows only their branch. For
 ### Adding Multi-Tenancy to Existing Models
 
 1. **Add `branch_id` column** to your migration:
-   ```php
-   $table->char('branch_id', 36)->nullable()->after('name');
-   $table->foreign('branch_id')->references('id')->on('branches')->onDelete('set null');
-   $table->index('branch_id');
-   ```
+
+    ```php
+    $table->char('branch_id', 36)->nullable()->after('name');
+    $table->foreign('branch_id')->references('id')->on('branches')->onDelete('set null');
+    $table->index('branch_id');
+    ```
 
 2. **Add to model's fillable**:
-   ```php
-   protected $fillable = [..., 'branch_id'];
-   ```
+
+    ```php
+    protected $fillable = [..., 'branch_id'];
+    ```
 
 3. **Add branch relationship**:
-   ```php
-   public function branch(): BelongsTo
-   {
-       return $this->belongsTo(Branch::class);
-   }
-   ```
+
+    ```php
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
+    }
+    ```
 
 4. **Add global scope in boot**:
-   ```php
-   protected static function boot(): void
-   {
-       parent::boot();
-       static::addGlobalScope(new BranchScoped());
-   }
-   ```
+
+    ```php
+    protected static function boot(): void
+    {
+        parent::boot();
+        static::addGlobalScope(new BranchScoped());
+    }
+    ```
 
 5. **Add to factory** (if needed):
-   ```php
-   'branch_id' => fake()->randomElement($branchIds),
-   ```
+    ```php
+    'branch_id' => fake()->randomElement($branchIds),
+    ```
 
 ## Future Enhancements
 

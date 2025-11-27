@@ -24,13 +24,13 @@ class BranchScoped implements Scope
 
         $user = auth()->user();
 
-        // Skip scoping for super admins or if user has no branch
-        if ($user->isSuperAdmin() || ! $user->branch_id) {
+        // Skip scoping if user has no branch assigned
+        if (! $user->branch_id) {
             return;
         }
 
         // Scope to user's branch
-        $builder->where('branch_id', $user->branch_id);
+        $builder->where($model->getTable() . '.branch_id', $user->branch_id);
     }
 
     public function remove(Builder $builder, Model $model): void
@@ -38,9 +38,11 @@ class BranchScoped implements Scope
         $query = $builder->getQuery();
 
         foreach ((array) $query->wheres as $key => $where) {
-            if ($where['type'] === 'Basic'
+            if (
+                $where['type'] === 'Basic'
                 && $where['column'] === 'branch_id'
-                && $where['operator'] === '=') {
+                && $where['operator'] === '='
+            ) {
                 unset($query->wheres[$key]);
             }
         }
