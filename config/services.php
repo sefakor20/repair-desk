@@ -37,4 +37,10 @@ return [
         ],
     ],
 
+    'texttango' => [
+        'api_key' => env('TEXTTANGO_API_KEY'),
+        'sender_id' => env('TEXTTANGO_SENDER_ID', 'RepairDesk'),
+        'url' => env('TEXTTANGO_API_URL', 'https://app.texttango.com/api/v1/sms/campaign/send'),
+    ],
+
 ];

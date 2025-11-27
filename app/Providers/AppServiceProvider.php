@@ -24,6 +24,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Register observers
+        \App\Models\Ticket::observe(\App\Observers\TicketObserver::class);
+
         // Register Blade directives for staff permissions
         $this->registerBladeDirectives();
 
