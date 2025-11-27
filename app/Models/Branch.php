@@ -59,6 +59,11 @@ class Branch extends Model
         return $this->hasMany(PosSale::class);
     }
 
+    public function staff(): HasMany
+    {
+        return $this->hasMany(Staff::class);
+    }
+
     // Scopes
     public function scopeActive($query)
     {

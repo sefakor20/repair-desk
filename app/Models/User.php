@@ -92,6 +92,11 @@ class User extends Authenticatable
         return $this->belongsTo(Branch::class);
     }
 
+    public function staffAssignments(): HasMany
+    {
+        return $this->hasMany(Staff::class);
+    }
+
     /**
      * Check if user is a super admin
      */

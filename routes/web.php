@@ -60,6 +60,7 @@ use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\ReturnPolicies;
 use App\Livewire\Settings\Shop as SettingsShop;
 use App\Livewire\Settings\TwoFactor;
+use App\Livewire\Staff\Index as StaffIndex;
 use App\Livewire\Tickets\Create as TicketsCreate;
 use App\Livewire\Tickets\Edit as TicketsEdit;
 use App\Livewire\Tickets\Index as TicketsIndex;
@@ -144,6 +145,9 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('users', UsersIndex::class)->name('users.index');
     Route::get('users/create', UsersCreate::class)->name('users.create');
     Route::get('users/{user}/edit', UsersEdit::class)->name('users.edit');
+
+    // Staff management routes
+    Route::get('staff', StaffIndex::class)->name('staff.index');
 
     // Settings Routes
     Route::redirect('settings', 'settings/profile');
