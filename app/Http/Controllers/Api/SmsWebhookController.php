@@ -16,6 +16,21 @@ class SmsWebhookController extends Controller
      */
     public function handleDeliveryStatus(Request $request)
     {
+        // Verify webhook signature if secret is configured
+        if (config('services.texttango.webhook_secret')) {
+            if (! $this->verifyWebhookSignature($request)) {
+                Log::warning('Invalid webhook signature', [
+                    'ip' => $request->ip(),
+                    'signature' => $request->header('X-TextTango-Signature'),
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid signature',
+                ], 401);
+            }
+        }
+
         // Log the incoming webhook for debugging
         Log::info('SMS Webhook Received', [
             'payload' => $request->all(),
@@ -58,13 +73,6 @@ class SmsWebhookController extends Controller
             $log->markAsFailed($validated['error_message'] ?? 'Delivery failed');
         }
 
-        // Store the full webhook response for reference
-        $log->response = array_merge($log->response ?? [], [
-            'webhook_received_at' => now()->toIso8601String(),
-            'webhook_data' => $validated,
-        ]);
-        $log->save();
-
         Log::info('SMS Delivery Status Updated', [
             'log_id' => $log->id,
             'status' => $validated['status'],
@@ -75,5 +83,24 @@ class SmsWebhookController extends Controller
             'success' => true,
             'message' => 'Delivery status updated',
         ]);
+    }
+
+    /**
+     * Verify the webhook signature using HMAC.
+     */
+    protected function verifyWebhookSignature(Request $request): bool
+    {
+        $signature = $request->header('X-TextTango-Signature');
+
+        if (! $signature) {
+            return false;
+        }
+
+        $secret = config('services.texttango.webhook_secret');
+        $payload = $request->getContent();
+
+        $expectedSignature = hash_hmac('sha256', $payload, $secret);
+
+        return hash_equals($expectedSignature, $signature);
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\SmsDeliveryLog;
+use App\Models\SmsTemplate;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Exception;
@@ -22,6 +23,26 @@ class SmsService
         $this->apiKey = config('services.texttango.api_key') ?? '';
         $this->senderId = config('services.texttango.sender_id') ?? 'RepairDesk';
         $this->apiUrl = config('services.texttango.url') ?? '';
+    }
+
+    /**
+     * Send SMS using a template.
+     */
+    public function sendFromTemplate(string $templateKey, array $variables, string|array $phones, ?object $notifiable = null): bool
+    {
+        $template = SmsTemplate::findByKey($templateKey);
+
+        if (! $template) {
+            Log::warning('SMS template not found', ['key' => $templateKey]);
+
+            return false;
+        }
+
+        $message = $template->render($variables);
+
+        $phones = is_array($phones) ? $phones : [$phones];
+
+        return $this->sendBulk($phones, $message, $notifiable, "template:{$templateKey}");
     }
 
     /**

@@ -48,12 +48,55 @@ class SmsMonitoring extends Component
         $this->dateTo = now()->format('Y-m-d');
     }
 
-    public function export(): void
+    public function export()
     {
         Gate::authorize('viewAny', SmsDeliveryLog::class);
 
-        // This will trigger a download
-        $this->dispatch('export-sms-logs');
+        $query = SmsDeliveryLog::query()
+            ->with('notifiable')
+            ->when($this->search, function ($q) {
+                $q->where(function ($query) {
+                    $query->where('phone', 'like', "%{$this->search}%")
+                        ->orWhere('message', 'like', "%{$this->search}%")
+                        ->orWhere('notification_type', 'like', "%{$this->search}%");
+                });
+            })
+            ->when($this->statusFilter !== 'all', fn($q) => $q->where('status', $this->statusFilter))
+            ->when($this->dateFrom, fn($q) => $q->whereDate('created_at', '>=', $this->dateFrom))
+            ->when($this->dateTo, fn($q) => $q->whereDate('created_at', '<=', $this->dateTo))
+            ->latest()
+            ->get();
+
+        $filename = 'sms-logs-' . now()->format('Y-m-d-His') . '.csv';
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename={$filename}",
+        ];
+
+        $callback = function () use ($query) {
+            $file = fopen('php://output', 'w');
+
+            // Add CSV headers
+            fputcsv($file, ['Date', 'Time', 'Phone', 'Message', 'Type', 'Status', 'Customer', 'Error', 'External ID']);
+
+            foreach ($query as $log) {
+                fputcsv($file, [
+                    $log->created_at->format('Y-m-d'),
+                    $log->created_at->format('H:i:s'),
+                    $log->phone_number,
+                    $log->message,
+                    $log->notification_type,
+                    $log->status,
+                    $log->notifiable?->name ?? 'N/A',
+                    $log->error_message ?? '',
+                    $log->external_id ?? '',
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     public function render(): View

@@ -163,6 +163,11 @@ Route::middleware(['auth'])->group(function (): void {
     // SMS Monitoring
     Route::get('admin/sms-monitoring', \App\Livewire\Admin\SmsMonitoring::class)->name('admin.sms-monitoring')->middleware('staff.permission:manage_settings');
 
+    // SMS Templates
+    Route::get('admin/sms-templates', \App\Livewire\Admin\SmsTemplates\Index::class)->name('admin.sms-templates.index')->middleware('staff.permission:manage_settings');
+    Route::get('admin/sms-templates/create', \App\Livewire\Admin\SmsTemplates\Form::class)->name('admin.sms-templates.create')->middleware('staff.permission:manage_settings');
+    Route::get('admin/sms-templates/{templateId}/edit', \App\Livewire\Admin\SmsTemplates\Form::class)->name('admin.sms-templates.edit')->middleware('staff.permission:manage_settings');
+
     Route::get('settings/two-factor', TwoFactor::class)
         ->middleware(
             when(

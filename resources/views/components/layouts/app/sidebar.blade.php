@@ -94,6 +94,12 @@
                         :current="request()->routeIs('admin.sms-monitoring')" wire:navigate>{{ __('SMS Monitoring') }}
                     </flux:navlist.item>
                 @endhasAnyStaffPermission
+
+                @hasAnyStaffPermission(['manage_settings'])
+                    <flux:navlist.item icon="document-text" :href="route('admin.sms-templates.index')"
+                        :current="request()->routeIs('admin.sms-templates.*')" wire:navigate>{{ __('SMS Templates') }}
+                    </flux:navlist.item>
+                @endhasAnyStaffPermission
             </flux:navlist.group>
         </flux:navlist>
 
