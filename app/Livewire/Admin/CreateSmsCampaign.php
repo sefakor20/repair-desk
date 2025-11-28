@@ -65,6 +65,14 @@ class CreateSmsCampaign extends Component
         $this->calculateEstimate();
     }
 
+    public function updatedSelectedContactIds(): void
+    {
+        // Immediate recalculation for contact selection
+        if ($this->segmentType === 'contacts') {
+            $this->calculateEstimate();
+        }
+    }
+
     public function updated($propertyName): void
     {
         // Skip validation and recalculation for computed properties
@@ -72,15 +80,32 @@ class CreateSmsCampaign extends Component
             return;
         }
 
+        // Handle specific property updates
+        if ($propertyName === 'selectedContactIds') {
+            // Validate only if we're in contacts mode
+            if ($this->segmentType === 'contacts') {
+                $this->validateOnly($propertyName);
+            }
+            $this->calculateEstimate();
+            return;
+        }
+
+        // Validate the property
         $this->validateOnly($propertyName);
 
-        if (in_array($propertyName, ['segmentType', 'recentDays', 'selectedContactIds', 'message'])) {
+        // Recalculate estimate for relevant properties
+        if (in_array($propertyName, ['segmentType', 'recentDays', 'message'])) {
             $this->calculateEstimate();
         }
     }
 
     public function calculateEstimate(): void
     {
+        // Reset to null first for immediate UI feedback
+        $this->estimatedRecipients = null;
+        $this->estimatedCost = null;
+
+        // Calculate recipients based on segment type
         if ($this->segmentType === 'contacts') {
             $this->estimatedRecipients = count($this->selectedContactIds);
         } else {
@@ -106,6 +131,9 @@ class CreateSmsCampaign extends Component
         } else {
             $this->estimatedCost = null;
         }
+
+        // Force UI update
+        $this->dispatch('estimate-updated');
     }
 
     public function getSegmentCount(): int

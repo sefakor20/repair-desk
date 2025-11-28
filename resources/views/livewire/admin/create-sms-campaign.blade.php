@@ -83,7 +83,8 @@
                                         <label
                                             class="flex items-center py-2 px-3 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded cursor-pointer">
                                             <input type="checkbox" wire:model.live="selectedContactIds"
-                                                value="{{ $contact['id'] }}"
+                                                value="{{ $contact['id'] }}" wire:loading.attr="disabled"
+                                                wire:target="selectedContactIds"
                                                 class="rounded border-zinc-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:border-zinc-600 dark:bg-zinc-700">
                                             <div class="ml-3 flex-1">
                                                 <div class="text-sm font-medium text-zinc-900 dark:text-zinc-100">
@@ -101,8 +102,14 @@
                                 </div>
                                 @if (count($selectedContactIds) > 0)
                                     <div class="mt-2 text-xs text-zinc-600 dark:text-zinc-400">
-                                        {{ count($selectedContactIds) }}
-                                        contact{{ count($selectedContactIds) !== 1 ? 's' : '' }} selected
+                                        <span wire:loading.remove wire:target="selectedContactIds,calculateEstimate">
+                                            {{ count($selectedContactIds) }}
+                                            contact{{ count($selectedContactIds) !== 1 ? 's' : '' }} selected
+                                        </span>
+                                        <span wire:loading wire:target="selectedContactIds,calculateEstimate"
+                                            class="text-blue-600">
+                                            Updating selection...
+                                        </span>
                                     </div>
                                 @endif
                                 @error('selectedContactIds')
@@ -153,33 +160,48 @@
                         <div>
                             <div class="text-sm text-zinc-600 dark:text-zinc-400">Recipients</div>
                             <div class="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
-                                <span wire:loading.remove wire:target="calculateEstimate">
+                                <span wire:loading.remove
+                                    wire:target="calculateEstimate,selectedContactIds,segmentType,recentDays">
                                     {{ $estimatedRecipients !== null ? number_format($estimatedRecipients) : '-' }}
                                 </span>
-                                <span wire:loading wire:target="calculateEstimate" class="text-zinc-400">
+                                <span wire:loading
+                                    wire:target="calculateEstimate,selectedContactIds,segmentType,recentDays"
+                                    class="text-zinc-400">
                                     Calculating...
                                 </span>
                             </div>
-                            <div class="text-xs text-zinc-500">customers with SMS enabled</div>
+                            <div class="text-xs text-zinc-500">
+                                @if ($segmentType === 'contacts')
+                                    contacts selected
+                                @else
+                                    customers with SMS enabled
+                                @endif
+                            </div>
                         </div>
 
                         <div class="border-t border-zinc-200 pt-4 dark:border-zinc-800">
                             <div class="text-sm text-zinc-600 dark:text-zinc-400">Estimated Cost</div>
                             <div class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-                                <span wire:loading.remove wire:target="calculateEstimate">
+                                <span wire:loading.remove
+                                    wire:target="calculateEstimate,selectedContactIds,segmentType,recentDays,message">
                                     @if ($estimatedCost !== null)
                                         {{ format_currency($estimatedCost) }}
                                     @else
                                         -
                                     @endif
                                 </span>
-                                <span wire:loading wire:target="calculateEstimate" class="text-emerald-400">
+                                <span wire:loading
+                                    wire:target="calculateEstimate,selectedContactIds,segmentType,recentDays,message"
+                                    class="text-emerald-400">
                                     Calculating...
                                 </span>
                             </div>
                             @if ($message && $estimatedRecipients && $estimatedRecipients > 0 && $estimatedCost)
                                 <div class="text-xs text-zinc-500">
-                                    ${{ number_format($estimatedCost / $estimatedRecipients, 4) }} per SMS
+                                    <span wire:loading.remove
+                                        wire:target="calculateEstimate,selectedContactIds,segmentType,recentDays,message">
+                                        ${{ number_format($estimatedCost / $estimatedRecipients, 4) }} per SMS
+                                    </span>
                                 </div>
                             @endif
                         </div>
