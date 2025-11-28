@@ -10,8 +10,6 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Exception;
 
-use function Laravel\Prompts\info;
-
 class SmsService
 {
     private string $apiKey;

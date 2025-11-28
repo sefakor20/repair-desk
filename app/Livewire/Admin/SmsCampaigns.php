@@ -23,6 +23,8 @@ class SmsCampaigns extends Component
 
     public ?string $campaignToDelete = null;
 
+    public bool $showAnalytics = false;
+
     protected $queryString = ['search', 'statusFilter'];
 
     public function mount(): void
@@ -74,6 +76,35 @@ class SmsCampaigns extends Component
         $campaign->markAsCancelled();
 
         session()->flash('success', 'Campaign cancelled successfully.');
+    }
+
+    public function toggleAnalytics(): void
+    {
+        $this->showAnalytics = !$this->showAnalytics;
+    }
+
+    public function getAnalyticsProperty(): array
+    {
+        $totalCampaigns = SmsCampaign::count();
+        $totalSent = SmsCampaign::sum('sent_count');
+        $totalFailed = SmsCampaign::sum('failed_count');
+        $totalCost = SmsCampaign::sum('actual_cost');
+        $avgDeliveryRate = $totalSent > 0 ? round(($totalSent / ($totalSent + $totalFailed)) * 100, 1) : 0;
+
+        // Recent campaigns (last 30 days)
+        $recentCampaigns = SmsCampaign::where('created_at', '>=', now()->subDays(30))->count();
+        $recentSent = SmsCampaign::where('created_at', '>=', now()->subDays(30))->sum('sent_count');
+
+        return [
+            'total_campaigns' => $totalCampaigns,
+            'total_sent' => $totalSent,
+            'total_failed' => $totalFailed,
+            'total_cost' => $totalCost,
+            'avg_delivery_rate' => $avgDeliveryRate,
+            'recent_campaigns' => $recentCampaigns,
+            'recent_sent' => $recentSent,
+            'active_campaigns' => SmsCampaign::active()->count(),
+        ];
     }
 
     #[Layout('components.layouts.app')]

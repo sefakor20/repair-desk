@@ -22,6 +22,25 @@
                             @enderror
                         </div>
 
+                        {{-- Template Selector --}}
+                        <div>
+                            <flux:select wire:model.live="selectedTemplate" label="Message Template"
+                                wire:change="selectTemplate">
+                                @foreach ($this->availableTemplates as $key => $template)
+                                    <option value="{{ $key }}">
+                                        {{ $key ? ucwords(str_replace('_', ' ', $key)) : $template }}</option>
+                                @endforeach
+                            </flux:select>
+                            @if ($selectedTemplate)
+                                <div class="mt-2">
+                                    <flux:button variant="ghost" size="sm" wire:click="clearTemplate"
+                                        type="button" icon="x-mark">
+                                        Clear Template
+                                    </flux:button>
+                                </div>
+                            @endif
+                        </div>
+
                         <div>
                             <flux:textarea wire:model.live.debounce.300ms="message" label="Message"
                                 placeholder="Your SMS message..." rows="4" required />
@@ -41,6 +60,20 @@
                             @error('message')
                                 <span class="mt-1 text-xs text-red-600">{{ $message }}</span>
                             @enderror
+
+                            {{-- Preview and Test Send Actions --}}
+                            @if ($message)
+                                <div class="mt-3 flex gap-2">
+                                    <flux:button variant="ghost" size="sm" wire:click="showPreviewModal"
+                                        type="button" icon="eye">
+                                        Preview
+                                    </flux:button>
+                                    <flux:button variant="ghost" size="sm" wire:click="showTestSendModal"
+                                        type="button" icon="paper-airplane">
+                                        Send Test
+                                    </flux:button>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -55,6 +88,8 @@
                                 <option value="all">All Customers</option>
                                 <option value="recent">Recent Customers</option>
                                 <option value="active">Active Customers (with recent tickets)</option>
+                                <option value="high_value">High-Value Customers</option>
+                                <option value="frequent_customers">Frequent Customers</option>
                                 <option value="contacts">Selected Contacts</option>
                             </flux:select>
                             @error('segmentType')
@@ -67,6 +102,26 @@
                                 <flux:input wire:model.live="recentDays" type="number" label="Created Within (days)"
                                     placeholder="30" min="1" max="365" />
                                 @error('recentDays')
+                                    <span class="mt-1 text-xs text-red-600">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        @endif
+
+                        @if ($segmentType === 'high_value')
+                            <div>
+                                <flux:input wire:model.live="minSpent" type="number" step="0.01"
+                                    label="Minimum Amount Spent (GHS)" placeholder="100.00" min="0" />
+                                @error('minSpent')
+                                    <span class="mt-1 text-xs text-red-600">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        @endif
+
+                        @if ($segmentType === 'frequent_customers')
+                            <div>
+                                <flux:input wire:model.live="minTickets" type="number"
+                                    label="Minimum Number of Tickets" placeholder="3" min="1" max="100" />
+                                @error('minTickets')
                                     <span class="mt-1 text-xs text-red-600">{{ $message }}</span>
                                 @enderror
                             </div>
@@ -173,6 +228,14 @@
                             <div class="text-xs text-zinc-500">
                                 @if ($segmentType === 'contacts')
                                     contacts selected
+                                @elseif($segmentType === 'high_value')
+                                    high-value customers
+                                @elseif($segmentType === 'frequent_customers')
+                                    frequent customers
+                                @elseif($segmentType === 'recent')
+                                    recent customers
+                                @elseif($segmentType === 'active')
+                                    active customers
                                 @else
                                     customers with SMS enabled
                                 @endif
@@ -250,9 +313,109 @@
                         <li>Keep messages under 160 characters for 1 SMS segment</li>
                         <li>Avoid special characters to reduce segments</li>
                         <li>Preview will show estimated segments</li>
+                        <li>Use templates for common message types</li>
+                        <li>Template variables like {customer_name} will be replaced with actual values</li>
                     </ul>
                 </div>
             </div>
         </div>
     </form>
+
+    {{-- Preview Modal --}}
+    @if ($showPreview)
+        <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog"
+            aria-modal="true">
+            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 bg-zinc-500 bg-opacity-75 transition-opacity" wire:click="closePreview">
+                </div>
+
+                <div
+                    class="inline-block align-bottom bg-white dark:bg-zinc-900 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-zinc-900 dark:text-zinc-100" id="modal-title">
+                                Message Preview
+                            </h3>
+                            <flux:button variant="ghost" size="sm" wire:click="closePreview" icon="x-mark">
+                            </flux:button>
+                        </div>
+
+                        <div class="bg-zinc-50 dark:bg-zinc-800 rounded-lg p-4 mb-4">
+                            <div class="text-xs text-zinc-500 dark:text-zinc-400 mb-2">SMS Preview:</div>
+                            <div class="text-sm text-zinc-900 dark:text-zinc-100 whitespace-pre-wrap">
+                                {{ $previewMessage }}</div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 text-xs text-zinc-600 dark:text-zinc-400">
+                            <div>
+                                <div class="font-medium">Characters:</div>
+                                <div>{{ strlen($previewMessage) }}</div>
+                            </div>
+                            <div>
+                                <div class="font-medium">Segments:</div>
+                                <div>{{ $this->getSegmentCount() }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 sm:mt-6">
+                        <flux:button variant="primary" class="w-full" wire:click="closePreview">
+                            Close Preview
+                        </flux:button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- Test Send Modal --}}
+    @if ($showTestSend)
+        <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog"
+            aria-modal="true">
+            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 bg-zinc-500 bg-opacity-75 transition-opacity" wire:click="closeTestSend">
+                </div>
+
+                <div
+                    class="inline-block align-bottom bg-white dark:bg-zinc-900 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-zinc-900 dark:text-zinc-100" id="modal-title">
+                                Send Test Message
+                            </h3>
+                            <flux:button variant="ghost" size="sm" wire:click="closeTestSend" icon="x-mark">
+                            </flux:button>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div>
+                                <flux:input wire:model="testPhoneNumber" label="Test Phone Number"
+                                    placeholder="+1234567890" type="tel" />
+                                @error('testPhoneNumber')
+                                    <span class="mt-1 text-xs text-red-600">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="bg-zinc-50 dark:bg-zinc-800 rounded-lg p-4">
+                                <div class="text-xs text-zinc-500 dark:text-zinc-400 mb-2">Message to send:</div>
+                                <div class="text-sm text-zinc-900 dark:text-zinc-100 whitespace-pre-wrap">
+                                    {{ $previewMessage }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 sm:mt-6 flex gap-3">
+                        <flux:button variant="ghost" class="flex-1" wire:click="closeTestSend">
+                            Cancel
+                        </flux:button>
+                        <flux:button variant="primary" class="flex-1" wire:click="sendTest"
+                            wire:loading.attr="disabled" wire:target="sendTest">
+                            <span wire:loading.remove wire:target="sendTest">Send Test</span>
+                            <span wire:loading wire:target="sendTest">Sending...</span>
+                        </flux:button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>

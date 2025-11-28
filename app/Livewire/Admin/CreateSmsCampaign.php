@@ -26,6 +26,10 @@ class CreateSmsCampaign extends Component
 
     public int $recentDays = 30;
 
+    public int $minTickets = 1;
+
+    public float $minSpent = 0.0;
+
     public array $selectedContactIds = [];
 
     public bool $scheduleForLater = false;
@@ -38,13 +42,25 @@ class CreateSmsCampaign extends Component
 
     public ?float $estimatedCost = null;
 
+    public bool $showPreview = false;
+
+    public string $testPhoneNumber = '';
+
+    public bool $showTestSend = false;
+
+    public string $previewMessage = '';
+
+    public string $selectedTemplate = '';
+
     protected function rules(): array
     {
         $rules = [
             'name' => ['required', 'string', 'max:255'],
             'message' => ['required', 'string', 'max:1000'],
-            'segmentType' => ['required', Rule::in(['all', 'recent', 'active', 'contacts'])],
+            'segmentType' => ['required', Rule::in(['all', 'recent', 'active', 'contacts', 'high_value', 'frequent_customers'])],
             'recentDays' => ['required_if:segmentType,recent', 'integer', 'min:1', 'max:365'],
+            'minTickets' => ['required_if:segmentType,frequent_customers', 'integer', 'min:1', 'max:100'],
+            'minSpent' => ['required_if:segmentType,high_value', 'numeric', 'min:0'],
             'scheduleForLater' => ['boolean'],
             'scheduledDate' => ['required_if:scheduleForLater,true', 'date', 'after_or_equal:today'],
             'scheduledTime' => ['required_if:scheduleForLater,true'],
@@ -94,7 +110,7 @@ class CreateSmsCampaign extends Component
         $this->validateOnly($propertyName);
 
         // Recalculate estimate for relevant properties
-        if (in_array($propertyName, ['segmentType', 'recentDays', 'message'])) {
+        if (in_array($propertyName, ['segmentType', 'recentDays', 'message', 'minTickets', 'minSpent'])) {
             $this->calculateEstimate();
         }
     }
@@ -115,6 +131,19 @@ class CreateSmsCampaign extends Component
                 'recent' => $query->where('created_at', '>=', now()->subDays($this->recentDays)),
                 'active' => $query->whereHas('tickets', function ($q) {
                     $q->where('created_at', '>=', now()->subMonths(3));
+                }),
+                'high_value' => $query->whereIn('id', function ($subquery) {
+                    $subquery->select('customer_id')
+                        ->from('invoices')
+                        ->groupBy('customer_id')
+                        ->havingRaw('SUM(total) >= ?', [$this->minSpent]);
+                }),
+                'frequent_customers' => $query->whereIn('id', function ($subquery) {
+                    $subquery->select('customer_id')
+                        ->from('tickets')
+                        ->where('branch_id', session('current_branch_id'))
+                        ->groupBy('customer_id')
+                        ->havingRaw('COUNT(*) >= ?', [$this->minTickets]);
                 }),
                 default => null,
             };
@@ -162,6 +191,98 @@ class CreateSmsCampaign extends Component
             });
     }
 
+    public function showPreviewModal(): void
+    {
+        if (!$this->message) {
+            return;
+        }
+
+        $this->generatePreviewMessage();
+        $this->showPreview = true;
+    }
+
+    public function closePreview(): void
+    {
+        $this->showPreview = false;
+        $this->previewMessage = '';
+    }
+
+    public function showTestSendModal(): void
+    {
+        if (!$this->message) {
+            return;
+        }
+
+        $this->generatePreviewMessage();
+        $this->showTestSend = true;
+    }
+
+    public function closeTestSend(): void
+    {
+        $this->showTestSend = false;
+        $this->testPhoneNumber = '';
+        $this->previewMessage = '';
+    }
+
+    public function sendTest(): void
+    {
+        $this->validate([
+            'testPhoneNumber' => ['required', 'string', 'regex:/^\+?[1-9]\d{1,14}$/'],
+            'message' => ['required', 'string'],
+        ]);
+
+        $smsService = new SmsService();
+        $success = $smsService->send(
+            $this->testPhoneNumber,
+            $this->previewMessage,
+            null,
+            'test_campaign',
+        );
+
+        if ($success) {
+            session()->flash('success', 'Test message sent successfully!');
+        } else {
+            session()->flash('error', 'Failed to send test message. Please check your configuration.');
+        }
+
+        $this->closeTestSend();
+    }
+
+    private function generatePreviewMessage(): void
+    {
+        // For now, just use the message as-is
+        // In the future, this could include variable replacement
+        $this->previewMessage = $this->message;
+    }
+
+    public function getAvailableTemplatesProperty(): array
+    {
+        return [
+            '' => 'No template (custom message)',
+            'appointment_reminder' => 'Appointment Reminder - Hi {customer_name}, this is a reminder for your repair appointment on {date}. Please arrive 10 minutes early.',
+            'repair_completed' => 'Repair Completed - Good news {customer_name}! Your {device} repair is complete. You can pick it up anytime during business hours.',
+            'payment_reminder' => 'Payment Due - Hi {customer_name}, your repair bill of {amount} is ready for payment. Please visit us or pay online.',
+            'status_update' => 'Status Update - Hi {customer_name}, your repair status has been updated to: {status}. We\'ll keep you posted on progress.',
+            'promotional' => 'Special Offer - Enjoy 20% off your next repair service! Valid until {expiry_date}. Book now to secure your discount.',
+            'pickup_ready' => 'Ready for Pickup - Hi {customer_name}, your repaired {device} is ready for collection. Store hours: Mon-Fri 9AM-6PM.',
+        ];
+    }
+
+    public function selectTemplate(): void
+    {
+        if ($this->selectedTemplate && isset($this->availableTemplates[$this->selectedTemplate])) {
+            $this->message = $this->availableTemplates[$this->selectedTemplate];
+            $this->calculateEstimate();
+        }
+    }
+
+    public function clearTemplate(): void
+    {
+        $this->selectedTemplate = '';
+        $this->message = '';
+        $this->calculateEstimate();
+    }
+
     public function create(): void
     {
         Gate::authorize('create', SmsCampaign::class);
@@ -180,6 +301,8 @@ class CreateSmsCampaign extends Component
                 'all' => ['type' => 'all'],
                 'recent' => ['type' => 'recent', 'days' => $this->recentDays],
                 'active' => ['type' => 'active'],
+                'high_value' => ['type' => 'high_value', 'min_spent' => $this->minSpent],
+                'frequent_customers' => ['type' => 'frequent_customers', 'min_tickets' => $this->minTickets],
             };
         }
 
