@@ -91,7 +91,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <flux:subheading class="text-zinc-600 dark:text-zinc-400">Total Cost</flux:subheading>
-                    <flux:heading size="2xl" class="mt-2">${{ number_format($stats['total_cost'], 2) }}
+                    <flux:heading size="2xl" class="mt-2">{{ format_currency($stats['total_cost']) }}
                     </flux:heading>
                 </div>
                 <div class="rounded-lg bg-emerald-100 p-3 dark:bg-emerald-900/20">
@@ -220,13 +220,13 @@
                             <td class="whitespace-nowrap px-6 py-4 text-sm text-zinc-600 dark:text-zinc-400">
                                 @if ($log->cost)
                                     <div class="font-medium text-zinc-900 dark:text-zinc-100">
-                                        ${{ number_format($log->cost, 4) }}
+                                        {{ format_currency($log->cost) }}
                                     </div>
                                     <div class="text-xs text-zinc-500">
-                                        {{ $log->segments }} segment{{ $log->segments > 1 ? 's' : '' }}
+                                        {{ $log->segments }} segment{{ $log->segments !== 1 ? 's' : '' }}
                                     </div>
                                 @else
-                                    <span class="text-zinc-400">-</span>
+                                    <span class="text-zinc-400 dark:text-zinc-600">{{ format_currency(0) }}</span>
                                 @endif
                             </td>
                             <td class="whitespace-nowrap px-6 py-4 text-sm text-zinc-600 dark:text-zinc-400">

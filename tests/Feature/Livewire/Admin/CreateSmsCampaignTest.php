@@ -31,13 +31,20 @@ it('can create and send campaign immediately', function () {
     $admin = User::factory()->admin()->create();
     Customer::factory()->count(5)->create(['phone' => '+1234567890']);
 
-    Livewire::actingAs($admin)
+    $component = Livewire::actingAs($admin)
         ->test(CreateSmsCampaign::class)
         ->set('name', 'Test Campaign')
         ->set('message', 'Hello from our repair shop!')
         ->set('segmentType', 'all')
         ->call('create');
 
+    // Check for validation errors first
+    $component->assertHasNoErrors();
+
+    // Assert redirect happened
+    $component->assertRedirect();
+
+    // Check the campaign was created in database
     expect(SmsCampaign::where('name', 'Test Campaign')->exists())->toBeTrue();
     expect(SmsCampaign::where('created_by', $admin->id)->count())->toBe(1);
 
@@ -51,7 +58,7 @@ it('can create and schedule campaign for later', function () {
 
     $scheduledDateTime = now()->addHour()->format('Y-m-d H:i:s');
 
-    Livewire::actingAs($admin)
+    $component = Livewire::actingAs($admin)
         ->test(CreateSmsCampaign::class)
         ->set('name', 'Scheduled Campaign')
         ->set('message', 'This is a scheduled message!')
@@ -60,6 +67,12 @@ it('can create and schedule campaign for later', function () {
         ->set('scheduledDate', now()->addHour()->format('Y-m-d'))
         ->set('scheduledTime', now()->addHour()->format('H:i'))
         ->call('create');
+
+    // Check for validation errors first
+    $component->assertHasNoErrors();
+
+    // Assert redirect happened
+    $component->assertRedirect();
 
     $campaign = SmsCampaign::where('name', 'Scheduled Campaign')->first();
     expect($campaign)->not()->toBeNull();

@@ -91,7 +91,7 @@ class SmsMonitoring extends Component
                     $log->notifiable?->name ?? 'N/A',
                     $log->error_message ?? '',
                     $log->external_id ?? '',
-                    $log->cost ? '$' . number_format($log->cost, 4) : '$0.0000',
+                    $log->cost ? format_currency($log->cost) : format_currency(0),
                     $log->segments,
                 ]);
             }

@@ -22,6 +22,8 @@ class SmsCampaign extends Model
         'message',
         'status',
         'segment_rules',
+        'recipient_type',
+        'contact_ids',
         'scheduled_at',
         'started_at',
         'completed_at',
@@ -37,6 +39,7 @@ class SmsCampaign extends Model
     {
         return [
             'segment_rules' => 'array',
+            'contact_ids' => 'array',
             'scheduled_at' => 'datetime',
             'started_at' => 'datetime',
             'completed_at' => 'datetime',

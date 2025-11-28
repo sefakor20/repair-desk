@@ -79,7 +79,7 @@ class SmsDeliveryLog extends Model
 
     public function calculateCost(): float
     {
-        $costPerSegment = config('services.texttango.cost_per_segment', 0.0075);
+        $costPerSegment = config('services.texttango.cost_per_segment', 0.12);
 
         return $this->segments * $costPerSegment;
     }

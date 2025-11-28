@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
+use App\Models\Contact;
 use App\Models\Customer;
 use App\Models\SmsCampaign;
 use App\Services\SmsService;
@@ -45,31 +46,36 @@ class ProcessSmsCampaign implements ShouldQueue
 
             // Process recipients in chunks
             $recipients->chunk($this->batchSize)->each(function ($chunk) use ($smsService) {
-                foreach ($chunk as $customer) {
+                foreach ($chunk as $recipient) {
                     try {
-                        // Check if customer has SMS enabled
-                        if (! $customer->canReceiveSms()) {
+                        // Check if recipient can receive SMS
+                        if (! $recipient->canReceiveSms()) {
                             continue;
                         }
 
                         // Send SMS via service
                         $result = $smsService->send(
-                            phone: $customer->phone,
+                            phone: $recipient->phone,
                             message: $this->campaign->message,
-                            notifiable: $customer,
+                            notifiable: $recipient,
                             notificationType: 'campaign',
                         );
 
                         // Link delivery log to campaign (result is bool, need to get the log)
                         if ($result) {
-                            // Get the most recent delivery log for this customer
-                            $log = $customer->smsDeliveryLogs()
+                            // Get the most recent delivery log for this recipient
+                            $log = $recipient->smsDeliveryLogs()
                                 ->where('message', $this->campaign->message)
                                 ->latest()
                                 ->first();
 
                             if ($log) {
                                 $log->update(['campaign_id' => $this->campaign->id]);
+                            }
+
+                            // Mark as contacted if it's a Contact model
+                            if ($recipient instanceof Contact) {
+                                $recipient->markAsContacted();
                             }
 
                             $this->campaign->incrementSentCount();
@@ -79,7 +85,8 @@ class ProcessSmsCampaign implements ShouldQueue
                     } catch (Exception $e) {
                         Log::error('Campaign SMS send failed', [
                             'campaign_id' => $this->campaign->id,
-                            'customer_id' => $customer->id,
+                            'recipient_id' => $recipient->id,
+                            'recipient_type' => get_class($recipient),
                             'error' => $e->getMessage(),
                         ]);
 
@@ -108,16 +115,28 @@ class ProcessSmsCampaign implements ShouldQueue
     }
 
     /**
-     * Get recipients based on segment rules.
+     * Get recipients based on campaign type and rules.
      */
     protected function getRecipients()
+    {
+        return match ($this->campaign->recipient_type) {
+            'contacts' => $this->getContacts(),
+            'customers' => $this->getCustomers(),
+            'mixed' => $this->getMixedRecipients(),
+            default => $this->getCustomers(),
+        };
+    }
+
+    /**
+     * Get customer recipients based on segment rules.
+     */
+    protected function getCustomers()
     {
         $query = Customer::query();
 
         $segmentRules = $this->campaign->segment_rules;
 
         if (! $segmentRules) {
-            // Default to all customers with phone numbers
             return $query->whereNotNull('phone')->get();
         }
 
@@ -135,5 +154,31 @@ class ProcessSmsCampaign implements ShouldQueue
                 ->get(),
             default => $query->whereNotNull('phone')->get(),
         };
+    }
+
+    /**
+     * Get contact recipients based on contact IDs.
+     */
+    protected function getContacts()
+    {
+        if (empty($this->campaign->contact_ids)) {
+            return collect();
+        }
+
+        return Contact::whereIn('id', $this->campaign->contact_ids)
+            ->active()
+            ->withPhone()
+            ->get();
+    }
+
+    /**
+     * Get mixed recipients (both customers and contacts).
+     */
+    protected function getMixedRecipients()
+    {
+        $customers = $this->getCustomers();
+        $contacts = $this->getContacts();
+
+        return $customers->concat($contacts);
     }
 }

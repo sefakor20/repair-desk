@@ -51,10 +51,11 @@
 
                     <div class="space-y-4">
                         <div>
-                            <flux:select wire:model.live="segmentType" label="Customer Segment">
+                            <flux:select wire:model.live="segmentType" label="Target Audience">
                                 <option value="all">All Customers</option>
                                 <option value="recent">Recent Customers</option>
                                 <option value="active">Active Customers (with recent tickets)</option>
+                                <option value="contacts">Selected Contacts</option>
                             </flux:select>
                             @error('segmentType')
                                 <span class="mt-1 text-xs text-red-600">{{ $message }}</span>
@@ -66,6 +67,45 @@
                                 <flux:input wire:model.live="recentDays" type="number" label="Created Within (days)"
                                     placeholder="30" min="1" max="365" />
                                 @error('recentDays')
+                                    <span class="mt-1 text-xs text-red-600">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        @endif
+
+                        @if ($segmentType === 'contacts')
+                            <div>
+                                <label class="block text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-2">
+                                    Select Contacts
+                                </label>
+                                <div
+                                    class="border border-zinc-200 dark:border-zinc-700 rounded-lg p-3 max-h-48 overflow-y-auto bg-zinc-50 dark:bg-zinc-800">
+                                    @forelse($this->availableContacts as $contact)
+                                        <label
+                                            class="flex items-center py-2 px-3 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded cursor-pointer">
+                                            <input type="checkbox" wire:model.live="selectedContactIds"
+                                                value="{{ $contact['id'] }}"
+                                                class="rounded border-zinc-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:border-zinc-600 dark:bg-zinc-700">
+                                            <div class="ml-3 flex-1">
+                                                <div class="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                                                    {{ $contact['name'] }}</div>
+                                                <div class="text-xs text-zinc-500 dark:text-zinc-400">
+                                                    {{ $contact['phone'] }}</div>
+                                            </div>
+                                        </label>
+                                    @empty
+                                        <div class="text-sm text-zinc-500 dark:text-zinc-400 py-4 text-center">
+                                            No contacts available. <a href="#"
+                                                class="text-blue-600 hover:underline">Add contacts first</a>.
+                                        </div>
+                                    @endforelse
+                                </div>
+                                @if (count($selectedContactIds) > 0)
+                                    <div class="mt-2 text-xs text-zinc-600 dark:text-zinc-400">
+                                        {{ count($selectedContactIds) }}
+                                        contact{{ count($selectedContactIds) !== 1 ? 's' : '' }} selected
+                                    </div>
+                                @endif
+                                @error('selectedContactIds')
                                     <span class="mt-1 text-xs text-red-600">{{ $message }}</span>
                                 @enderror
                             </div>
@@ -128,7 +168,7 @@
                             <div class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                                 <span wire:loading.remove wire:target="calculateEstimate">
                                     @if ($estimatedCost !== null)
-                                        ${{ number_format($estimatedCost, 2) }}
+                                        {{ format_currency($estimatedCost) }}
                                     @else
                                         -
                                     @endif

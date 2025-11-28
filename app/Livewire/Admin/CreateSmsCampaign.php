@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Admin;
 
 use App\Jobs\ProcessSmsCampaign;
+use App\Models\Contact;
 use App\Models\Customer;
 use App\Models\SmsCampaign;
 use App\Services\SmsService;
@@ -25,6 +26,8 @@ class CreateSmsCampaign extends Component
 
     public int $recentDays = 30;
 
+    public array $selectedContactIds = [];
+
     public bool $scheduleForLater = false;
 
     public string $scheduledDate = '';
@@ -37,15 +40,23 @@ class CreateSmsCampaign extends Component
 
     protected function rules(): array
     {
-        return [
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
             'message' => ['required', 'string', 'max:1000'],
-            'segmentType' => ['required', Rule::in(['all', 'recent', 'active'])],
+            'segmentType' => ['required', Rule::in(['all', 'recent', 'active', 'contacts'])],
             'recentDays' => ['required_if:segmentType,recent', 'integer', 'min:1', 'max:365'],
             'scheduleForLater' => ['boolean'],
             'scheduledDate' => ['required_if:scheduleForLater,true', 'date', 'after_or_equal:today'],
             'scheduledTime' => ['required_if:scheduleForLater,true'],
         ];
+
+        // Only add contact validation if segment type is contacts
+        if ($this->segmentType === 'contacts') {
+            $rules['selectedContactIds'] = ['required', 'array', 'min:1'];
+            $rules['selectedContactIds.*'] = ['exists:contacts,id'];
+        }
+
+        return $rules;
     }
 
     public function mount(): void
@@ -56,32 +67,41 @@ class CreateSmsCampaign extends Component
 
     public function updated($propertyName): void
     {
+        // Skip validation and recalculation for computed properties
+        if (in_array($propertyName, ['estimatedRecipients', 'estimatedCost'])) {
+            return;
+        }
+
         $this->validateOnly($propertyName);
 
-        if (in_array($propertyName, ['segmentType', 'recentDays', 'message'])) {
+        if (in_array($propertyName, ['segmentType', 'recentDays', 'selectedContactIds', 'message'])) {
             $this->calculateEstimate();
         }
     }
 
     public function calculateEstimate(): void
     {
-        $query = Customer::whereNotNull('phone');
+        if ($this->segmentType === 'contacts') {
+            $this->estimatedRecipients = count($this->selectedContactIds);
+        } else {
+            $query = Customer::whereNotNull('phone');
 
-        match ($this->segmentType) {
-            'recent' => $query->where('created_at', '>=', now()->subDays($this->recentDays)),
-            'active' => $query->whereHas('tickets', function ($q) {
-                $q->where('created_at', '>=', now()->subMonths(3));
-            }),
-            default => null,
-        };
+            match ($this->segmentType) {
+                'recent' => $query->where('created_at', '>=', now()->subDays($this->recentDays)),
+                'active' => $query->whereHas('tickets', function ($q) {
+                    $q->where('created_at', '>=', now()->subMonths(3));
+                }),
+                default => null,
+            };
 
-        $this->estimatedRecipients = $query->count();
+            $this->estimatedRecipients = $query->count();
+        }
 
         // Calculate estimated cost
         if ($this->message && $this->estimatedRecipients > 0) {
             $smsService = new SmsService();
             $segments = $smsService->calculateSegments($this->message);
-            $costPerSegment = config('services.texttango.cost_per_segment', 0.0075);
+            $costPerSegment = config('services.texttango.cost_per_segment', 0.12);
             $this->estimatedCost = $this->estimatedRecipients * $segments * $costPerSegment;
         } else {
             $this->estimatedCost = null;
@@ -98,17 +118,42 @@ class CreateSmsCampaign extends Component
         return $smsService->calculateSegments($this->message);
     }
 
+    public function getAvailableContactsProperty()
+    {
+        return Contact::active()
+            ->withPhone()
+            ->orderBy('first_name')
+            ->orderBy('last_name')
+            ->get()
+            ->map(function ($contact) {
+                return [
+                    'id' => $contact->id,
+                    'name' => $contact->full_contact_info,
+                    'phone' => $contact->phone,
+                ];
+            });
+    }
+
     public function create(): void
     {
         Gate::authorize('create', SmsCampaign::class);
 
         $this->validate();
 
-        $segmentRules = match ($this->segmentType) {
-            'all' => ['type' => 'all'],
-            'recent' => ['type' => 'recent', 'days' => $this->recentDays],
-            'active' => ['type' => 'active'],
-        };
+        // Determine recipient type and prepare data
+        $recipientType = $this->segmentType === 'contacts' ? 'contacts' : 'customers';
+        $segmentRules = null;
+        $contactIds = null;
+
+        if ($this->segmentType === 'contacts') {
+            $contactIds = $this->selectedContactIds;
+        } else {
+            $segmentRules = match ($this->segmentType) {
+                'all' => ['type' => 'all'],
+                'recent' => ['type' => 'recent', 'days' => $this->recentDays],
+                'active' => ['type' => 'active'],
+            };
+        }
 
         $scheduledAt = null;
         if ($this->scheduleForLater && $this->scheduledDate && $this->scheduledTime) {
@@ -119,7 +164,9 @@ class CreateSmsCampaign extends Component
             'name' => $this->name,
             'message' => $this->message,
             'status' => $scheduledAt ? 'scheduled' : 'draft',
+            'recipient_type' => $recipientType,
             'segment_rules' => $segmentRules,
+            'contact_ids' => $contactIds,
             'scheduled_at' => $scheduledAt,
             'total_recipients' => $this->estimatedRecipients,
             'estimated_cost' => $this->estimatedCost,
