@@ -56,9 +56,9 @@ class SmsReports extends Component
             // Overall stats
             fputcsv($file, ['Overall Statistics']);
             fputcsv($file, ['Total Messages', number_format($stats['total_messages'])]);
-            fputcsv($file, ['Total Cost', '$' . number_format($stats['total_cost'], 2)]);
+            fputcsv($file, ['Total Cost', format_currency($stats['total_cost'] ?? 0)]);
             fputcsv($file, ['Total Segments', number_format($stats['total_segments'])]);
-            fputcsv($file, ['Average Cost per Message', '$' . number_format($stats['avg_cost_per_message'], 4)]);
+            fputcsv($file, ['Average Cost per Message', format_currency($stats['avg_cost_per_message'] ?? 0)]);
             fputcsv($file, ['Success Rate', $stats['success_rate'] . '%']);
             fputcsv($file, []);
 
@@ -69,7 +69,7 @@ class SmsReports extends Component
                 fputcsv($file, [
                     class_basename($type->notification_type ?? 'N/A'),
                     $type->total_messages,
-                    '$' . number_format($type->total_cost, 2),
+                    format_currency($type->total_cost ?? 0),
                     $type->total_segments,
                 ]);
             }
@@ -82,7 +82,7 @@ class SmsReports extends Component
                 fputcsv($file, [
                     ucfirst($status->status),
                     $status->total_messages,
-                    '$' . number_format($status->total_cost, 2),
+                    format_currency($status->total_cost ?? 0),
                     $status->total_segments,
                 ]);
             }
@@ -151,9 +151,9 @@ class SmsReports extends Component
 
         return $query->select(
             DB::raw("DATE_FORMAT(created_at, '{$dateFormat}') as date"),
-            DB::raw('SUM(cost) as total_cost'),
+            DB::raw('COALESCE(SUM(cost), 0) as total_cost'),
             DB::raw('COUNT(*) as total_messages'),
-            DB::raw('SUM(segments) as total_segments'),
+            DB::raw('COALESCE(SUM(segments), 0) as total_segments'),
         )
             ->groupBy('date')
             ->orderBy('date')
@@ -166,8 +166,8 @@ class SmsReports extends Component
             ->select(
                 'notification_type',
                 DB::raw('COUNT(*) as total_messages'),
-                DB::raw('SUM(cost) as total_cost'),
-                DB::raw('SUM(segments) as total_segments'),
+                DB::raw('COALESCE(SUM(cost), 0) as total_cost'),
+                DB::raw('COALESCE(SUM(segments), 0) as total_segments'),
             )
             ->groupBy('notification_type')
             ->orderByDesc('total_cost')
@@ -180,8 +180,8 @@ class SmsReports extends Component
             ->select(
                 'status',
                 DB::raw('COUNT(*) as total_messages'),
-                DB::raw('SUM(cost) as total_cost'),
-                DB::raw('SUM(segments) as total_segments'),
+                DB::raw('COALESCE(SUM(cost), 0) as total_cost'),
+                DB::raw('COALESCE(SUM(segments), 0) as total_segments'),
             )
             ->groupBy('status')
             ->orderByDesc('total_cost')
@@ -193,7 +193,7 @@ class SmsReports extends Component
         return SmsDeliveryLog::whereBetween('created_at', [$this->dateFrom, $this->dateTo . ' 23:59:59'])
             ->select(
                 DB::raw('DATE(created_at) as date'),
-                DB::raw('SUM(cost) as total_cost'),
+                DB::raw('COALESCE(SUM(cost), 0) as total_cost'),
                 DB::raw('COUNT(*) as total_messages'),
             )
             ->groupBy('date')

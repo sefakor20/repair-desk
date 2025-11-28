@@ -49,10 +49,10 @@
             <div class="flex items-center justify-between">
                 <div>
                     <flux:subheading class="text-zinc-600 dark:text-zinc-400">Total Cost</flux:subheading>
-                    <flux:heading size="2xl" class="mt-2">${{ number_format($stats['total_cost'], 2) }}
+                    <flux:heading size="2xl" class="mt-2">{{ format_currency($stats['total_cost'] ?? 0) }}
                     </flux:heading>
                     <div class="mt-1 text-xs text-zinc-500">
-                        ${{ number_format($stats['avg_cost_per_message'], 4) }} per message
+                        {{ format_currency($stats['avg_cost_per_message'] ?? 0) }} per message
                     </div>
                 </div>
                 <div class="rounded-lg bg-emerald-100 p-3 dark:bg-emerald-900/20">
@@ -140,7 +140,7 @@
                         <div class="mb-1 flex items-center justify-between text-sm">
                             <span class="text-zinc-600 dark:text-zinc-400">{{ $data->date }}</span>
                             <span class="font-medium text-zinc-900 dark:text-zinc-100">
-                                ${{ number_format($data->total_cost, 2) }}
+                                {{ format_currency($data->total_cost ?? 0) }}
                             </span>
                         </div>
                         <div class="h-2 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
@@ -173,7 +173,7 @@
                                 {{ class_basename($type->notification_type ?? 'N/A') }}
                             </span>
                             <span class="font-medium text-zinc-900 dark:text-zinc-100">
-                                ${{ number_format($type->total_cost, 2) }}
+                                {{ format_currency($type->total_cost ?? 0) }}
                             </span>
                         </div>
                         <div class="h-2 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
@@ -227,7 +227,7 @@
                                     {{ number_format($status->total_messages) }}
                                 </td>
                                 <td class="px-4 py-3 text-right text-sm font-medium text-zinc-900 dark:text-zinc-100">
-                                    ${{ number_format($status->total_cost, 2) }}
+                                    {{ format_currency($status->total_cost ?? 0) }}
                                 </td>
                                 <td class="px-4 py-3 text-right text-sm text-zinc-600 dark:text-zinc-400">
                                     {{ number_format($status->total_segments) }}
@@ -267,7 +267,7 @@
                                     {{ number_format($day->total_messages) }}
                                 </td>
                                 <td class="px-4 py-3 text-right text-sm font-medium text-zinc-900 dark:text-zinc-100">
-                                    ${{ number_format($day->total_cost, 2) }}
+                                    {{ format_currency($day->total_cost ?? 0) }}
                                 </td>
                             </tr>
                         @empty

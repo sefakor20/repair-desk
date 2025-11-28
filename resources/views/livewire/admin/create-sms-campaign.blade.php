@@ -263,7 +263,7 @@
                                 <div class="text-xs text-zinc-500">
                                     <span wire:loading.remove
                                         wire:target="calculateEstimate,selectedContactIds,segmentType,recentDays,message">
-                                        ${{ number_format($estimatedCost / $estimatedRecipients, 4) }} per SMS
+                                        {{ format_currency($estimatedCost / $estimatedRecipients) }} per SMS
                                     </span>
                                 </div>
                             @endif
