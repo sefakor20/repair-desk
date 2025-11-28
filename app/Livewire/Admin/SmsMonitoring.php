@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Admin;
 
 use App\Models\SmsDeliveryLog;
+use App\Services\SmsService;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Livewire\Component;
@@ -77,7 +78,7 @@ class SmsMonitoring extends Component
             $file = fopen('php://output', 'w');
 
             // Add CSV headers
-            fputcsv($file, ['Date', 'Time', 'Phone', 'Message', 'Type', 'Status', 'Customer', 'Error', 'External ID']);
+            fputcsv($file, ['Date', 'Time', 'Phone', 'Message', 'Type', 'Status', 'Customer', 'Error', 'External ID', 'Cost', 'Segments']);
 
             foreach ($query as $log) {
                 fputcsv($file, [
@@ -90,6 +91,8 @@ class SmsMonitoring extends Component
                     $log->notifiable?->name ?? 'N/A',
                     $log->error_message ?? '',
                     $log->external_id ?? '',
+                    $log->cost ? '$' . number_format($log->cost, 4) : '$0.0000',
+                    $log->segments,
                 ]);
             }
 
@@ -97,6 +100,27 @@ class SmsMonitoring extends Component
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    public function retryMessage(string $logId, SmsService $smsService): void
+    {
+        Gate::authorize('viewAny', SmsDeliveryLog::class);
+
+        $log = SmsDeliveryLog::findOrFail($logId);
+
+        if ($log->status !== 'failed') {
+            $this->dispatch('error', message: 'Only failed messages can be retried.');
+
+            return;
+        }
+
+        $success = $smsService->retrySms($log);
+
+        if ($success) {
+            $this->dispatch('success', message: 'SMS retried successfully!');
+        } else {
+            $this->dispatch('error', message: 'Failed to retry SMS. Check the logs for details.');
+        }
     }
 
     public function render(): View
@@ -123,6 +147,8 @@ class SmsMonitoring extends Component
             'sent' => SmsDeliveryLog::where('status', 'sent')->whereBetween('created_at', [$this->dateFrom, $this->dateTo . ' 23:59:59'])->count(),
             'failed' => SmsDeliveryLog::where('status', 'failed')->whereBetween('created_at', [$this->dateFrom, $this->dateTo . ' 23:59:59'])->count(),
             'pending' => SmsDeliveryLog::where('status', 'pending')->whereBetween('created_at', [$this->dateFrom, $this->dateTo . ' 23:59:59'])->count(),
+            'total_cost' => SmsDeliveryLog::whereBetween('created_at', [$this->dateFrom, $this->dateTo . ' 23:59:59'])->sum('cost'),
+            'total_segments' => SmsDeliveryLog::whereBetween('created_at', [$this->dateFrom, $this->dateTo . ' 23:59:59'])->sum('segments'),
         ];
 
         // Calculate success rate

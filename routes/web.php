@@ -163,6 +163,13 @@ Route::middleware(['auth'])->group(function (): void {
     // SMS Monitoring
     Route::get('admin/sms-monitoring', \App\Livewire\Admin\SmsMonitoring::class)->name('admin.sms-monitoring')->middleware('staff.permission:manage_settings');
 
+    // SMS Reports
+    Route::get('admin/sms-reports', \App\Livewire\Admin\SmsReports::class)->name('admin.sms-reports')->middleware('staff.permission:manage_settings');
+
+    // SMS Campaigns
+    Route::get('admin/sms-campaigns', \App\Livewire\Admin\SmsCampaigns::class)->name('admin.sms-campaigns')->middleware('staff.permission:manage_settings');
+    Route::get('admin/sms-campaigns/create', \App\Livewire\Admin\CreateSmsCampaign::class)->name('admin.sms-campaigns.create')->middleware('staff.permission:manage_settings');
+
     // SMS Templates
     Route::get('admin/sms-templates', \App\Livewire\Admin\SmsTemplates\Index::class)->name('admin.sms-templates.index')->middleware('staff.permission:manage_settings');
     Route::get('admin/sms-templates/create', \App\Livewire\Admin\SmsTemplates\Form::class)->name('admin.sms-templates.create')->middleware('staff.permission:manage_settings');

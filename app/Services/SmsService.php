@@ -75,6 +75,9 @@ class SmsService
 
         // Create delivery logs for each phone number
         $logs = collect($phones)->map(function ($phone) use ($message, $notifiable, $notificationType) {
+            // Calculate SMS segments (160 chars per segment for GSM-7, 70 for Unicode)
+            $segments = $this->calculateSegments($message);
+
             return SmsDeliveryLog::create([
                 'notifiable_type' => $notifiable ? get_class($notifiable) : null,
                 'notifiable_id' => $notifiable?->id ?? null,
@@ -82,6 +85,7 @@ class SmsService
                 'message' => $message,
                 'notification_type' => $notificationType,
                 'status' => 'pending',
+                'segments' => $segments,
             ]);
         });
 
@@ -114,6 +118,10 @@ class SmsService
                         $log->external_id = $externalId;
                         $log->save();
                     }
+
+                    // Calculate and set cost
+                    $cost = $log->calculateCost();
+                    $log->update(['cost' => $cost]);
 
                     $log->markAsSent($responseData);
                 });
@@ -156,10 +164,144 @@ class SmsService
     }
 
     /**
+     * Retry a failed SMS message.
+     */
+    public function retrySms(SmsDeliveryLog $log): bool
+    {
+        // Check if retry is allowed
+        if (! $log->canRetry()) {
+            Log::warning('SMS retry not allowed', [
+                'log_id' => $log->id,
+                'retry_count' => $log->retry_count,
+                'max_retries' => $log->max_retries,
+            ]);
+
+            return false;
+        }
+
+        if (empty($this->apiKey)) {
+            Log::warning('TextTango API key not configured');
+
+            return false;
+        }
+
+        // Update retry tracking before attempting
+        $log->update([
+            'retry_count' => $log->retry_count + 1,
+            'last_retry_at' => now(),
+            'next_retry_at' => null,
+            'status' => 'pending',
+            'error_message' => null,
+        ]);
+
+        try {
+            $response = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer ' . $this->apiKey,
+            ])->post($this->apiUrl, [
+                'to' => $log->phone,
+                'from' => $this->senderId,
+                'body' => $log->message,
+                'campaign_name' => uniqid('RepairDesk_Retry_'),
+                'is_scheduled' => false,
+                'is_scheduled_datetime' => null,
+                'flash' => false,
+            ]);
+
+            if ($response->successful()) {
+                $responseData = $response->json();
+                $externalId = $responseData['message_id'] ?? $responseData['data']['message_id'] ?? null;
+
+                if ($externalId) {
+                    $log->external_id = $externalId;
+                }
+
+                $cost = $log->calculateCost();
+                $log->update(['cost' => $cost]);
+                $log->markAsSent($responseData);
+
+                Log::info('SMS retry successful', [
+                    'log_id' => $log->id,
+                    'retry_count' => $log->retry_count,
+                ]);
+
+                return true;
+            }
+
+            $errorMessage = $response->body();
+            $log->markAsFailed($errorMessage);
+
+            // Schedule next retry if possible
+            if ($log->retry_count < $log->max_retries) {
+                $nextDelayMinutes = 2 ** $log->retry_count;
+                $log->update([
+                    'next_retry_at' => now()->addMinutes($nextDelayMinutes),
+                ]);
+
+                Log::info('SMS retry failed, scheduled next attempt', [
+                    'log_id' => $log->id,
+                    'retry_count' => $log->retry_count,
+                    'next_retry_at' => $log->next_retry_at,
+                ]);
+            }
+
+            return false;
+        } catch (Exception $e) {
+            $errorMessage = $e->getMessage();
+            $log->markAsFailed($errorMessage);
+
+            // Schedule next retry if possible
+            if ($log->retry_count < $log->max_retries) {
+                $nextDelayMinutes = 2 ** $log->retry_count;
+                $log->update([
+                    'next_retry_at' => now()->addMinutes($nextDelayMinutes),
+                ]);
+            }
+
+            Log::error('SMS retry exception', [
+                'log_id' => $log->id,
+                'error' => $errorMessage,
+            ]);
+
+            return false;
+        }
+    }
+
+    /**
      * Check if SMS service is configured and enabled.
      */
     public function isEnabled(): bool
     {
         return ! empty($this->apiKey) && ! empty($this->apiUrl);
+    }
+
+    /**
+     * Calculate SMS segments based on message length.
+     * GSM-7 encoding: 160 chars per segment (single), 153 per segment (multi)
+     * Unicode: 70 chars per segment (single), 67 per segment (multi)
+     */
+    public function calculateSegments(string $message): int
+    {
+        $length = mb_strlen($message);
+
+        // Check if message contains Unicode characters
+        $isUnicode = mb_strlen($message) !== mb_strlen($message);
+
+        if ($isUnicode) {
+            // Unicode (UCS-2) encoding
+            if ($length <= 70) {
+                return 1;
+            }
+
+            return (int) ceil($length / 67);
+        }
+
+        // GSM-7 encoding
+        if ($length <= 160) {
+            return 1;
+        }
+
+        return (int) ceil($length / 153);
     }
 }

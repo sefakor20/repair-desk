@@ -158,4 +158,19 @@ class Customer extends Model
     {
         return mb_trim("{$this->first_name} {$this->last_name}");
     }
+
+    public function canReceiveSms(): bool
+    {
+        if (! $this->phone) {
+            return false;
+        }
+
+        // Check if customer has SMS preferences and if they allow SMS
+        $preferences = $this->preferences;
+        if ($preferences && ! $preferences->sms_notifications) {
+            return false;
+        }
+
+        return true;
+    }
 }
