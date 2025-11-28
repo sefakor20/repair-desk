@@ -109,7 +109,8 @@
                     @endhasAnyStaffPermission
 
                     @hasAnyStaffPermission(['manage_settings'])
-                        <flux:navlist.item icon="book-user" href="#contacts" :current="false" wire:navigate>
+                        <flux:navlist.item icon="book-user" :href="route('admin.contacts.index')"
+                            :current="request()->routeIs('admin.contacts.*')" wire:navigate>
                             {{ __('Contacts') }}
                         </flux:navlist.item>
                     @endhasAnyStaffPermission

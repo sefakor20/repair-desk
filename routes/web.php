@@ -170,6 +170,11 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('admin/sms-campaigns', \App\Livewire\Admin\SmsCampaigns::class)->name('admin.sms-campaigns')->middleware('staff.permission:manage_settings');
     Route::get('admin/sms-campaigns/create', \App\Livewire\Admin\CreateSmsCampaign::class)->name('admin.sms-campaigns.create')->middleware('staff.permission:manage_settings');
 
+    // SMS Contacts
+    Route::get('admin/contacts', \App\Livewire\Admin\Contacts\Index::class)->name('admin.contacts.index')->middleware('staff.permission:manage_settings');
+    Route::get('admin/contacts/create', \App\Livewire\Admin\Contacts\Create::class)->name('admin.contacts.create')->middleware('staff.permission:manage_settings');
+    Route::get('admin/contacts/{contact}/edit', \App\Livewire\Admin\Contacts\Edit::class)->name('admin.contacts.edit')->middleware('staff.permission:manage_settings');
+
     // SMS Templates
     Route::get('admin/sms-templates', \App\Livewire\Admin\SmsTemplates\Index::class)->name('admin.sms-templates.index')->middleware('staff.permission:manage_settings');
     Route::get('admin/sms-templates/create', \App\Livewire\Admin\SmsTemplates\Form::class)->name('admin.sms-templates.create')->middleware('staff.permission:manage_settings');

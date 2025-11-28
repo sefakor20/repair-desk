@@ -37,20 +37,31 @@ class SmsWebhookController extends Controller
             'headers' => $request->headers->all(),
         ]);
 
-        // Validate required fields
+        // Validate required fields - handle both old message_id and new tracking_id
         $validated = $request->validate([
-            'message_id' => 'required|string',
+            'message_id' => 'sometimes|string',      // Legacy format
+            'tracking_id' => 'sometimes|string',     // New TextTango format
             'status' => 'required|string|in:sent,delivered,failed,pending',
             'phone' => 'sometimes|string',
             'error_message' => 'nullable|string',
             'delivered_at' => 'nullable|date',
         ]);
 
-        // Find the SMS delivery log by external_id (message_id from TextTango)
-        $log = SmsDeliveryLog::where('external_id', $validated['message_id'])->first();
+        // Get the identifier - prefer tracking_id over message_id for new TextTango format
+        $externalId = $validated['tracking_id'] ?? $validated['message_id'] ?? null;
+
+        if (! $externalId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Missing tracking_id or message_id',
+            ], 422);
+        }
+
+        // Find the SMS delivery log by external_id
+        $log = SmsDeliveryLog::where('external_id', $externalId)->first();
 
         if (! $log) {
-            Log::warning('SMS Delivery Log not found', ['message_id' => $validated['message_id']]);
+            Log::warning('SMS Delivery Log not found', ['external_id' => $externalId]);
 
             return response()->json([
                 'success' => false,

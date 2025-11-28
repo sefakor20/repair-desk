@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Exception;
 
+use function Laravel\Prompts\info;
+
 class SmsService
 {
     private string $apiKey;
@@ -90,32 +92,33 @@ class SmsService
         });
 
         try {
+
             $response = Http::withHeaders([
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
                 'Authorization' => 'Bearer ' . $this->apiKey,
-            ])->post($this->apiUrl, [
-                'to' => implode(',', $phones),
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+            ])->post("{$this->apiUrl}", [
                 'from' => $this->senderId,
                 'body' => $message,
-                'campaign_name' => uniqid('RepairDesk_'),
+                'to' =>  $phones,
                 'is_scheduled' => false,
-                'is_scheduled_datetime' => null,
                 'flash' => false,
+                'campaign_name' => uniqid('RepairDesk_'),
             ]);
+
+
 
             if ($response->successful()) {
                 $responseData = $response->json();
+                Log::info('TextTango SMS API response', ['response' => $responseData]);
 
-                // Extract message IDs if provided by TextTango
-                $messageIds = $responseData['message_ids'] ?? $responseData['data']['message_ids'] ?? [];
+                $trackingId = $responseData['data']['tracking_id'] ?? null;
 
                 // Mark all logs as sent and store external_id
-                $logs->each(function ($log, $index) use ($responseData, $messageIds) {
-                    $externalId = $messageIds[$index] ?? $responseData['message_id'] ?? null;
-
-                    if ($externalId) {
-                        $log->external_id = $externalId;
+                $logs->each(function ($log) use ($responseData, $trackingId) {
+                    // Use tracking_id as external_id for TextTango
+                    if ($trackingId) {
+                        $log->external_id = $trackingId;
                         $log->save();
                     }
 
@@ -123,13 +126,9 @@ class SmsService
                     $cost = $log->calculateCost();
                     $log->update(['cost' => $cost]);
 
-                    $log->markAsSent($responseData);
+                    // Pass the response data array to markAsSent
+                    $log->markAsSent($responseData ?? []);
                 });
-
-                Log::info('SMS sent successfully', [
-                    'recipients' => count($phones),
-                    'response' => $responseData,
-                ]);
 
                 return true;
             }
@@ -211,15 +210,15 @@ class SmsService
 
             if ($response->successful()) {
                 $responseData = $response->json();
-                $externalId = $responseData['message_id'] ?? $responseData['data']['message_id'] ?? null;
+                $trackingId = $responseData['data']['tracking_id'] ?? null;
 
-                if ($externalId) {
-                    $log->external_id = $externalId;
+                if ($trackingId) {
+                    $log->external_id = $trackingId;
                 }
 
                 $cost = $log->calculateCost();
                 $log->update(['cost' => $cost]);
-                $log->markAsSent($responseData);
+                $log->markAsSent($responseData ?? []);
 
                 Log::info('SMS retry successful', [
                     'log_id' => $log->id,
@@ -286,7 +285,7 @@ class SmsService
         $length = mb_strlen($message);
 
         // Check if message contains Unicode characters
-        $isUnicode = mb_strlen($message) !== mb_strlen($message);
+        $isUnicode = mb_strlen($message, 'UTF-8') !== mb_strlen($message);
 
         if ($isUnicode) {
             // Unicode (UCS-2) encoding

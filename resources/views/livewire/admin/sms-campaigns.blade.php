@@ -91,36 +91,36 @@
                                 <td class="px-6 py-4">
                                     <span
                                         class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
-                                        &#123;&#123; match($campaign->status) {
+                                        {{ match ($campaign->status) {
                                             'draft' => 'bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-300',
                                             'scheduled' => 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300',
                                             'sending' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300',
                                             'completed' => 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-300',
                                             'cancelled' => 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300',
-                                            default => 'bg-zinc-100 text-zinc-800'
-                                        } &#125;&#125;">
-                                        &#123;&#123; ucfirst($campaign->status) &#125;&#125;
+                                            default => 'bg-zinc-100 text-zinc-800',
+                                        } }}">
+                                        {{ ucfirst($campaign->status) }}
                                     </span>
                                     @if ($campaign->scheduled_at)
                                         <div class="mt-1 text-xs text-zinc-500">
-                                            &#123;&#123; $campaign->scheduled_at->format('M d, Y H:i') &#125;&#125;
+                                            {{ $campaign->scheduled_at->format('M d, Y H:i') }}
                                         </div>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="text-sm text-zinc-900 dark:text-zinc-100">
-                                        &#123;&#123; $campaign->sent_count + $campaign->failed_count &#125;&#125; /
-                                        &#123;&#123; $campaign->total_recipients &#125;&#125;
+                                        {{ $campaign->sent_count + $campaign->failed_count }} /
+                                        {{ $campaign->total_recipients }}
                                     </div>
                                     @if ($campaign->total_recipients > 0)
                                         <div
                                             class="mt-1 h-2 w-32 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-700">
                                             <div class="h-full bg-emerald-500 transition-all duration-300"
-                                                style="width: &#123;&#123; $campaign->progress_percentage &#125;&#125;%">
+                                                style="width: {{ $campaign->progress_percentage }}%">
                                             </div>
                                         </div>
                                         <div class="mt-1 text-xs text-zinc-500">
-                                            &#123;&#123; $campaign->success_rate &#125;&#125;% success
+                                            {{ $campaign->success_rate }}% success
                                         </div>
                                     @else
                                         <div class="text-xs text-zinc-500">Not started</div>
@@ -129,12 +129,12 @@
                                 <td class="px-6 py-4">
                                     @if ($campaign->actual_cost)
                                         <div class="text-sm font-medium text-zinc-900 dark:text-zinc-100">
-                                            $&#123;&#123; number_format($campaign->actual_cost, 2) &#125;&#125;
+                                            {{ format_currency($campaign->actual_cost) }}
                                         </div>
                                         <div class="text-xs text-zinc-500">Actual</div>
                                     @elseif ($campaign->estimated_cost)
                                         <div class="text-sm text-zinc-600 dark:text-zinc-400">
-                                            ~$&#123;&#123; number_format($campaign->estimated_cost, 2) &#125;&#125;
+                                            ~{{ format_currency($campaign->estimated_cost) }}
                                         </div>
                                         <div class="text-xs text-zinc-500">Estimated</div>
                                     @else
@@ -143,17 +143,17 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="text-sm text-zinc-900 dark:text-zinc-100">
-                                        &#123;&#123; $campaign->created_at->format('M d, Y') &#125;&#125;
+                                        {{ $campaign->created_at->format('M d, Y') }}
                                     </div>
                                     <div class="text-xs text-zinc-500">
-                                        &#123;&#123; $campaign->created_at->format('H:i') &#125;&#125;
+                                        {{ $campaign->created_at->format('H:i') }}
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 text-right text-sm font-medium">
                                     <div class="flex items-center justify-end gap-2">
                                         @if (in_array($campaign->status, ['draft', 'scheduled']))
                                             <flux:button variant="ghost" size="sm"
-                                                wire:click="cancelCampaign('&#123;&#123; $campaign->id &#125;&#125;')"
+                                                wire:click="cancelCampaign('{{ $campaign->id }}')"
                                                 wire:confirm="Are you sure you want to cancel this campaign?">
                                                 Cancel
                                             </flux:button>
@@ -161,7 +161,7 @@
 
                                         @if (in_array($campaign->status, ['draft', 'completed', 'cancelled']))
                                             <flux:button variant="ghost" size="sm"
-                                                wire:click="confirmDelete('&#123;&#123; $campaign->id &#125;&#125;')"
+                                                wire:click="confirmDelete('{{ $campaign->id }}')"
                                                 class="text-red-600 hover:text-red-700 dark:text-red-400">
                                                 Delete
                                             </flux:button>
@@ -176,7 +176,7 @@
 
             {{-- Pagination --}}
             <div class="border-t border-zinc-200 px-6 py-4 dark:border-zinc-800">
-                &#123;&#123; $campaigns->links() &#125;&#125;
+                {{ $campaigns->links() }}
             </div>
         @else
             <div class="px-6 py-12 text-center">
