@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\InventoryStatus;
+use App\Traits\BranchScoped;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -97,5 +98,13 @@ class InventoryItem extends Model
     {
         return $query->where('quantity', 0)
             ->where('status', InventoryStatus::Active);
+    }
+
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        // Apply branch scoping globally
+        static::addGlobalScope(new BranchScoped());
     }
 }

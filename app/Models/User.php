@@ -92,6 +92,32 @@ class User extends Authenticatable
         return $this->belongsTo(Branch::class);
     }
 
+    public function staffAssignments(): HasMany
+    {
+        return $this->hasMany(Staff::class);
+    }
+
+    /**
+     * Check if user is a super admin
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === UserRole::Admin && ! $this->branch_id;
+    }
+
+    /**
+     * Check if user can manage the given branch
+     */
+    public function canManageBranch(Branch|string $branch): bool
+    {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
+        $branchId = $branch instanceof Branch ? $branch->id : $branch;
+        return $this->branch_id === $branchId;
+    }
+
     /**
      * Get the user's initials
      */
@@ -102,5 +128,41 @@ class User extends Authenticatable
             ->take(2)
             ->map(fn($word) => Str::substr($word, 0, 1))
             ->implode('');
+    }
+
+    /**
+     * Check if user has a specific staff permission
+     */
+    public function hasStaffPermission(string $permission): bool
+    {
+        return app(\App\Services\StaffPermissionService::class)
+            ->hasPermission($this, $permission);
+    }
+
+    /**
+     * Check if user has any of the given staff permissions
+     */
+    public function hasAnyStaffPermission(array $permissions): bool
+    {
+        return app(\App\Services\StaffPermissionService::class)
+            ->hasAnyPermission($this, $permissions);
+    }
+
+    /**
+     * Check if user has all of the given staff permissions
+     */
+    public function hasAllStaffPermissions(array $permissions): bool
+    {
+        return app(\App\Services\StaffPermissionService::class)
+            ->hasAllPermissions($this, $permissions);
+    }
+
+    /**
+     * Get the active staff assignment for this user
+     */
+    public function activeStaffAssignment(): ?Staff
+    {
+        return app(\App\Services\StaffPermissionService::class)
+            ->getActiveStaffAssignment($this);
     }
 }

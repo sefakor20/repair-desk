@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Branches;
 
 use App\Models\Branch;
@@ -52,7 +54,7 @@ class Index extends Component
 
             Flux::toast(
                 text: 'Cannot delete branch with related records: ' . implode(', ', $messages),
-                variant: 'danger'
+                variant: 'danger',
             );
 
             return;
@@ -62,7 +64,7 @@ class Index extends Component
 
         Flux::toast(
             text: 'Branch deleted successfully.',
-            variant: 'success'
+            variant: 'success',
         );
     }
 
@@ -74,7 +76,7 @@ class Index extends Component
 
         Flux::toast(
             text: 'Branch status updated successfully.',
-            variant: 'success'
+            variant: 'success',
         );
     }
 

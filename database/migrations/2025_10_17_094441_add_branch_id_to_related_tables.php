@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -38,6 +39,20 @@ return new class extends Migration
             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('set null');
             $table->index('branch_id');
         });
+
+        // Add branch_id to invoices table
+        Schema::table('invoices', function (Blueprint $table) {
+            $table->char('branch_id', 36)->nullable()->after('customer_id');
+            $table->foreign('branch_id')->references('id')->on('branches')->onDelete('set null');
+            $table->index('branch_id');
+        });
+
+        // Add branch_id to payments table
+        Schema::table('payments', function (Blueprint $table) {
+            $table->char('branch_id', 36)->nullable()->after('invoice_id');
+            $table->foreign('branch_id')->references('id')->on('branches')->onDelete('set null');
+            $table->index('branch_id');
+        });
     }
 
     /**
@@ -61,6 +76,16 @@ return new class extends Migration
         });
 
         Schema::table('pos_sales', function (Blueprint $table) {
+            $table->dropForeign(['branch_id']);
+            $table->dropColumn('branch_id');
+        });
+
+        Schema::table('invoices', function (Blueprint $table) {
+            $table->dropForeign(['branch_id']);
+            $table->dropColumn('branch_id');
+        });
+
+        Schema::table('payments', function (Blueprint $table) {
             $table->dropForeign(['branch_id']);
             $table->dropColumn('branch_id');
         });

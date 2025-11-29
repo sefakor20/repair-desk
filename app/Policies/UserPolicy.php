@@ -74,19 +74,21 @@ class UserPolicy
 
     /**
      * Determine whether the user can view reports.
-     * Only Admin and Manager can view reports.
+     * Admin, Manager, or staff with view_reports permission can view reports.
      */
     public function viewReports(User $user): bool
     {
-        return in_array($user->role, [UserRole::Admin, UserRole::Manager]);
+        return in_array($user->role, [UserRole::Admin, UserRole::Manager])
+            || $user->hasStaffPermission('view_reports');
     }
 
     /**
      * Determine whether the user can access system settings.
-     * Only Admin can access system settings.
+     * Admin or staff with manage_settings permission can access settings.
      */
     public function accessSettings(User $user): bool
     {
-        return $user->role === UserRole::Admin;
+        return $user->role === UserRole::Admin
+            || $user->hasStaffPermission('manage_settings');
     }
 }

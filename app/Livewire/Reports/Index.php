@@ -303,7 +303,7 @@ class Index extends Component
                 'inventory_items.name',
                 'inventory_items.sku',
                 DB::raw('SUM(pos_sale_items.quantity) as total_quantity'),
-                DB::raw('SUM(pos_sale_items.subtotal) as total_revenue')
+                DB::raw('SUM(pos_sale_items.subtotal) as total_revenue'),
             )
             ->groupBy('inventory_items.id', 'inventory_items.name', 'inventory_items.sku')
             ->orderByDesc('total_quantity')
@@ -323,7 +323,7 @@ class Index extends Component
                 'inventory_items.name',
                 'inventory_items.sku',
                 DB::raw('SUM(pos_sale_items.quantity) as total_quantity'),
-                DB::raw('SUM(pos_sale_items.subtotal) as total_revenue')
+                DB::raw('SUM(pos_sale_items.subtotal) as total_revenue'),
             )
             ->groupBy('inventory_items.id', 'inventory_items.name', 'inventory_items.sku')
             ->orderByDesc('total_revenue')

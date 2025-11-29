@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -21,7 +23,7 @@ class BranchFactory extends Factory
 
         return [
             'name' => fake()->company() . ' Branch',
-            'code' => strtoupper(fake()->unique()->lexify('???')),
+            'code' => mb_strtoupper(fake()->unique()->lexify('???')),
             'address' => fake()->streetAddress(),
             'city' => $city,
             'state' => 'Greater Accra',

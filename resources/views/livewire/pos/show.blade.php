@@ -61,9 +61,9 @@
                             @foreach ($sale->items as $item)
                                 <tr>
                                     <td class="py-3">
-                                        <flux:text class="font-medium">{{ $item->inventoryItem->name }}</flux:text>
+                                        <flux:text class="font-medium">{{ $item->inventoryItem?->name }}</flux:text>
                                         <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">
-                                            {{ $item->inventoryItem->sku }}
+                                            {{ $item->inventoryItem?->sku }}
                                         </flux:text>
                                     </td>
                                     <td class="py-3 text-right">

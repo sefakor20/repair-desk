@@ -3,13 +3,13 @@
 declare(strict_types=1);
 
 use App\Livewire\Customers\Edit;
-use App\Models\{Customer, User};
+use App\Models\{Customer};
 use Livewire\Livewire;
 
 use function Pest\Laravel\{actingAs, assertDatabaseHas};
 
 test('customer edit page can be rendered', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create();
 
     actingAs($user)
@@ -20,7 +20,7 @@ test('customer edit page can be rendered', function () {
 });
 
 test('edit form is pre-populated with customer data', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create([
         'first_name' => 'John',
         'last_name' => 'Doe',
@@ -43,7 +43,7 @@ test('edit form is pre-populated with customer data', function () {
 });
 
 test('customer edit form requires first name', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create();
 
     Livewire::actingAs($user)
@@ -54,7 +54,7 @@ test('customer edit form requires first name', function () {
 });
 
 test('customer edit form requires last name', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create();
 
     Livewire::actingAs($user)
@@ -65,7 +65,7 @@ test('customer edit form requires last name', function () {
 });
 
 test('customer edit form requires email', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create();
 
     Livewire::actingAs($user)
@@ -76,7 +76,7 @@ test('customer edit form requires email', function () {
 });
 
 test('customer edit form requires valid email', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create();
 
     Livewire::actingAs($user)
@@ -87,7 +87,7 @@ test('customer edit form requires valid email', function () {
 });
 
 test('customer can keep same email when editing', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create(['email' => 'john@example.com']);
 
     Livewire::actingAs($user)
@@ -105,7 +105,7 @@ test('customer can keep same email when editing', function () {
 });
 
 test('customer edit form requires unique email for other customers', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $existingCustomer = Customer::factory()->create(['email' => 'existing@example.com']);
     $customer = Customer::factory()->create(['email' => 'john@example.com']);
 
@@ -117,7 +117,7 @@ test('customer edit form requires unique email for other customers', function ()
 });
 
 test('customer edit form requires phone', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create();
 
     Livewire::actingAs($user)
@@ -128,7 +128,7 @@ test('customer edit form requires phone', function () {
 });
 
 test('customer can be updated with valid data', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create([
         'first_name' => 'John',
         'last_name' => 'Doe',
@@ -153,7 +153,7 @@ test('customer can be updated with valid data', function () {
 });
 
 test('customer address can be updated', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create(['address' => '123 Main St']);
 
     Livewire::actingAs($user)
@@ -169,7 +169,7 @@ test('customer address can be updated', function () {
 });
 
 test('customer notes can be updated', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create(['notes' => 'Old note']);
 
     Livewire::actingAs($user)
@@ -185,7 +185,7 @@ test('customer notes can be updated', function () {
 });
 
 test('customer tags can be added during edit', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create(['tags' => ['VIP']]);
 
     Livewire::actingAs($user)
@@ -196,7 +196,7 @@ test('customer tags can be added during edit', function () {
 });
 
 test('customer tags can be removed during edit', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create(['tags' => ['VIP', 'Regular', 'Premium']]);
 
     Livewire::actingAs($user)
@@ -206,7 +206,7 @@ test('customer tags can be removed during edit', function () {
 });
 
 test('customer tags can be saved during edit', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create(['tags' => ['VIP']]);
 
     Livewire::actingAs($user)
@@ -220,7 +220,7 @@ test('customer tags can be saved during edit', function () {
 });
 
 test('success message is shown after updating customer', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create();
 
     Livewire::actingAs($user)
@@ -234,7 +234,7 @@ test('success message is shown after updating customer', function () {
 test('unauthorized user cannot update customer', function () {
     // This test ensures the authorization is working at the policy level
     // In this app, all authenticated users can update customers
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create();
 
     expect($user->can('update', $customer))->toBeTrue();

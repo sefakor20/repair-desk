@@ -9,7 +9,7 @@ use Livewire\Livewire;
 use function Pest\Laravel\{actingAs, get};
 
 beforeEach(function (): void {
-    $this->user = User::factory()->create();
+    $this->user = createAdmin();
     $this->customer = Customer::factory()->create();
     $this->device = Device::factory()->for($this->customer)->create();
     $this->createdBy = User::factory()->create(['name' => 'John Creator']);

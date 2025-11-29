@@ -90,4 +90,15 @@ class UserFactory extends Factory
             'role' => UserRole::Technician,
         ]);
     }
+
+    /**
+     * Indicate that the user is a super admin (admin with no branch).
+     */
+    public function superAdmin(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'role' => UserRole::Admin,
+            'branch_id' => null,
+        ]);
+    }
 }

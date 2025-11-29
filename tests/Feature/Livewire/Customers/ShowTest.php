@@ -9,7 +9,7 @@ use Livewire\Livewire;
 use function Pest\Laravel\actingAs;
 
 test('customer show page can be rendered', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create();
 
     actingAs($user)
@@ -19,7 +19,7 @@ test('customer show page can be rendered', function () {
 });
 
 test('customer show page displays customer information', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create([
         'first_name' => 'John',
         'last_name' => 'Doe',
@@ -39,7 +39,7 @@ test('customer show page displays customer information', function () {
 });
 
 test('customer show page displays tags', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create([
         'tags' => ['VIP', 'Regular', 'Premium'],
     ]);
@@ -52,7 +52,7 @@ test('customer show page displays tags', function () {
 });
 
 test('customer show page displays device count', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create();
     Device::factory()->count(3)->create(['customer_id' => $customer->id]);
 
@@ -63,7 +63,7 @@ test('customer show page displays device count', function () {
 });
 
 test('customer show page displays ticket count', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create();
     $device = Device::factory()->create(['customer_id' => $customer->id]);
     Ticket::factory()->count(5)->create([
@@ -78,7 +78,7 @@ test('customer show page displays ticket count', function () {
 });
 
 test('customer show page displays devices list', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create();
     $device = Device::factory()->create([
         'customer_id' => $customer->id,
@@ -97,7 +97,7 @@ test('customer show page displays devices list', function () {
 });
 
 test('customer show page shows message when no devices', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create();
 
     Livewire::actingAs($user)
@@ -106,7 +106,7 @@ test('customer show page shows message when no devices', function () {
 });
 
 test('customer show page displays recent tickets', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create();
     $device = Device::factory()->create(['customer_id' => $customer->id]);
     $ticket = Ticket::factory()->create([
@@ -122,7 +122,7 @@ test('customer show page displays recent tickets', function () {
 });
 
 test('customer show page shows message when no tickets', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create();
 
     Livewire::actingAs($user)
@@ -131,7 +131,7 @@ test('customer show page shows message when no tickets', function () {
 });
 
 test('customer show page displays edit button for authorized users', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create();
 
     actingAs($user)
@@ -193,7 +193,7 @@ test('success message is shown after deleting customer', function () {
 });
 
 test('customer show page has breadcrumb navigation', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create();
 
     actingAs($user)
@@ -205,7 +205,7 @@ test('customer show page has breadcrumb navigation', function () {
 test('unauthorized user cannot view customer', function () {
     // This test ensures the authorization is working at the policy level
     // In this app, all authenticated users can view customers
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create();
 
     expect($user->can('view', $customer))->toBeTrue();

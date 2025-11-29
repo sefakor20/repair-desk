@@ -29,6 +29,15 @@ class Preferences extends Component
 
     public bool $newsletter = false;
 
+    // SMS Preferences
+    public bool $sms_enabled = true;
+
+    public bool $sms_ticket_updates = true;
+
+    public bool $sms_repair_completed = true;
+
+    public bool $sms_invoice_reminders = true;
+
     public function mount(Customer $customer): void
     {
         $this->customer = $customer;
@@ -44,6 +53,10 @@ class Preferences extends Component
                 'notify_referral_success' => true,
                 'marketing_emails' => false,
                 'newsletter' => false,
+                'sms_enabled' => true,
+                'sms_ticket_updates' => true,
+                'sms_repair_completed' => true,
+                'sms_invoice_reminders' => true,
             ],
         );
 
@@ -55,6 +68,10 @@ class Preferences extends Component
         $this->notify_referral_success = $this->preferences->notify_referral_success;
         $this->marketing_emails = $this->preferences->marketing_emails;
         $this->newsletter = $this->preferences->newsletter;
+        $this->sms_enabled = $this->preferences->sms_enabled;
+        $this->sms_ticket_updates = $this->preferences->sms_ticket_updates;
+        $this->sms_repair_completed = $this->preferences->sms_repair_completed;
+        $this->sms_invoice_reminders = $this->preferences->sms_invoice_reminders;
     }
 
     public function save(): void
@@ -67,6 +84,10 @@ class Preferences extends Component
             'notify_referral_success' => $this->notify_referral_success,
             'marketing_emails' => $this->marketing_emails,
             'newsletter' => $this->newsletter,
+            'sms_enabled' => $this->sms_enabled,
+            'sms_ticket_updates' => $this->sms_ticket_updates,
+            'sms_repair_completed' => $this->sms_repair_completed,
+            'sms_invoice_reminders' => $this->sms_invoice_reminders,
         ]);
 
         $this->dispatch(

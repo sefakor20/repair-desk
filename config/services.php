@@ -37,4 +37,12 @@ return [
         ],
     ],
 
+    'texttango' => [
+        'api_key' => env('TEXTTANGO_API_KEY'),
+        'sender_id' => env('TEXTTANGO_SENDER_ID', 'RepairDesk'),
+        'url' => env('TEXTTANGO_API_URL', 'https://app.texttango.com/api/v1/sms/campaign/send'),
+        'webhook_secret' => env('TEXTTANGO_WEBHOOK_SECRET'),
+        'cost_per_segment' => env('TEXTTANGO_COST_PER_SEGMENT', 0.06), // Default: GH₵0.06 per segment
+    ],
+
 ];

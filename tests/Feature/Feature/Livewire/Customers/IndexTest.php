@@ -9,7 +9,7 @@ use Livewire\Livewire;
 use function Pest\Laravel\actingAs;
 
 test('customers index page can be rendered', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     actingAs($user)
         ->get(route('customers.index'))
@@ -18,7 +18,7 @@ test('customers index page can be rendered', function () {
 });
 
 test('customers list shows customer data', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customers = Customer::factory()->count(3)->create();
 
     Livewire::actingAs($user)
@@ -29,7 +29,7 @@ test('customers list shows customer data', function () {
 });
 
 test('search filters customers by first name', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $john = Customer::factory()->create(['first_name' => 'Johnny', 'last_name' => 'Bravo']);
     $jane = Customer::factory()->create(['first_name' => 'Janet', 'last_name' => 'Smith']);
 
@@ -41,7 +41,7 @@ test('search filters customers by first name', function () {
 });
 
 test('search filters customers by last name', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $john = Customer::factory()->create(['first_name' => 'Mark', 'last_name' => 'Williams']);
     $jane = Customer::factory()->create(['first_name' => 'Sarah', 'last_name' => 'Johnson']);
 
@@ -53,7 +53,7 @@ test('search filters customers by last name', function () {
 });
 
 test('search filters customers by email', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $john = Customer::factory()->create(['email' => 'john@example.com']);
     $jane = Customer::factory()->create(['email' => 'jane@example.com']);
 
@@ -65,7 +65,7 @@ test('search filters customers by email', function () {
 });
 
 test('search filters customers by phone', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $john = Customer::factory()->create(['phone' => '1234567890']);
     $jane = Customer::factory()->create(['phone' => '0987654321']);
 
@@ -77,7 +77,7 @@ test('search filters customers by phone', function () {
 });
 
 test('customers are paginated', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     Customer::factory()->count(20)->create();
 
     $response = actingAs($user)->get(route('customers.index'));
@@ -87,7 +87,7 @@ test('customers are paginated', function () {
 });
 
 test('customers list shows device count', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create();
     Device::factory()->count(3)->create(['customer_id' => $customer->id]);
 
@@ -98,7 +98,7 @@ test('customers list shows device count', function () {
 });
 
 test('customers list shows ticket count', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create();
     $device = Device::factory()->create(['customer_id' => $customer->id]);
     Ticket::factory()->count(5)->create([
@@ -113,7 +113,7 @@ test('customers list shows ticket count', function () {
 });
 
 test('customers list displays tags', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create([
         'tags' => ['VIP', 'Premium'],
     ]);
@@ -125,7 +125,7 @@ test('customers list displays tags', function () {
 });
 
 test('customers list shows empty state when no customers', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     Livewire::actingAs($user)
         ->test(Index::class)
@@ -134,7 +134,7 @@ test('customers list shows empty state when no customers', function () {
 });
 
 test('customers list shows empty state when search returns no results', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     Customer::factory()->create(['first_name' => 'John']);
 
     Livewire::actingAs($user)
@@ -145,7 +145,7 @@ test('customers list shows empty state when search returns no results', function
 });
 
 test('view button is visible for customers', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create();
 
     actingAs($user)
@@ -154,7 +154,7 @@ test('view button is visible for customers', function () {
 });
 
 test('edit button is visible for customers', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $customer = Customer::factory()->create();
 
     actingAs($user)
@@ -194,7 +194,7 @@ test('manager can delete customer from index', function () {
 });
 
 test('search resets pagination', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     // Create 20 customers so pagination is needed
     Customer::factory()->count(20)->create();
@@ -210,7 +210,7 @@ test('search resets pagination', function () {
 });
 
 test('customers are ordered by latest first', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $older = Customer::factory()->create(['created_at' => now()->subDays(2)]);
     $newer = Customer::factory()->create(['created_at' => now()]);
 

@@ -7,13 +7,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\{BelongsTo, BelongsToMany, HasMany, HasOne};
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, BelongsToMany, HasMany, HasOne, MorphMany};
+use Illuminate\Notifications\Notifiable;
 
 class Customer extends Model
 {
     /** @use HasFactory<\Database\Factories\CustomerFactory> */
     use HasFactory;
     use HasUlids;
+    use Notifiable;
 
     protected $fillable = [
         'first_name',
@@ -60,6 +62,11 @@ class Customer extends Model
     public function preferences(): HasOne
     {
         return $this->hasOne(CustomerPreference::class);
+    }
+
+    public function smsDeliveryLogs(): MorphMany
+    {
+        return $this->morphMany(SmsDeliveryLog::class, 'notifiable');
     }
 
     public function referralsMade(): HasMany
@@ -149,6 +156,21 @@ class Customer extends Model
 
     public function getFullNameAttribute(): string
     {
-        return trim("{$this->first_name} {$this->last_name}");
+        return mb_trim("{$this->first_name} {$this->last_name}");
+    }
+
+    public function canReceiveSms(): bool
+    {
+        if (! $this->phone) {
+            return false;
+        }
+
+        // Check if customer has SMS preferences and if they allow SMS
+        $preferences = $this->preferences;
+        if ($preferences && ! $preferences->sms_notifications) {
+            return false;
+        }
+
+        return true;
     }
 }

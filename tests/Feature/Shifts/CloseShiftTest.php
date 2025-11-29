@@ -5,13 +5,12 @@ declare(strict_types=1);
 use App\Enums\ShiftStatus;
 use App\Livewire\Shifts\CloseShift;
 use App\Models\Shift;
-use App\Models\User;
 use Livewire\Livewire;
 
 use function Pest\Laravel\{actingAs, assertDatabaseHas};
 
 test('user can view close shift page when shift is open', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     Shift::factory()->open()->create(['opened_by' => $user->id]);
 
     actingAs($user)
@@ -21,7 +20,7 @@ test('user can view close shift page when shift is open', function () {
 });
 
 test('user cannot view close shift page when no active shift', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     actingAs($user)
         ->get(route('shifts.close'))
@@ -29,7 +28,7 @@ test('user cannot view close shift page when no active shift', function () {
 });
 
 test('user can close shift successfully', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $shift = Shift::factory()->open()->create(['opened_by' => $user->id]);
 
     Livewire::actingAs($user)
@@ -48,7 +47,7 @@ test('user can close shift successfully', function () {
 });
 
 test('closing notes are optional', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $shift = Shift::factory()->open()->create(['opened_by' => $user->id]);
 
     Livewire::actingAs($user)
@@ -61,7 +60,7 @@ test('closing notes are optional', function () {
 });
 
 test('closing notes cannot exceed 500 characters', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     Shift::factory()->open()->create(['opened_by' => $user->id]);
 
     Livewire::actingAs($user)
@@ -72,8 +71,8 @@ test('closing notes cannot exceed 500 characters', function () {
 });
 
 test('user cannot close another users shift', function () {
-    $user1 = User::factory()->create();
-    $user2 = User::factory()->create();
+    $user1 = createAdmin();
+    $user2 = createAdmin();
     Shift::factory()->open()->create(['opened_by' => $user1->id]);
 
     actingAs($user2)
@@ -82,7 +81,7 @@ test('user cannot close another users shift', function () {
 });
 
 test('shift sets ended_at timestamp when closed', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $shift = Shift::factory()->open()->create(['opened_by' => $user->id]);
 
     Livewire::actingAs($user)

@@ -14,45 +14,113 @@
         </a>
 
         <flux:navlist variant="outline">
-            <flux:navlist.group :heading="__('Platform')" class="grid">
+            <flux:navlist.group :heading="__('Overview')" class="grid">
                 <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
                     wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
-                <flux:navlist.item icon="user-group" :href="route('customers.index')"
-                    :current="request()->routeIs('customers.*')" wire:navigate>{{ __('Customers') }}</flux:navlist.item>
-                <flux:navlist.item icon="device-phone-mobile" :href="route('devices.index')"
-                    :current="request()->routeIs('devices.*')" wire:navigate>{{ __('Devices') }}</flux:navlist.item>
-                <flux:navlist.item icon="wrench-screwdriver" :href="route('tickets.index')"
-                    :current="request()->routeIs('tickets.*')" wire:navigate>{{ __('Tickets') }}</flux:navlist.item>
-                <flux:navlist.item icon="cube" :href="route('inventory.index')"
-                    :current="request()->routeIs('inventory.*')" wire:navigate>{{ __('Inventory') }}
-                </flux:navlist.item>
-                <flux:navlist.item icon="store" :href="route('branches.index')"
-                    :current="request()->routeIs('branches.*')" wire:navigate>{{ __('Branches') }}</flux:navlist.item>
-                <flux:navlist.item icon="document-text" :href="route('invoices.index')"
-                    :current="request()->routeIs('invoices.*')" wire:navigate>{{ __('Invoices') }}</flux:navlist.item>
-                <flux:navlist.item icon="shopping-cart" :href="route('pos.index')"
-                    :current="request()->routeIs('pos.*') && !request()->routeIs('pos.returns.*')" wire:navigate>
-                    {{ __('POS') }}</flux:navlist.item>
-                <flux:navlist.item icon="arrow-path" :href="route('pos.returns.index')"
-                    :current="request()->routeIs('pos.returns.*')" wire:navigate>{{ __('Returns') }}
-                </flux:navlist.item>
-                <flux:navlist.item icon="banknotes" :href="route('cash-drawer.index')"
-                    :current="request()->routeIs('cash-drawer.*')" wire:navigate>{{ __('Cash Drawer') }}
-                </flux:navlist.item>
-                <flux:navlist.item icon="clock" :href="route('shifts.index')"
-                    :current="request()->routeIs('shifts.*')" wire:navigate>{{ __('Shifts') }}
-                </flux:navlist.item>
-                @can('viewReports', App\Models\User::class)
-                    <flux:navlist.item icon="chart-bar" :href="route('reports.index')"
-                        :current="request()->routeIs('reports.*')" wire:navigate>{{ __('Reports') }}</flux:navlist.item>
-                @endcan
+
                 <flux:navlist.item icon="chart-pie" :href="route('analytics.dashboard')"
                     :current="request()->routeIs('analytics.*')" wire:navigate>{{ __('Analytics') }}
                 </flux:navlist.item>
+
+                @hasAnyStaffPermission(['view_reports', 'manage_settings'])
+                    <flux:navlist.item icon="chart-bar" :href="route('reports.index')"
+                        :current="request()->routeIs('reports.*')" wire:navigate>{{ __('Reports') }}</flux:navlist.item>
+                @endhasAnyStaffPermission
+            </flux:navlist.group>
+
+            <flux:navlist.group :heading="__('Operations')" class="grid">
+                @hasAnyStaffPermission(['manage_customers', 'create_tickets', 'view_assigned_tickets'])
+                    <flux:navlist.item icon="user-group" :href="route('customers.index')"
+                        :current="request()->routeIs('customers.*')" wire:navigate>{{ __('Customers') }}</flux:navlist.item>
+                @endhasAnyStaffPermission
+
+                <flux:navlist.item icon="device-phone-mobile" :href="route('devices.index')"
+                    :current="request()->routeIs('devices.*')" wire:navigate>{{ __('Devices') }}</flux:navlist.item>
+
+                @hasAnyStaffPermission(['manage_tickets', 'view_assigned_tickets', 'create_tickets'])
+                    <flux:navlist.item icon="wrench-screwdriver" :href="route('tickets.index')"
+                        :current="request()->routeIs('tickets.*')" wire:navigate>{{ __('Tickets') }}</flux:navlist.item>
+                @endhasAnyStaffPermission
+
+                @hasAnyStaffPermission(['manage_inventory', 'view_inventory', 'use_inventory'])
+                    <flux:navlist.item icon="cube" :href="route('inventory.index')"
+                        :current="request()->routeIs('inventory.*')" wire:navigate>{{ __('Inventory') }}
+                    </flux:navlist.item>
+                @endhasAnyStaffPermission
+            </flux:navlist.group>
+
+            <flux:navlist.group :heading="__('Sales & Payments')" class="grid">
+                @hasAnyStaffPermission(['create_invoices', 'view_sales', 'process_payments'])
+                    <flux:navlist.item icon="document-text" :href="route('invoices.index')"
+                        :current="request()->routeIs('invoices.*')" wire:navigate>{{ __('Invoices') }}</flux:navlist.item>
+                @endhasAnyStaffPermission
+
+                @hasAnyStaffPermission(['create_sales', 'view_sales'])
+                    <flux:navlist.item icon="shopping-cart" :href="route('pos.index')"
+                        :current="request()->routeIs('pos.*') && !request()->routeIs('pos.returns.*')" wire:navigate>
+                        {{ __('POS') }}</flux:navlist.item>
+                @endhasAnyStaffPermission
+
+                @hasAnyStaffPermission(['create_sales', 'view_sales'])
+                    <flux:navlist.item icon="arrow-path" :href="route('pos.returns.index')"
+                        :current="request()->routeIs('pos.returns.*')" wire:navigate>{{ __('Returns') }}
+                    </flux:navlist.item>
+                @endhasAnyStaffPermission
+
+                @hasAnyStaffPermission(['manage_cash_drawer', 'process_payments'])
+                    <flux:navlist.item icon="banknotes" :href="route('cash-drawer.index')"
+                        :current="request()->routeIs('cash-drawer.*')" wire:navigate>{{ __('Cash Drawer') }}
+                    </flux:navlist.item>
+                @endhasAnyStaffPermission
+
+                <flux:navlist.item icon="clock" :href="route('shifts.index')"
+                    :current="request()->routeIs('shifts.*')" wire:navigate>{{ __('Shifts') }}
+                </flux:navlist.item>
+            </flux:navlist.group>
+
+            <flux:navlist.group :heading="__('Management')" class="grid">
+                @can('viewAny', App\Models\Branch::class)
+                    <flux:navlist.item icon="store" :href="route('branches.index')"
+                        :current="request()->routeIs('branches.*')" wire:navigate>{{ __('Branches') }}</flux:navlist.item>
+                @endcan
+
                 @can('viewAny', App\Models\User::class)
                     <flux:navlist.item icon="users" :href="route('users.index')"
                         :current="request()->routeIs('users.*')" wire:navigate>{{ __('Users') }}</flux:navlist.item>
                 @endcan
+
+                <flux:sidebar.group expandable icon="chat-bubble-left-right" heading="SMS" class="grid">
+                    @hasAnyStaffPermission(['manage_settings', 'view_reports'])
+                        <flux:navlist.item icon="chat-bubble-left-right" :href="route('admin.sms-monitoring')"
+                            :current="request()->routeIs('admin.sms-monitoring')" wire:navigate>{{ __('Monitoring') }}
+                        </flux:navlist.item>
+                    @endhasAnyStaffPermission
+
+                    @hasAnyStaffPermission(['manage_settings', 'view_reports'])
+                        <flux:navlist.item icon="chart-bar" :href="route('admin.sms-reports')"
+                            :current="request()->routeIs('admin.sms-reports')" wire:navigate>{{ __('Reports') }}
+                        </flux:navlist.item>
+                    @endhasAnyStaffPermission
+
+                    @hasAnyStaffPermission(['manage_settings'])
+                        <flux:navlist.item icon="megaphone" :href="route('admin.sms-campaigns')"
+                            :current="request()->routeIs('admin.sms-campaigns*')" wire:navigate>{{ __('Campaigns') }}
+                        </flux:navlist.item>
+                    @endhasAnyStaffPermission
+
+                    @hasAnyStaffPermission(['manage_settings'])
+                        <flux:navlist.item icon="book-user" :href="route('admin.contacts.index')"
+                            :current="request()->routeIs('admin.contacts.*')" wire:navigate>
+                            {{ __('Contacts') }}
+                        </flux:navlist.item>
+                    @endhasAnyStaffPermission
+
+                    @hasAnyStaffPermission(['manage_settings'])
+                        <flux:navlist.item icon="document-text" :href="route('admin.sms-templates.index')"
+                            :current="request()->routeIs('admin.sms-templates.*')" wire:navigate>{{ __('Templates') }}
+                        </flux:navlist.item>
+                    @endhasAnyStaffPermission
+                </flux:sidebar.group>
             </flux:navlist.group>
         </flux:navlist>
 
@@ -71,96 +139,96 @@
         </flux:navlist>
 
         <!-- Desktop User Menu -->
-        @auth
-            <flux:dropdown class="hidden lg:block" position="bottom" align="start">
-                <flux:profile :name="auth()->user()->name" :initials="auth()->user()->initials()" <flux:menu
-                    class="w-[220px]">
-                    <flux:menu.radio.group>
-                        <div class="p-0 text-sm font-normal">
-                            <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
-                                <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
-                                    <span
-                                        class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                        {{ auth()->user()->initials() }}
-                                    </span>
-                                </span>
+        <flux:dropdown class="hidden lg:block" position="bottom" align="start">
+            <flux:profile :name="auth()->user()->name" :initials="auth()->user()->initials()"
+                icon-trailing="chevrons-up-down" />
 
-                                <div class="grid flex-1 text-start text-sm leading-tight">
-                                    <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
-                                    <span class="truncate text-xs">{{ auth()->user()->email }}</span>
-                                </div>
+            <flux:menu class="w-[220px]">
+                <flux:menu.radio.group>
+                    <div class="p-0 text-sm font-normal">
+                        <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
+                            <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
+                                <span
+                                    class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                    {{ auth()->user()->initials() }}
+                                </span>
+                            </span>
+
+                            <div class="grid flex-1 text-start text-sm leading-tight">
+                                <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
+                                <span class="truncate text-xs">{{ auth()->user()->email }}</span>
                             </div>
                         </div>
-                    </flux:menu.radio.group>
+                    </div>
+                </flux:menu.radio.group>
 
-                    <flux:menu.separator />
+                <flux:menu.separator />
 
-                    <flux:menu.radio.group>
-                        <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>
-                            {{ __('Settings') }}
-                        </flux:menu.item>
-                    </flux:menu.radio.group>
+                <flux:menu.radio.group>
+                    <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>
+                        {{ __('Settings') }}
+                    </flux:menu.item>
+                </flux:menu.radio.group>
 
-                    <flux:menu.separator />
+                <flux:menu.separator />
 
-                    <form method="POST" action="{{ route('logout') }}" class="w-full">
-                        @csrf
-                        <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full">
-                            {{ __('Log Out') }}
-                        </flux:menu.item>
-                    </form>
-                    </flux:menu>
-            </flux:dropdown>
-        </flux:sidebar>
+                <form method="POST" action="{{ route('logout') }}" class="w-full">
+                    @csrf
+                    <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full">
+                        {{ __('Log Out') }}
+                    </flux:menu.item>
+                </form>
+            </flux:menu>
+        </flux:dropdown>
+    </flux:sidebar>
 
-        <!-- Mobile User Menu -->
-        <flux:header class="lg:hidden">
-            <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
+    <!-- Mobile User Menu -->
+    <flux:header class="lg:hidden">
+        <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
-            <flux:spacer />
+        <flux:spacer />
 
-            <flux:dropdown position="top" align="end">
-                <flux:profile :initials="auth()->user()->initials()" icon-trailing="chevron-down" />
+        <flux:dropdown position="top" align="end">
+            <flux:profile :initials="auth()->user()->initials()" icon-trailing="chevron-down" />
 
-                <flux:menu>
-                    <flux:menu.radio.group>
-                        <div class="p-0 text-sm font-normal">
-                            <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
-                                <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
-                                    <span
-                                        class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                        {{ auth()->user()->initials() }}
-                                    </span>
+            <flux:menu>
+                <flux:menu.radio.group>
+                    <div class="p-0 text-sm font-normal">
+                        <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
+                            <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
+                                <span
+                                    class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                    {{ auth()->user()->initials() }}
                                 </span>
+                            </span>
 
-                                <div class="grid flex-1 text-start text-sm leading-tight">
-                                    <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
-                                    <span class="truncate text-xs">{{ auth()->user()->email }}</span>
-                                </div>
+                            <div class="grid flex-1 text-start text-sm leading-tight">
+                                <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
+                                <span class="truncate text-xs">{{ auth()->user()->email }}</span>
                             </div>
                         </div>
-                    </flux:menu.radio.group>
+                    </div>
+                </flux:menu.radio.group>
 
-                    <flux:menu.separator />
+                <flux:menu.separator />
 
-                    <flux:menu.radio.group>
-                        <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>
-                            {{ __('Settings') }}
-                        </flux:menu.item>
-                    </flux:menu.radio.group>
+                <flux:menu.radio.group>
+                    <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>
+                        {{ __('Settings') }}
+                    </flux:menu.item>
+                </flux:menu.radio.group>
 
-                    <flux:menu.separator />
+                <flux:menu.separator />
 
-                    <form method="POST" action="{{ route('logout') }}" class="w-full">
-                        @csrf
-                        <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full">
-                            {{ __('Log Out') }}
-                        </flux:menu.item>
-                    </form>
-                </flux:menu>
-            </flux:dropdown>
-        </flux:header>
-    @endauth
+                <form method="POST" action="{{ route('logout') }}" class="w-full">
+                    @csrf
+                    <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full">
+                        {{ __('Log Out') }}
+                    </flux:menu.item>
+                </form>
+            </flux:menu>
+        </flux:dropdown>
+    </flux:header>
 
     {{ $slot }}
 

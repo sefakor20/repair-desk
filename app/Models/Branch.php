@@ -12,7 +12,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Branch extends Model
 {
     /** @use HasFactory<\Database\Factories\BranchFactory> */
-    use HasFactory, HasUuids;
+    use HasFactory;
+    use HasUuids;
 
     protected $fillable = [
         'name',
@@ -56,6 +57,11 @@ class Branch extends Model
     public function posSales(): HasMany
     {
         return $this->hasMany(PosSale::class);
+    }
+
+    public function staff(): HasMany
+    {
+        return $this->hasMany(Staff::class);
     }
 
     // Scopes

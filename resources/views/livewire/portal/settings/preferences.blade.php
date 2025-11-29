@@ -129,6 +129,84 @@
                         </div>
                     </div>
 
+                    <!-- SMS Notifications -->
+                    @if ($customer->phone)
+                        <div class="px-6 py-6 space-y-4 bg-blue-50/50 dark:bg-blue-950/20">
+                            <div>
+                                <h3
+                                    class="text-base font-semibold text-zinc-900 dark:text-white flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                    </svg>
+                                    SMS Notifications
+                                </h3>
+                                <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">Receive text message updates
+                                    on your phone ({{ $customer->phone }})
+                                </p>
+                            </div>
+
+                            <div class="space-y-4 mt-4">
+                                <label class="flex items-start gap-3 cursor-pointer group">
+                                    <flux:switch wire:model="sms_enabled" />
+                                    <div class="flex-1">
+                                        <div
+                                            class="text-sm font-medium text-zinc-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                            Enable SMS Notifications
+                                        </div>
+                                        <div class="text-sm text-zinc-600 dark:text-zinc-400">
+                                            Master switch for all SMS notifications
+                                        </div>
+                                    </div>
+                                </label>
+
+                                @if ($sms_enabled)
+                                    <div class="ml-8 space-y-3 pl-4 border-l-2 border-blue-200 dark:border-blue-800">
+                                        <label class="flex items-start gap-3 cursor-pointer group">
+                                            <flux:switch wire:model="sms_ticket_updates" />
+                                            <div class="flex-1">
+                                                <div
+                                                    class="text-sm font-medium text-zinc-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                                    Ticket Updates
+                                                </div>
+                                                <div class="text-sm text-zinc-600 dark:text-zinc-400">
+                                                    Get SMS when your ticket status changes
+                                                </div>
+                                            </div>
+                                        </label>
+
+                                        <label class="flex items-start gap-3 cursor-pointer group">
+                                            <flux:switch wire:model="sms_repair_completed" />
+                                            <div class="flex-1">
+                                                <div
+                                                    class="text-sm font-medium text-zinc-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                                    Repair Completed
+                                                </div>
+                                                <div class="text-sm text-zinc-600 dark:text-zinc-400">
+                                                    Alert when your device is ready for pickup
+                                                </div>
+                                            </div>
+                                        </label>
+
+                                        <label class="flex items-start gap-3 cursor-pointer group">
+                                            <flux:switch wire:model="sms_invoice_reminders" />
+                                            <div class="flex-1">
+                                                <div
+                                                    class="text-sm font-medium text-zinc-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                                    Invoice Reminders
+                                                </div>
+                                                <div class="text-sm text-zinc-600 dark:text-zinc-400">
+                                                    Receive payment reminders via SMS
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+
                     <!-- Actions -->
                     <div class="px-6 py-4 bg-zinc-50 dark:bg-zinc-950">
                         <div class="flex items-center justify-end gap-3">

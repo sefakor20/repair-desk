@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 use App\Enums\{PaymentMethod, PosSaleStatus};
 use App\Livewire\Pos\Index;
-use App\Models\{Customer, PosSale, PosSaleItem, User};
+use App\Models\{Customer, PosSale, PosSaleItem};
 use Livewire\Livewire;
 
 use function Pest\Laravel\{actingAs, get};
 
 test('pos index page can be rendered', function () {
-    actingAs(User::factory()->create());
+    actingAs(createAdmin());
 
     get(route('pos.index'))
         ->assertSuccessful();
@@ -22,7 +22,7 @@ test('unauthorized user cannot access pos index page', function () {
 });
 
 test('pos index page displays sales', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     $sale = PosSale::factory()->create([
@@ -39,14 +39,14 @@ test('pos index page displays sales', function () {
 });
 
 test('pos index shows empty state when no sales exist', function () {
-    actingAs(User::factory()->create());
+    actingAs(createAdmin());
 
     Livewire::test(Index::class)
         ->assertSee('No sales yet');
 });
 
 test('can search sales by sale number', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     $sale1 = PosSale::factory()->create([
@@ -65,7 +65,7 @@ test('can search sales by sale number', function () {
 });
 
 test('can search sales by customer name', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     $customer1 = Customer::factory()->create(['first_name' => 'John', 'last_name' => 'Doe']);
@@ -87,7 +87,7 @@ test('can search sales by customer name', function () {
 });
 
 test('can filter sales by status', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     $completedSale = PosSale::factory()->create([
@@ -106,7 +106,7 @@ test('can filter sales by status', function () {
 });
 
 test('can filter sales by payment method', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     $cashSale = PosSale::factory()->create([
@@ -125,7 +125,7 @@ test('can filter sales by payment method', function () {
 });
 
 test('can clear all filters', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     Livewire::test(Index::class)
@@ -139,7 +139,7 @@ test('can clear all filters', function () {
 });
 
 test('sales are paginated', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     PosSale::factory(20)->create([
@@ -152,7 +152,7 @@ test('sales are paginated', function () {
 });
 
 test('displays walk-in customer for sales without customer', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     $sale = PosSale::factory()->create([

@@ -6,13 +6,12 @@ use App\Enums\CashDrawerStatus;
 use App\Enums\CashTransactionType;
 use App\Livewire\CashDrawer\OpenDrawer;
 use App\Models\CashDrawerSession;
-use App\Models\User;
 use Livewire\Livewire;
 
 use function Pest\Laravel\{actingAs, assertDatabaseHas};
 
 test('user can view open drawer page when no active session', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     actingAs($user)
         ->get(route('cash-drawer.open'))
@@ -21,7 +20,7 @@ test('user can view open drawer page when no active session', function () {
 });
 
 test('user cannot view open drawer page when session already open', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     CashDrawerSession::factory()->open()->create();
 
@@ -31,7 +30,7 @@ test('user cannot view open drawer page when session already open', function () 
 });
 
 test('user can open cash drawer with valid data', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     Livewire::actingAs($user)
         ->test(OpenDrawer::class)
@@ -50,7 +49,7 @@ test('user can open cash drawer with valid data', function () {
 });
 
 test('opening transaction is created when drawer is opened', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     Livewire::actingAs($user)
         ->test(OpenDrawer::class)
@@ -67,7 +66,7 @@ test('opening transaction is created when drawer is opened', function () {
 });
 
 test('opening balance is required', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     Livewire::actingAs($user)
         ->test(OpenDrawer::class)
@@ -77,7 +76,7 @@ test('opening balance is required', function () {
 });
 
 test('opening balance must be numeric', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     Livewire::actingAs($user)
         ->test(OpenDrawer::class)
@@ -87,7 +86,7 @@ test('opening balance must be numeric', function () {
 });
 
 test('opening balance cannot be negative', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     Livewire::actingAs($user)
         ->test(OpenDrawer::class)
@@ -97,7 +96,7 @@ test('opening balance cannot be negative', function () {
 });
 
 test('opening notes are optional', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     Livewire::actingAs($user)
         ->test(OpenDrawer::class)
@@ -113,7 +112,7 @@ test('opening notes are optional', function () {
 });
 
 test('cannot open drawer when another session is already open', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     CashDrawerSession::factory()->open()->create();
 
@@ -123,7 +122,7 @@ test('cannot open drawer when another session is already open', function () {
 });
 
 test('cash drawer initializes with zero values', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     Livewire::actingAs($user)
         ->test(OpenDrawer::class)

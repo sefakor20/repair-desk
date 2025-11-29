@@ -13,8 +13,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->web(append: [
+            \App\Http\Middleware\EnsureBranchContext::class,
+        ]);
+
         $middleware->alias([
             'customer.portal' => \App\Http\Middleware\ValidateCustomerPortalAccess::class,
+            'staff.permission' => \App\Http\Middleware\CheckStaffPermission::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

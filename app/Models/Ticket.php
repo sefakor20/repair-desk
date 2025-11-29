@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\TicketPriority;
 use App\Enums\TicketStatus;
+use App\Traits\BranchScoped;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -92,6 +93,9 @@ class Ticket extends Model
     protected static function boot(): void
     {
         parent::boot();
+
+        // Apply branch scoping globally
+        static::addGlobalScope(new BranchScoped());
 
         static::creating(function ($ticket) {
             if (empty($ticket->ticket_number)) {

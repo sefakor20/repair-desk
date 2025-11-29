@@ -10,7 +10,7 @@ use Livewire\Livewire;
 use function Pest\Laravel\{actingAs, get};
 
 test('pos show page can be rendered', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     $sale = PosSale::factory()->create([
@@ -29,7 +29,7 @@ test('unauthorized user cannot access pos show page', function () {
 });
 
 test('displays sale details correctly', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     $sale = PosSale::factory()->create([
@@ -50,7 +50,7 @@ test('displays sale details correctly', function () {
 });
 
 test('displays sale items', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     $sale = PosSale::factory()->create([
@@ -77,7 +77,7 @@ test('displays sale items', function () {
 });
 
 test('displays walk-in customer for sales without customer', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     $sale = PosSale::factory()->create([
@@ -90,7 +90,7 @@ test('displays walk-in customer for sales without customer', function () {
 });
 
 test('displays sale status badge', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     $sale = PosSale::factory()->create([
@@ -263,7 +263,7 @@ test('cannot process refund for already refunded sale', function () {
 });
 
 test('displays sale notes when present', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     $sale = PosSale::factory()->create([
@@ -276,7 +276,7 @@ test('displays sale notes when present', function () {
 });
 
 test('displays payment method', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     actingAs($user);
 
     $sale = PosSale::factory()->create([

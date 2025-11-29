@@ -179,7 +179,7 @@
                                     <flux:text>{{ $ticket->customer->full_name }}</flux:text>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <flux:text class="text-sm">{{ $ticket->device->device_name }}</flux:text>
+                                    <flux:text class="text-sm">{{ $ticket->device?->device_name }}</flux:text>
                                 </td>
                                 <td class="whitespace-nowrap px-6 py-4">
                                     <x-status-badge :status="$ticket->status" />

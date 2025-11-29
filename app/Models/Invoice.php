@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\InvoiceStatus;
+use App\Traits\BranchScoped;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -21,6 +22,7 @@ class Invoice extends Model
         'invoice_number',
         'ticket_id',
         'customer_id',
+        'branch_id',
         'subtotal',
         'tax_rate',
         'tax_amount',
@@ -52,6 +54,11 @@ class Invoice extends Model
         return $this->belongsTo(Customer::class);
     }
 
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
@@ -75,6 +82,9 @@ class Invoice extends Model
     protected static function boot(): void
     {
         parent::boot();
+
+        // Apply branch scoping globally
+        static::addGlobalScope(new BranchScoped());
 
         static::creating(function ($invoice) {
             if (empty($invoice->invoice_number)) {

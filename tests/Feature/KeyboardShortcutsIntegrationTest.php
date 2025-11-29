@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-use App\Models\User;
 
 beforeEach(function () {
-    $this->user = User::factory()->create();
+    $this->user = createAdmin();
     $this->actingAs($this->user);
 });
 

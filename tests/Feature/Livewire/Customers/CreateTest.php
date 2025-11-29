@@ -3,13 +3,13 @@
 declare(strict_types=1);
 
 use App\Livewire\Customers\Create;
-use App\Models\{Customer, User};
+use App\Models\{Customer};
 use Livewire\Livewire;
 
 use function Pest\Laravel\{actingAs, assertDatabaseHas};
 
 test('customer create page can be rendered', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     actingAs($user)
         ->get(route('customers.create'))
@@ -18,7 +18,7 @@ test('customer create page can be rendered', function () {
 });
 
 test('customer create form requires first name', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     Livewire::actingAs($user)
         ->test(Create::class)
@@ -31,7 +31,7 @@ test('customer create form requires first name', function () {
 });
 
 test('customer create form requires last name', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     Livewire::actingAs($user)
         ->test(Create::class)
@@ -44,7 +44,7 @@ test('customer create form requires last name', function () {
 });
 
 test('customer create form requires email', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     Livewire::actingAs($user)
         ->test(Create::class)
@@ -57,7 +57,7 @@ test('customer create form requires email', function () {
 });
 
 test('customer create form requires valid email', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     Livewire::actingAs($user)
         ->test(Create::class)
@@ -70,7 +70,7 @@ test('customer create form requires valid email', function () {
 });
 
 test('customer create form requires unique email', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
     $existingCustomer = Customer::factory()->create(['email' => 'existing@example.com']);
 
     Livewire::actingAs($user)
@@ -84,7 +84,7 @@ test('customer create form requires unique email', function () {
 });
 
 test('customer create form requires phone', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     Livewire::actingAs($user)
         ->test(Create::class)
@@ -97,7 +97,7 @@ test('customer create form requires phone', function () {
 });
 
 test('customer can be created with valid data', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     Livewire::actingAs($user)
         ->test(Create::class)
@@ -118,7 +118,7 @@ test('customer can be created with valid data', function () {
 });
 
 test('customer can be created with optional address', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     Livewire::actingAs($user)
         ->test(Create::class)
@@ -137,7 +137,7 @@ test('customer can be created with optional address', function () {
 });
 
 test('customer can be created with optional notes', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     Livewire::actingAs($user)
         ->test(Create::class)
@@ -156,7 +156,7 @@ test('customer can be created with optional notes', function () {
 });
 
 test('tags can be added to customer', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     Livewire::actingAs($user)
         ->test(Create::class)
@@ -174,7 +174,7 @@ test('tags can be added to customer', function () {
 });
 
 test('duplicate tags are not added', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     Livewire::actingAs($user)
         ->test(Create::class)
@@ -187,7 +187,7 @@ test('duplicate tags are not added', function () {
 });
 
 test('tags can be removed', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     Livewire::actingAs($user)
         ->test(Create::class)
@@ -197,7 +197,7 @@ test('tags can be removed', function () {
 });
 
 test('customer with tags can be saved', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     Livewire::actingAs($user)
         ->test(Create::class)
@@ -214,7 +214,7 @@ test('customer with tags can be saved', function () {
 });
 
 test('success message is shown after creating customer', function () {
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     Livewire::actingAs($user)
         ->test(Create::class)
@@ -230,7 +230,7 @@ test('success message is shown after creating customer', function () {
 test('unauthorized user cannot create customer', function () {
     // This test ensures the authorization is working at the policy level
     // In this app, all authenticated users can create customers
-    $user = User::factory()->create();
+    $user = createAdmin();
 
     expect($user->can('create', Customer::class))->toBeTrue();
 });

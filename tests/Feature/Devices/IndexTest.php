@@ -72,8 +72,8 @@ test('search filters devices by serial number', function () {
 
     Livewire::test(Index::class)
         ->set('search', 'SN123456')
-        ->assertSee($device1->serial_number)
-        ->assertDontSee($device2->serial_number);
+        ->assertSee($device1->device_name)
+        ->assertDontSee($device2->device_name);
 });
 
 test('search filters devices by imei', function () {
