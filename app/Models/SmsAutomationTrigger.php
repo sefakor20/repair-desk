@@ -140,7 +140,7 @@ class SmsAutomationTrigger extends Model
 
         // Common variables
         if (method_exists($model, 'customer') && $model->customer) {
-            $variables['customer_name'] = $model->customer->name;
+            $variables['customer_name'] = $model->customer->full_name;
             $variables['customer_phone'] = $model->customer->phone;
         }
 
@@ -153,7 +153,12 @@ class SmsAutomationTrigger extends Model
         }
 
         if (isset($model->status)) {
-            $variables['status'] = ucwords(str_replace('_', ' ', $model->status));
+            $status = $model->status;
+            if ($status instanceof \BackedEnum) {
+                $variables['status'] = ucwords(str_replace('_', ' ', $status->value));
+            } else {
+                $variables['status'] = ucwords(str_replace('_', ' ', $status));
+            }
         }
 
         // Branch information

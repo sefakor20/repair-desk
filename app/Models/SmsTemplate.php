@@ -39,6 +39,8 @@ class SmsTemplate extends Model
         $message = $this->message;
 
         foreach ($variables as $key => $value) {
+            // Replace both single and double brace formats for backward compatibility
+            $message = str_replace('{{' . $key . '}}', (string) $value, $message);
             $message = str_replace('{' . $key . '}', (string) $value, $message);
         }
 
@@ -50,7 +52,8 @@ class SmsTemplate extends Model
      */
     public function extractVariables(): array
     {
-        preg_match_all('/\{(\w+)\}/', $this->message, $matches);
+        // Extract both single and double brace variables
+        preg_match_all('/\{\{?(\w+)\}\}?/', $this->message, $matches);
 
         return array_unique($matches[1] ?? []);
     }
