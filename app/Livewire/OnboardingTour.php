@@ -77,6 +77,10 @@ class OnboardingTour extends Component
             }
 
             $this->currentStep++;
+
+            // Get the new step target and dispatch it
+            $newStepTarget = $this->currentTourStep['target'] ?? null;
+            $this->dispatch('tour-step-updated', ['target' => $newStepTarget]);
         } else {
             $this->completeTour();
         }
@@ -86,6 +90,10 @@ class OnboardingTour extends Component
     {
         if (!$this->isFirstStep) {
             $this->currentStep--;
+
+            // Get the new step target and dispatch it
+            $newStepTarget = $this->currentTourStep['target'] ?? null;
+            $this->dispatch('tour-step-updated', ['target' => $newStepTarget]);
         }
     }
 

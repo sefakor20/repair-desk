@@ -160,6 +160,55 @@ select:focus[data-flux-control] {
     }
 }
 
+/* Tour highlighting styles */
+.tour-highlight {
+    @apply relative z-50;
+    position: relative !important;
+    z-index: 50 !important;
+    background-color: rgba(59, 130, 246, 0.1) !important;
+    border: 2px solid #3b82f6 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.5) !important;
+    animation: tourPulse 2s infinite;
+}
+
+.tour-highlight::before {
+    content: "";
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    background: linear-gradient(45deg, #3b82f6, #60a5fa, #3b82f6);
+    border-radius: 10px;
+    z-index: -1;
+    animation: tourGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes tourPulse {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.02);
+    }
+}
+
+@keyframes tourGlow {
+    from {
+        opacity: 0.5;
+    }
+    to {
+        opacity: 0.8;
+    }
+}
+
+.tour-spotlight-overlay {
+    pointer-events: none;
+    background: rgba(0, 0, 0, 0.4);
+}
+
 /* ============================================
    Print Styles for Receipts
    ============================================ */

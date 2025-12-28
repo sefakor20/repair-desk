@@ -92,6 +92,16 @@ class UserFactory extends Factory
     }
 
     /**
+     * Indicate that the user is front desk.
+     */
+    public function frontDesk(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'role' => UserRole::FrontDesk,
+        ]);
+    }
+
+    /**
      * Indicate that the user is a super admin (admin with no branch).
      */
     public function superAdmin(): static

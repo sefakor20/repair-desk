@@ -4,7 +4,7 @@
         <div class="tour-spotlight-overlay fixed inset-0 z-40" wire:key="tour-overlay"></div>
 
         <!-- Tour Modal -->
-        <div class="tour-modal fixed z-50" wire:key="tour-modal" style="top: 20px; right: 20px;">
+        <div class="tour-modal fixed z-50" wire:key="tour-modal-{{ $currentStep }}" style="top: 20px; right: 20px;">
             <div
                 class="w-80 bg-white rounded-xl shadow-2xl border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
                 <!-- Progress Bar -->
@@ -51,7 +51,7 @@
                     <div
                         class="flex items-center justify-between pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
                         <flux:button wire:click="previousStep" variant="outline" :disabled="$this->isFirstStep"
-                            size="sm" class="px-3 py-1.5 text-xs">
+                            size="sm" class="px-3 py-1.5 text-xs" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="previousStep">← Back</span>
                             <span wire:loading wire:target="previousStep">...</span>
                         </flux:button>
@@ -59,17 +59,18 @@
                         <div class="flex items-center space-x-2">
                             @if ($this->isLastStep)
                                 <flux:button wire:click="completeTour" variant="primary" size="sm"
-                                    class="px-4 py-1.5 text-xs">
+                                    class="px-4 py-1.5 text-xs" wire:loading.attr="disabled">
                                     <span wire:loading.remove wire:target="completeTour">Finish</span>
                                     <span wire:loading wire:target="completeTour">...</span>
                                 </flux:button>
                             @else
                                 <flux:button wire:click="skipTour" variant="ghost" size="sm"
-                                    class="px-3 py-1.5 text-xs text-gray-500">
-                                    Skip
+                                    class="px-3 py-1.5 text-xs text-gray-500" wire:loading.attr="disabled">
+                                    <span wire:loading.remove wire:target="skipTour">Skip</span>
+                                    <span wire:loading wire:target="skipTour">...</span>
                                 </flux:button>
                                 <flux:button wire:click="nextStep" variant="primary" size="sm"
-                                    class="px-4 py-1.5 text-xs">
+                                    class="px-4 py-1.5 text-xs" wire:loading.attr="disabled">
                                     <span wire:loading.remove wire:target="nextStep">Next →</span>
                                     <span wire:loading wire:target="nextStep">...</span>
                                 </flux:button>
@@ -81,7 +82,7 @@
         </div>
 
         <!-- Tour Highlight Script -->
-        <script>
+        <script wire:ignore>
             document.addEventListener('livewire:init', function() {
                 let currentHighlight = null;
                 let spotlightOverlay = null;
@@ -115,6 +116,7 @@
 
                 // Function to highlight target elements
                 function highlightElement(selector) {
+
                     // Remove previous highlight
                     if (currentHighlight) {
                         currentHighlight.classList.remove('tour-highlight');
@@ -126,48 +128,114 @@
                         return;
                     }
 
-                    // Find and highlight new element
-                    const element = document.querySelector(selector);
-                    if (element) {
-                        element.classList.add('tour-highlight');
-                        currentHighlight = element;
+                    // Add small delay to ensure DOM is ready
+                    setTimeout(() => {
+                        // Try multiple selector strategies
+                        let element = document.querySelector(selector);
 
-                        // Create spotlight effect
-                        createSpotlight(element);
+                        // If not found, try finding parent elements that might contain our target
+                        if (!element && selector.includes('[data-tour')) {
+                            const tourValue = selector.match(/data-tour="([^"]+)"/)?.[1];
 
-                        // Scroll into view
-                        element.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'center'
-                        });
+                            if (tourValue) {
+                                element = document.querySelector(`[data-tour="${tourValue}"]`);
 
-                        // Position modal to avoid blocking the highlight
-                        const modal = document.querySelector('.tour-modal');
-                        if (modal) {
-                            const rect = element.getBoundingClientRect();
-                            const modalRect = modal.getBoundingClientRect();
+                                // If still not found, look for elements with the tour attribute anywhere
+                                if (!element) {
+                                    element = document.querySelector(`*[data-tour="${tourValue}"]`);
+                                }
 
-                            // Try to position modal to the right first
-                            if (rect.right + modalRect.width + 40 < window.innerWidth) {
-                                modal.style.left = (rect.right + 20) + 'px';
-                                modal.style.right = 'auto';
-                                modal.style.top = Math.max(20, rect.top - 20) + 'px';
-                            }
-                            // Otherwise try to the left
-                            else if (rect.left - modalRect.width - 40 > 0) {
-                                modal.style.right = (window.innerWidth - rect.left + 20) + 'px';
-                                modal.style.left = 'auto';
-                                modal.style.top = Math.max(20, rect.top - 20) + 'px';
-                            }
-                            // Default to top-right corner
-                            else {
-                                modal.style.top = '20px';
-                                modal.style.right = '20px';
-                                modal.style.left = 'auto';
+                                // Try to find the element manually
+                                if (!element) {
+                                    const allTourElements = document.querySelectorAll('[data-tour]');
+                                    for (const el of allTourElements) {
+                                        if (el.getAttribute('data-tour') === tourValue) {
+                                            element = el;
+                                            break;
+                                        }
+                                    }
+                                }
                             }
                         }
-                    }
+
+                        if (element) {
+
+                            // For Flux UI components, we might need to highlight the actual clickable element
+                            const clickableElement = element.querySelector('a, button') || element;
+
+                            clickableElement.classList.add('tour-highlight');
+                            currentHighlight = clickableElement;
+
+                            // Create spotlight effect
+                            createSpotlight(clickableElement);
+
+                            // Scroll into view with more padding
+                            clickableElement.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'center',
+                                inline: 'center'
+                            });
+
+                            // Position modal to avoid blocking the highlight
+                            const modal = document.querySelector('.tour-modal');
+                            if (modal) {
+                                const rect = clickableElement.getBoundingClientRect();
+                                const modalRect = modal.getBoundingClientRect();
+                                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                                const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+
+                                // Reset any previous positioning
+                                modal.style.left = 'auto';
+                                modal.style.right = 'auto';
+                                modal.style.top = 'auto';
+                                modal.style.bottom = 'auto';
+
+                                // Calculate available space
+                                const spaceRight = window.innerWidth - rect.right;
+                                const spaceLeft = rect.left;
+                                const spaceTop = rect.top;
+                                const spaceBottom = window.innerHeight - rect.bottom;
+
+                                // Try to position modal to the right first
+                                if (spaceRight > modalRect.width + 40) {
+                                    modal.style.left = (rect.right + scrollLeft + 20) + 'px';
+                                    modal.style.top = Math.max(20, rect.top + scrollTop - 20) + 'px';
+                                }
+                                // Try positioning to the left
+                                else if (spaceLeft > modalRect.width + 40) {
+                                    modal.style.left = (rect.left + scrollLeft - modalRect.width - 20) + 'px';
+                                    modal.style.top = Math.max(20, rect.top + scrollTop - 20) + 'px';
+                                }
+                                // Try positioning below
+                                else if (spaceBottom > modalRect.height + 40) {
+                                    modal.style.left = Math.max(20, Math.min(rect.left + scrollLeft, window
+                                        .innerWidth - modalRect.width - 20)) + 'px';
+                                    modal.style.top = (rect.bottom + scrollTop + 20) + 'px';
+                                }
+                                // Try positioning above
+                                else if (spaceTop > modalRect.height + 40) {
+                                    modal.style.left = Math.max(20, Math.min(rect.left + scrollLeft, window
+                                        .innerWidth - modalRect.width - 20)) + 'px';
+                                    modal.style.top = (rect.top + scrollTop - modalRect.height - 20) + 'px';
+                                }
+                                // Fallback to top-right corner
+                                else {
+                                    modal.style.top = '20px';
+                                    modal.style.right = '20px';
+                                }
+                            }
+                        } else {
+                            createSpotlight(null);
+                        }
+                    }, 100);
                 }
+
+                // Listen for Livewire updates to trigger highlighting
+                Livewire.on('tour-step-updated', (event) => {
+                    const target = event[0]?.target || event.target || null;
+                    // Use longer timeout to ensure DOM is fully updated
+                    setTimeout(() => highlightElement(target), 400);
+                });
 
                 // Update spotlight on window resize
                 window.addEventListener('resize', () => {
@@ -176,9 +244,16 @@
                     }
                 });
 
-                // Highlight current step target
+                // Highlight current step target when page loads
                 @if (isset($this->currentTourStep['target']) && $this->currentTourStep['target'])
-                    setTimeout(() => highlightElement('{{ $this->currentTourStep['target'] }}'), 100);
+                    // Wait for page to be fully loaded
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', () => {
+                            setTimeout(() => highlightElement({!! json_encode($this->currentTourStep['target']) !!}), 300);
+                        });
+                    } else {
+                        setTimeout(() => highlightElement({!! json_encode($this->currentTourStep['target']) !!}), 300);
+                    }
                 @endif
 
                 // Listen for tour step changes
@@ -186,7 +261,7 @@
                     if (component.name === 'onboarding-tour') {
                         const stepData = component.get('currentTourStep');
                         if (stepData && stepData.target) {
-                            setTimeout(() => highlightElement(stepData.target), 100);
+                            setTimeout(() => highlightElement(stepData.target), 200);
                         }
                     }
                 });
