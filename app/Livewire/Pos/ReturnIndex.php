@@ -35,20 +35,20 @@ class ReturnIndex extends Component
     {
         return PosReturn::query()
             ->with(['originalSale.customer', 'processedBy', 'items'])
-            ->when($this->search, function ($query) {
-                $query->where(function ($q) {
+            ->when($this->search, function ($query): void {
+                $query->where(function ($q): void {
                     $q->where('return_number', 'like', "%{$this->search}%")
-                        ->orWhereHas('originalSale', function ($sale) {
+                        ->orWhereHas('originalSale', function ($sale): void {
                             $sale->where('sale_number', 'like', "%{$this->search}%");
                         })
-                        ->orWhereHas('customer', function ($customer) {
+                        ->orWhereHas('customer', function ($customer): void {
                             $customer->where('first_name', 'like', "%{$this->search}%")
                                 ->orWhere('last_name', 'like', "%{$this->search}%")
                                 ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$this->search}%"]);
                         });
                 });
             })
-            ->when($this->status !== 'all', function ($query) {
+            ->when($this->status !== 'all', function ($query): void {
                 $query->where('status', $this->status);
             })
             ->recent()
@@ -56,7 +56,7 @@ class ReturnIndex extends Component
     }
 
     #[Computed]
-    public function stats()
+    public function stats(): array
     {
         return [
             'pending_count' => PosReturn::where('status', ReturnStatus::Pending)->count(),
@@ -102,7 +102,7 @@ class ReturnIndex extends Component
         session()->flash('success', 'Return rejected.');
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         return view('livewire.pos.return-index');
     }

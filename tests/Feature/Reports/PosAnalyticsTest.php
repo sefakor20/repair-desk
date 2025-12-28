@@ -9,12 +9,12 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create(['role' => UserRole::Admin]);
     actingAs($this->user);
 });
 
-test('pos analytics tab displays key metrics', function () {
+test('pos analytics tab displays key metrics', function (): void {
     // Create test data
     $customer = Customer::factory()->create();
     $item = InventoryItem::factory()->create(['quantity' => 100]);
@@ -48,7 +48,7 @@ test('pos analytics tab displays key metrics', function () {
         ->assertSee('2'); // Items sold
 });
 
-test('pos analytics shows revenue by payment method', function () {
+test('pos analytics shows revenue by payment method', function (): void {
     $item = InventoryItem::factory()->create(['quantity' => 100]);
 
     // Create sales with different payment methods
@@ -95,7 +95,7 @@ test('pos analytics shows revenue by payment method', function () {
         ->assertSee('150.00');
 });
 
-test('pos analytics displays daily sales trend', function () {
+test('pos analytics displays daily sales trend', function (): void {
     $item = InventoryItem::factory()->create(['quantity' => 100]);
 
     // Create sales on different days
@@ -136,7 +136,7 @@ test('pos analytics displays daily sales trend', function () {
         ->assertSee('200.00');
 });
 
-test('pos analytics shows top products by quantity', function () {
+test('pos analytics shows top products by quantity', function (): void {
     $item1 = InventoryItem::factory()->create(['name' => 'Product A', 'quantity' => 100]);
     $item2 = InventoryItem::factory()->create(['name' => 'Product B', 'quantity' => 100]);
     $item3 = InventoryItem::factory()->create(['name' => 'Product C', 'quantity' => 100]);
@@ -185,7 +185,7 @@ test('pos analytics shows top products by quantity', function () {
         ->assertSee('5');
 });
 
-test('pos analytics shows top products by revenue', function () {
+test('pos analytics shows top products by revenue', function (): void {
     $item1 = InventoryItem::factory()->create(['name' => 'High Value Item', 'quantity' => 100]);
     $item2 = InventoryItem::factory()->create(['name' => 'Medium Value Item', 'quantity' => 100]);
 
@@ -219,7 +219,7 @@ test('pos analytics shows top products by revenue', function () {
         ->assertSee('500.00');
 });
 
-test('pos analytics displays sales by hour', function () {
+test('pos analytics displays sales by hour', function (): void {
     $item = InventoryItem::factory()->create(['quantity' => 100]);
 
     // Create sales at different hours
@@ -249,7 +249,7 @@ test('pos analytics displays sales by hour', function () {
         ->assertSee('14:00');
 });
 
-test('pos analytics shows sales by day of week', function () {
+test('pos analytics shows sales by day of week', function (): void {
     $item = InventoryItem::factory()->create(['quantity' => 100]);
 
     // Create sales on different days of the week
@@ -282,7 +282,7 @@ test('pos analytics shows sales by day of week', function () {
         ->assertSee('Friday');
 });
 
-test('pos analytics displays top customers', function () {
+test('pos analytics displays top customers', function (): void {
     $customer1 = Customer::factory()->create(['first_name' => 'John', 'last_name' => 'Doe']);
     $customer2 = Customer::factory()->create(['first_name' => 'Jane', 'last_name' => 'Smith']);
     $item = InventoryItem::factory()->create(['quantity' => 100]);
@@ -325,7 +325,7 @@ test('pos analytics displays top customers', function () {
         ->assertSee('2'); // Jane's transaction count
 });
 
-test('pos analytics shows discount totals', function () {
+test('pos analytics shows discount totals', function (): void {
     $item = InventoryItem::factory()->create(['quantity' => 100]);
 
     $sale1 = PosSale::factory()->create([
@@ -353,7 +353,7 @@ test('pos analytics shows discount totals', function () {
         ->assertSee('25.00');
 });
 
-test('pos analytics separates cash and digital sales', function () {
+test('pos analytics separates cash and digital sales', function (): void {
     $item = InventoryItem::factory()->create(['quantity' => 100]);
 
     // Cash sales
@@ -398,7 +398,7 @@ test('pos analytics separates cash and digital sales', function () {
         ->assertSee('350.00'); // 200 + 150
 });
 
-test('pos analytics filters by date range', function () {
+test('pos analytics filters by date range', function (): void {
     $item = InventoryItem::factory()->create(['quantity' => 100]);
 
     // Sale within range
@@ -432,7 +432,7 @@ test('pos analytics filters by date range', function () {
         ->assertDontSee('200.00'); // Sale from 2 months ago should not appear
 });
 
-test('pos analytics excludes refunded sales', function () {
+test('pos analytics excludes refunded sales', function (): void {
     $item = InventoryItem::factory()->create(['quantity' => 100]);
 
     // Completed sale
@@ -463,14 +463,14 @@ test('pos analytics excludes refunded sales', function () {
         ->assertDontSee('300.00'); // Should not include refunded amount
 });
 
-test('pos analytics handles no data gracefully', function () {
+test('pos analytics handles no data gracefully', function (): void {
     Livewire::test(Index::class, ['tab' => 'pos'])
         ->assertSee('Total POS Revenue')
         ->assertSee('0.00')
         ->assertSee('No POS sales data for selected period');
 });
 
-test('pos analytics calculates average transaction correctly', function () {
+test('pos analytics calculates average transaction correctly', function (): void {
     $item = InventoryItem::factory()->create(['quantity' => 100]);
 
     // Create 3 sales with total of 300
@@ -492,7 +492,7 @@ test('pos analytics calculates average transaction correctly', function () {
         ->assertSee('100.00'); // 300 / 3 = 100
 });
 
-test('pos analytics requires proper authorization', function () {
+test('pos analytics requires proper authorization', function (): void {
     $unauthorizedUser = User::factory()->create();
     actingAs($unauthorizedUser);
 
@@ -502,7 +502,7 @@ test('pos analytics requires proper authorization', function () {
     Livewire::test(Index::class, ['tab' => 'pos']);
 })->skip('Authorization needs to be implemented in UserPolicy');
 
-test('pos analytics shows payment method percentages', function () {
+test('pos analytics shows payment method percentages', function (): void {
     $item = InventoryItem::factory()->create(['quantity' => 100]);
 
     // Create 10 sales: 5 cash, 3 card, 2 mobile money

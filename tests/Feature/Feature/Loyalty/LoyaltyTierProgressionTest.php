@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Models\{Customer, CustomerLoyaltyAccount, LoyaltyTier};
 
-beforeEach(function () {
+beforeEach(function (): void {
     // Seed tiers with known point thresholds
     $this->bronze = LoyaltyTier::factory()->bronze()->create();
     $this->silver = LoyaltyTier::factory()->silver()->create();
@@ -12,7 +12,7 @@ beforeEach(function () {
     $this->platinum = LoyaltyTier::factory()->platinum()->create();
 });
 
-test('new customer starts with no tier', function () {
+test('new customer starts with no tier', function (): void {
     $customer = Customer::factory()->create();
     $loyaltyAccount = CustomerLoyaltyAccount::factory()->newMember()->create([
         'customer_id' => $customer->id,
@@ -21,7 +21,7 @@ test('new customer starts with no tier', function () {
     expect($loyaltyAccount->loyalty_tier_id)->toBeNull();
 });
 
-test('customer progresses to bronze tier automatically', function () {
+test('customer progresses to bronze tier automatically', function (): void {
     $customer = Customer::factory()->create();
     $loyaltyAccount = CustomerLoyaltyAccount::factory()->create([
         'customer_id' => $customer->id,
@@ -36,7 +36,7 @@ test('customer progresses to bronze tier automatically', function () {
         ->and($loyaltyAccount->tier_achieved_at)->not->toBeNull();
 });
 
-test('customer progresses to silver tier at 1000 points', function () {
+test('customer progresses to silver tier at 1000 points', function (): void {
     $customer = Customer::factory()->create();
     $loyaltyAccount = CustomerLoyaltyAccount::factory()->create([
         'customer_id' => $customer->id,
@@ -50,7 +50,7 @@ test('customer progresses to silver tier at 1000 points', function () {
     expect($loyaltyAccount->loyalty_tier_id)->toBe($this->silver->id);
 });
 
-test('customer progresses to gold tier at 5000 points', function () {
+test('customer progresses to gold tier at 5000 points', function (): void {
     $customer = Customer::factory()->create();
     $loyaltyAccount = CustomerLoyaltyAccount::factory()->create([
         'customer_id' => $customer->id,
@@ -64,7 +64,7 @@ test('customer progresses to gold tier at 5000 points', function () {
     expect($loyaltyAccount->loyalty_tier_id)->toBe($this->gold->id);
 });
 
-test('customer progresses to platinum tier at 15000 points', function () {
+test('customer progresses to platinum tier at 15000 points', function (): void {
     $customer = Customer::factory()->create();
     $loyaltyAccount = CustomerLoyaltyAccount::factory()->create([
         'customer_id' => $customer->id,
@@ -78,7 +78,7 @@ test('customer progresses to platinum tier at 15000 points', function () {
     expect($loyaltyAccount->loyalty_tier_id)->toBe($this->platinum->id);
 });
 
-test('tier does not change if points are below next tier threshold', function () {
+test('tier does not change if points are below next tier threshold', function (): void {
     $customer = Customer::factory()->create();
     $loyaltyAccount = CustomerLoyaltyAccount::factory()->create([
         'customer_id' => $customer->id,
@@ -92,7 +92,7 @@ test('tier does not change if points are below next tier threshold', function ()
     expect($loyaltyAccount->loyalty_tier_id)->toBe($this->bronze->id);
 });
 
-test('tier achieved timestamp is updated when tier changes', function () {
+test('tier achieved timestamp is updated when tier changes', function (): void {
     $customer = Customer::factory()->create();
     $oldTimestamp = now()->subWeek();
 
@@ -110,7 +110,7 @@ test('tier achieved timestamp is updated when tier changes', function () {
         ->and($loyaltyAccount->tier_achieved_at->isToday())->toBeTrue();
 });
 
-test('customer gets correct points multiplier for bronze tier', function () {
+test('customer gets correct points multiplier for bronze tier', function (): void {
     $customer = Customer::factory()->create();
     $loyaltyAccount = CustomerLoyaltyAccount::factory()->create([
         'customer_id' => $customer->id,
@@ -120,7 +120,7 @@ test('customer gets correct points multiplier for bronze tier', function () {
     expect($loyaltyAccount->getPointsMultiplier())->toBe(1.0);
 });
 
-test('customer gets correct points multiplier for silver tier', function () {
+test('customer gets correct points multiplier for silver tier', function (): void {
     $customer = Customer::factory()->create();
     $loyaltyAccount = CustomerLoyaltyAccount::factory()->create([
         'customer_id' => $customer->id,
@@ -130,7 +130,7 @@ test('customer gets correct points multiplier for silver tier', function () {
     expect($loyaltyAccount->getPointsMultiplier())->toBe(1.25);
 });
 
-test('customer gets correct points multiplier for gold tier', function () {
+test('customer gets correct points multiplier for gold tier', function (): void {
     $customer = Customer::factory()->create();
     $loyaltyAccount = CustomerLoyaltyAccount::factory()->create([
         'customer_id' => $customer->id,
@@ -140,7 +140,7 @@ test('customer gets correct points multiplier for gold tier', function () {
     expect($loyaltyAccount->getPointsMultiplier())->toBe(1.5);
 });
 
-test('customer gets correct points multiplier for platinum tier', function () {
+test('customer gets correct points multiplier for platinum tier', function (): void {
     $customer = Customer::factory()->create();
     $loyaltyAccount = CustomerLoyaltyAccount::factory()->create([
         'customer_id' => $customer->id,
@@ -150,7 +150,7 @@ test('customer gets correct points multiplier for platinum tier', function () {
     expect($loyaltyAccount->getPointsMultiplier())->toBe(2.0);
 });
 
-test('customer gets correct discount percentage for their tier', function () {
+test('customer gets correct discount percentage for their tier', function (): void {
     $customer = Customer::factory()->create();
     $loyaltyAccount = CustomerLoyaltyAccount::factory()->create([
         'customer_id' => $customer->id,
@@ -160,7 +160,7 @@ test('customer gets correct discount percentage for their tier', function () {
     expect($loyaltyAccount->getDiscountPercentage())->toBe(10.0);
 });
 
-test('customer with no tier gets default multiplier', function () {
+test('customer with no tier gets default multiplier', function (): void {
     $customer = Customer::factory()->create();
     $loyaltyAccount = CustomerLoyaltyAccount::factory()->create([
         'customer_id' => $customer->id,
@@ -171,7 +171,7 @@ test('customer with no tier gets default multiplier', function () {
         ->and($loyaltyAccount->getDiscountPercentage())->toBe(0.0);
 });
 
-test('inactive tiers are not assigned to customers', function () {
+test('inactive tiers are not assigned to customers', function (): void {
     $inactiveTier = LoyaltyTier::factory()->inactive()->create([
         'min_points' => 2000,
         'priority' => 10,
@@ -190,7 +190,7 @@ test('inactive tiers are not assigned to customers', function () {
     expect($loyaltyAccount->loyalty_tier_id)->not->toBe($inactiveTier->id);
 });
 
-test('customer can skip tiers if they accumulate enough points', function () {
+test('customer can skip tiers if they accumulate enough points', function (): void {
     $customer = Customer::factory()->create();
     $loyaltyAccount = CustomerLoyaltyAccount::factory()->create([
         'customer_id' => $customer->id,

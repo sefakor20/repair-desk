@@ -6,7 +6,7 @@ use App\Livewire\Users\Index;
 use App\Models\User;
 use Livewire\Livewire;
 
-test('only admin can access users index page', function () {
+test('only admin can access users index page', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -14,7 +14,7 @@ test('only admin can access users index page', function () {
         ->assertSuccessful();
 });
 
-test('non-admin users cannot access users index page', function () {
+test('non-admin users cannot access users index page', function (): void {
     $manager = User::factory()->manager()->create();
     $technician = User::factory()->technician()->create();
     $frontDesk = User::factory()->create();
@@ -32,7 +32,7 @@ test('non-admin users cannot access users index page', function () {
         ->assertForbidden();
 });
 
-test('users index displays all users', function () {
+test('users index displays all users', function (): void {
     $admin = User::factory()->admin()->create();
     $users = User::factory()->count(5)->create();
 
@@ -42,7 +42,7 @@ test('users index displays all users', function () {
         ->assertSee($users[0]->email);
 });
 
-test('search filters users by name', function () {
+test('search filters users by name', function (): void {
     $admin = User::factory()->admin()->create();
     $user1 = User::factory()->create(['name' => 'John Doe']);
     $user2 = User::factory()->create(['name' => 'Jane Smith']);
@@ -54,7 +54,7 @@ test('search filters users by name', function () {
         ->assertDontSee('Jane Smith');
 });
 
-test('search filters users by email', function () {
+test('search filters users by email', function (): void {
     $admin = User::factory()->admin()->create();
     $user1 = User::factory()->create(['email' => 'john@example.com']);
     $user2 = User::factory()->create(['email' => 'jane@example.com']);
@@ -66,7 +66,7 @@ test('search filters users by email', function () {
         ->assertDontSee('jane@example.com');
 });
 
-test('role filter works correctly', function () {
+test('role filter works correctly', function (): void {
     $admin = User::factory()->admin()->create();
     $manager = User::factory()->manager()->create();
     $technician = User::factory()->technician()->create();
@@ -78,7 +78,7 @@ test('role filter works correctly', function () {
         ->assertDontSee($technician->email);
 });
 
-test('status filter shows only active users', function () {
+test('status filter shows only active users', function (): void {
     $admin = User::factory()->admin()->create();
     $activeUser = User::factory()->create(['active' => true]);
     $inactiveUser = User::factory()->create(['active' => false]);
@@ -90,7 +90,7 @@ test('status filter shows only active users', function () {
         ->assertDontSee($inactiveUser->email);
 });
 
-test('status filter shows only inactive users', function () {
+test('status filter shows only inactive users', function (): void {
     $admin = User::factory()->admin()->create();
     $activeUser = User::factory()->create(['active' => true]);
     $inactiveUser = User::factory()->create(['active' => false]);
@@ -102,7 +102,7 @@ test('status filter shows only inactive users', function () {
         ->assertDontSee($activeUser->email);
 });
 
-test('admin can delete other users', function () {
+test('admin can delete other users', function (): void {
     $admin = User::factory()->admin()->create();
     $user = User::factory()->create();
 
@@ -116,7 +116,7 @@ test('admin can delete other users', function () {
     expect(User::count())->toBe(1);
 });
 
-test('admin cannot delete themselves', function () {
+test('admin cannot delete themselves', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -125,7 +125,7 @@ test('admin cannot delete themselves', function () {
         ->assertForbidden();
 });
 
-test('admin can toggle user status', function () {
+test('admin can toggle user status', function (): void {
     $admin = User::factory()->admin()->create();
     $user = User::factory()->create(['active' => true]);
 
@@ -136,7 +136,7 @@ test('admin can toggle user status', function () {
     expect($user->fresh()->active)->toBeFalse();
 });
 
-test('pagination works correctly', function () {
+test('pagination works correctly', function (): void {
     $admin = User::factory()->admin()->create();
     User::factory()->count(20)->create();
 

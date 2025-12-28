@@ -59,7 +59,7 @@ class OpenDrawer extends Component
         $this->redirect(route('cash-drawer.index'), navigate: true);
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         return view('livewire.cash-drawer.open-drawer');
     }

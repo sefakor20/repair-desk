@@ -86,11 +86,11 @@ class Index extends Component
         $this->resetPage();
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         $branches = Branch::query()
-            ->when($this->search, function ($query) {
-                $query->where(function ($q) {
+            ->when($this->search, function ($query): void {
+                $query->where(function ($q): void {
                     $q->where('name', 'like', "%{$this->search}%")
                         ->orWhere('code', 'like', "%{$this->search}%")
                         ->orWhere('city', 'like', "%{$this->search}%")
@@ -98,7 +98,7 @@ class Index extends Component
                         ->orWhere('phone', 'like', "%{$this->search}%");
                 });
             })
-            ->when($this->statusFilter !== '', function ($query) {
+            ->when($this->statusFilter !== '', function ($query): void {
                 $query->where('is_active', $this->statusFilter === 'active');
             })
             ->withCount(['users', 'tickets', 'inventoryItems', 'posSales'])

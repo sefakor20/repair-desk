@@ -112,11 +112,11 @@ class SmsCampaigns extends Component
     {
         $query = SmsCampaign::query()
             ->with('creator')
-            ->when($this->search, function ($q) {
+            ->when($this->search, function ($q): void {
                 $q->where('name', 'like', "%{$this->search}%")
                     ->orWhere('message', 'like', "%{$this->search}%");
             })
-            ->when($this->statusFilter !== 'all', function ($q) {
+            ->when($this->statusFilter !== 'all', function ($q): void {
                 $q->where('status', $this->statusFilter);
             })
             ->latest();

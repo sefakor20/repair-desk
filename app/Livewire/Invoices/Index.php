@@ -22,19 +22,19 @@ class Index extends Component
 
     public ?string $deletingInvoiceId = null;
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         $invoices = Invoice::query()
             ->with(['customer', 'ticket'])
-            ->when($this->search, function ($query) {
-                $query->where(function ($q) {
+            ->when($this->search, function ($query): void {
+                $query->where(function ($q): void {
                     $q->where('invoice_number', 'like', "%{$this->search}%")
                         ->orWhereHas('customer', fn($q) => $q->where('first_name', 'like', "%{$this->search}%")
                             ->orWhere('last_name', 'like', "%{$this->search}%"))
                         ->orWhereHas('ticket', fn($q) => $q->where('ticket_number', 'like', "%{$this->search}%"));
                 });
             })
-            ->when($this->status, function ($query) {
+            ->when($this->status, function ($query): void {
                 $query->where('status', InvoiceStatus::from($this->status));
             })
             ->latest()

@@ -15,7 +15,7 @@ class SmsTemplates extends Component
 
     public $search = '';
     public $showCreateModal = false;
-    public $editingTemplate = null;
+    public $editingTemplate;
 
     // Form fields
     public $name = '';
@@ -41,8 +41,8 @@ class SmsTemplates extends Component
     public function templates()
     {
         return SmsTemplate::query()
-            ->when($this->search, function ($query) {
-                $query->where(function ($subQuery) {
+            ->when($this->search, function ($query): void {
+                $query->where(function ($subQuery): void {
                     $subQuery->where('name', 'like', '%' . $this->search . '%')
                         ->orWhere('key', 'like', '%' . $this->search . '%')
                         ->orWhere('message', 'like', '%' . $this->search . '%');
@@ -180,7 +180,7 @@ class SmsTemplates extends Component
         $this->is_active = true;
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         return view('livewire.settings.sms-templates');
     }

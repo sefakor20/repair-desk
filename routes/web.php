@@ -266,10 +266,10 @@ Route::prefix('portal')->name('portal.')->group(function (): void {
 });
 
 // Create a portal access route (allows customers to access via emailed link)
-Route::get('portal/access/{customer}/{token}', function ($customer, $token) {
+Route::get('portal/access/{customer}/{token}', function ($customer, string $token) {
     $customer = \App\Models\Customer::validatePortalToken($token, $customer);
 
-    if (! $customer) {
+    if (!$customer instanceof \App\Models\Customer) {
         return redirect()->route('portal.login')->with('error', 'Invalid or expired access link.');
     }
 

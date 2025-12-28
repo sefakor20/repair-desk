@@ -43,7 +43,7 @@ class ProcessSmsAutomationTrigger implements ShouldQueue
 
             // Get recipients
             $recipients = $this->trigger->getRecipients($this->model);
-            if (empty($recipients)) {
+            if ($recipients === []) {
                 Log::warning('No recipients found for SMS automation trigger', [
                     'trigger_id' => $this->trigger->id,
                     'model_id' => $this->model->id,
@@ -61,9 +61,9 @@ class ProcessSmsAutomationTrigger implements ShouldQueue
             $smsService = new SmsService();
             foreach ($recipients as $recipient) {
                 $smsService->send(
-                    phoneNumber: $recipient,
                     message: $message,
                     notificationType: 'automation_trigger',
+                    phoneNumber: $recipient,
                     notificationId: $this->model->id,
                 );
             }

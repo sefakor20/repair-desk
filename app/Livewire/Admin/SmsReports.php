@@ -44,7 +44,7 @@ class SmsReports extends Component
             'Content-Disposition' => "attachment; filename={$filename}",
         ];
 
-        $callback = function () use ($stats, $costByType, $costByStatus) {
+        $callback = function () use ($stats, $costByType, $costByStatus): void {
             $file = fopen('php://output', 'w');
 
             // Summary section

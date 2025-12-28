@@ -48,7 +48,7 @@ class Index extends Component
     public function render(): View
     {
         $templates = SmsTemplate::query()
-            ->when($this->search, function ($q) {
+            ->when($this->search, function ($q): void {
                 $q->where('name', 'like', "%{$this->search}%")
                     ->orWhere('key', 'like', "%{$this->search}%")
                     ->orWhere('message', 'like', "%{$this->search}%");

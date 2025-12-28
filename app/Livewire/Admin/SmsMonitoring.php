@@ -55,8 +55,8 @@ class SmsMonitoring extends Component
 
         $query = SmsDeliveryLog::query()
             ->with('notifiable')
-            ->when($this->search, function ($q) {
-                $q->where(function ($query) {
+            ->when($this->search, function ($q): void {
+                $q->where(function ($query): void {
                     $query->where('phone', 'like', "%{$this->search}%")
                         ->orWhere('message', 'like', "%{$this->search}%")
                         ->orWhere('notification_type', 'like', "%{$this->search}%");
@@ -74,7 +74,7 @@ class SmsMonitoring extends Component
             'Content-Disposition' => "attachment; filename={$filename}",
         ];
 
-        $callback = function () use ($query) {
+        $callback = function () use ($query): void {
             $file = fopen('php://output', 'w');
 
             // Add CSV headers
@@ -127,8 +127,8 @@ class SmsMonitoring extends Component
     {
         $query = SmsDeliveryLog::query()
             ->with('notifiable')
-            ->when($this->search, function ($q) {
-                $q->where(function ($query) {
+            ->when($this->search, function ($q): void {
+                $q->where(function ($query): void {
                     $query->where('phone', 'like', "%{$this->search}%")
                         ->orWhere('message', 'like', "%{$this->search}%")
                         ->orWhere('notification_type', 'like', "%{$this->search}%");

@@ -9,32 +9,32 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\{actingAs, get};
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create(['role' => UserRole::Technician]);
     actingAs($this->user);
 });
 
-test('device create page can be rendered', function () {
+test('device create page can be rendered', function (): void {
     get(route('devices.create'))
         ->assertOk()
         ->assertSeeLivewire(Create::class);
 });
 
-test('device create requires authentication', function () {
+test('device create requires authentication', function (): void {
     auth()->logout();
 
     get(route('devices.create'))
         ->assertRedirect(route('login'));
 });
 
-test('displays customer dropdown', function () {
+test('displays customer dropdown', function (): void {
     $customer = Customer::factory()->create();
 
     Livewire::test(Create::class)
         ->assertSee($customer->full_name);
 });
 
-test('can create device with required fields', function () {
+test('can create device with required fields', function (): void {
     $customer = Customer::factory()->create();
 
     Livewire::test(Create::class)
@@ -55,7 +55,7 @@ test('can create device with required fields', function () {
     expect($device->model)->toBe('iPhone 15 Pro');
 });
 
-test('can create device with all fields', function () {
+test('can create device with all fields', function (): void {
     $customer = Customer::factory()->create();
 
     Livewire::test(Create::class)
@@ -76,7 +76,7 @@ test('can create device with all fields', function () {
     expect($device->notes)->toBe('Test notes');
 });
 
-test('customer_id is required', function () {
+test('customer_id is required', function (): void {
     Livewire::test(Create::class)
         ->set('form.type', 'Smartphone')
         ->set('form.brand', 'Apple')
@@ -87,7 +87,7 @@ test('customer_id is required', function () {
     expect(Device::count())->toBe(0);
 });
 
-test('customer_id must exist', function () {
+test('customer_id must exist', function (): void {
     Livewire::test(Create::class)
         ->set('form.customer_id', '999')
         ->set('form.type', 'Smartphone')
@@ -99,7 +99,7 @@ test('customer_id must exist', function () {
     expect(Device::count())->toBe(0);
 });
 
-test('type is required', function () {
+test('type is required', function (): void {
     $customer = Customer::factory()->create();
 
     Livewire::test(Create::class)
@@ -112,7 +112,7 @@ test('type is required', function () {
     expect(Device::count())->toBe(0);
 });
 
-test('brand is required', function () {
+test('brand is required', function (): void {
     $customer = Customer::factory()->create();
 
     Livewire::test(Create::class)
@@ -125,7 +125,7 @@ test('brand is required', function () {
     expect(Device::count())->toBe(0);
 });
 
-test('model is required', function () {
+test('model is required', function (): void {
     $customer = Customer::factory()->create();
 
     Livewire::test(Create::class)
@@ -138,7 +138,7 @@ test('model is required', function () {
     expect(Device::count())->toBe(0);
 });
 
-test('serial_number is optional', function () {
+test('serial_number is optional', function (): void {
     $customer = Customer::factory()->create();
 
     Livewire::test(Create::class)
@@ -152,7 +152,7 @@ test('serial_number is optional', function () {
     expect(Device::count())->toBe(1);
 });
 
-test('imei is optional', function () {
+test('imei is optional', function (): void {
     $customer = Customer::factory()->create();
 
     Livewire::test(Create::class)
@@ -166,7 +166,7 @@ test('imei is optional', function () {
     expect(Device::count())->toBe(1);
 });
 
-test('notes is optional', function () {
+test('notes is optional', function (): void {
     $customer = Customer::factory()->create();
 
     Livewire::test(Create::class)
@@ -180,7 +180,7 @@ test('notes is optional', function () {
     expect(Device::count())->toBe(1);
 });
 
-test('type cannot exceed 255 characters', function () {
+test('type cannot exceed 255 characters', function (): void {
     $customer = Customer::factory()->create();
 
     Livewire::test(Create::class)
@@ -194,7 +194,7 @@ test('type cannot exceed 255 characters', function () {
     expect(Device::count())->toBe(0);
 });
 
-test('brand cannot exceed 255 characters', function () {
+test('brand cannot exceed 255 characters', function (): void {
     $customer = Customer::factory()->create();
 
     Livewire::test(Create::class)
@@ -208,7 +208,7 @@ test('brand cannot exceed 255 characters', function () {
     expect(Device::count())->toBe(0);
 });
 
-test('model cannot exceed 255 characters', function () {
+test('model cannot exceed 255 characters', function (): void {
     $customer = Customer::factory()->create();
 
     Livewire::test(Create::class)
@@ -222,7 +222,7 @@ test('model cannot exceed 255 characters', function () {
     expect(Device::count())->toBe(0);
 });
 
-test('serial_number cannot exceed 255 characters', function () {
+test('serial_number cannot exceed 255 characters', function (): void {
     $customer = Customer::factory()->create();
 
     Livewire::test(Create::class)
@@ -237,7 +237,7 @@ test('serial_number cannot exceed 255 characters', function () {
     expect(Device::count())->toBe(0);
 });
 
-test('imei cannot exceed 255 characters', function () {
+test('imei cannot exceed 255 characters', function (): void {
     $customer = Customer::factory()->create();
 
     Livewire::test(Create::class)
@@ -252,7 +252,7 @@ test('imei cannot exceed 255 characters', function () {
     expect(Device::count())->toBe(0);
 });
 
-test('redirects to device show page after creation', function () {
+test('redirects to device show page after creation', function (): void {
     $customer = Customer::factory()->create();
 
     Livewire::test(Create::class)

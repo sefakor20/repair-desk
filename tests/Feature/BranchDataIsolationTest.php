@@ -7,13 +7,13 @@ use App\Services\BranchContextService;
 
 use function Pest\Laravel\actingAs;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->branches = Branch::factory()->count(3)->create();
     $this->branchContext = app(BranchContextService::class);
 });
 
-describe('Branch Data Isolation', function () {
-    it('prevents users from accessing data outside their branch', function () {
+describe('Branch Data Isolation', function (): void {
+    it('prevents users from accessing data outside their branch', function (): void {
         $branch1 = $this->branches->get(0);
         $branch2 = $this->branches->get(1);
 
@@ -28,7 +28,7 @@ describe('Branch Data Isolation', function () {
             ->and($results->first()->id)->toBe($ticket1->id);
     });
 
-    it('scopes inventory items to user branch', function () {
+    it('scopes inventory items to user branch', function (): void {
         $branch1 = $this->branches->get(0);
         $branch2 = $this->branches->get(1);
 
@@ -43,7 +43,7 @@ describe('Branch Data Isolation', function () {
             ->and($results->first()->id)->toBe($item1->id);
     });
 
-    it('scopes POS sales to user branch', function () {
+    it('scopes POS sales to user branch', function (): void {
         $branch1 = $this->branches->get(0);
         $branch2 = $this->branches->get(1);
 
@@ -58,7 +58,7 @@ describe('Branch Data Isolation', function () {
             ->and($results->first()->id)->toBe($sale1->id);
     });
 
-    it('allows super admins without branch to see all data', function () {
+    it('allows super admins without branch to see all data', function (): void {
         $branch1 = $this->branches->get(0);
         $branch2 = $this->branches->get(1);
 
@@ -72,7 +72,7 @@ describe('Branch Data Isolation', function () {
         expect($results)->toHaveCount(2);
     });
 
-    it('excludes unauthenticated users from queries', function () {
+    it('excludes unauthenticated users from queries', function (): void {
         $branch1 = $this->branches->get(0);
         Ticket::factory()->create(['branch_id' => $branch1->id]);
 
@@ -80,7 +80,7 @@ describe('Branch Data Isolation', function () {
         expect($results)->toHaveCount(1);
     });
 
-    it('scopes invoices to user branch', function () {
+    it('scopes invoices to user branch', function (): void {
         $branch1 = $this->branches->get(0);
         $branch2 = $this->branches->get(1);
 
@@ -95,7 +95,7 @@ describe('Branch Data Isolation', function () {
             ->and($results->first()->id)->toBe($invoice1->id);
     });
 
-    it('scopes payments to user branch', function () {
+    it('scopes payments to user branch', function (): void {
         $branch1 = $this->branches->get(0);
         $branch2 = $this->branches->get(1);
 
@@ -111,8 +111,8 @@ describe('Branch Data Isolation', function () {
     });
 });
 
-describe('Branch Context Service', function () {
-    it('provides current branch context for authenticated user', function () {
+describe('Branch Context Service', function (): void {
+    it('provides current branch context for authenticated user', function (): void {
         $branch = $this->branches->first();
         $user = User::factory()->create(['branch_id' => $branch->id]);
 
@@ -122,7 +122,7 @@ describe('Branch Context Service', function () {
         expect($currentBranch?->id)->toBe($branch->id);
     });
 
-    it('checks if user can access specific branch', function () {
+    it('checks if user can access specific branch', function (): void {
         $branch1 = $this->branches->get(0);
         $branch2 = $this->branches->get(1);
 
@@ -134,7 +134,7 @@ describe('Branch Context Service', function () {
             ->and($this->branchContext->canAccessBranch($branch2))->toBeFalse();
     });
 
-    it('returns accessible branches for super admin', function () {
+    it('returns accessible branches for super admin', function (): void {
         $admin = User::factory()->create(['role' => 'admin', 'branch_id' => null]);
 
         actingAs($admin);
@@ -143,7 +143,7 @@ describe('Branch Context Service', function () {
         expect($accessible)->toHaveCount(3);
     });
 
-    it('returns only their branch for regular user', function () {
+    it('returns only their branch for regular user', function (): void {
         $branch = $this->branches->first();
         $user = User::factory()->create(['branch_id' => $branch->id]);
 
@@ -155,8 +155,8 @@ describe('Branch Context Service', function () {
     });
 });
 
-describe('User Branch Methods', function () {
-    it('identifies super admins correctly', function () {
+describe('User Branch Methods', function (): void {
+    it('identifies super admins correctly', function (): void {
         $superAdmin = User::factory()->create(['role' => 'admin', 'branch_id' => null]);
         $branchAdmin = User::factory()->create(['role' => 'admin', 'branch_id' => $this->branches->first()->id]);
 
@@ -164,7 +164,7 @@ describe('User Branch Methods', function () {
             ->and($branchAdmin->isSuperAdmin())->toBeFalse();
     });
 
-    it('checks if user can manage branch', function () {
+    it('checks if user can manage branch', function (): void {
         $branch1 = $this->branches->get(0);
         $branch2 = $this->branches->get(1);
 

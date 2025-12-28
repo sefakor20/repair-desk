@@ -89,7 +89,7 @@ class PointTransfer extends Model
             throw new Exception('Insufficient points');
         }
 
-        DB::transaction(function () use ($senderAccount, $recipientAccount) {
+        DB::transaction(function () use ($senderAccount, $recipientAccount): void {
             // Deduct from sender
             $senderTx = $senderAccount->deductPoints(
                 $this->points,

@@ -5,13 +5,13 @@ declare(strict_types=1);
 use App\Models\{Customer, CustomerLoyaltyAccount, LoyaltyReward, LoyaltyTier};
 use App\Enums\LoyaltyRewardType;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->bronze = LoyaltyTier::factory()->bronze()->create();
     $this->silver = LoyaltyTier::factory()->silver()->create();
     $this->gold = LoyaltyTier::factory()->gold()->create();
 });
 
-test('customer can redeem reward with sufficient points', function () {
+test('customer can redeem reward with sufficient points', function (): void {
     $customer = Customer::factory()->create();
     $loyaltyAccount = CustomerLoyaltyAccount::factory()->create([
         'customer_id' => $customer->id,
@@ -32,7 +32,7 @@ test('customer can redeem reward with sufficient points', function () {
         ->and($reward->fresh()->times_redeemed)->toBe(1);
 });
 
-test('customer cannot redeem reward with insufficient points', function () {
+test('customer cannot redeem reward with insufficient points', function (): void {
     $customer = Customer::factory()->create();
     $loyaltyAccount = CustomerLoyaltyAccount::factory()->create([
         'customer_id' => $customer->id,
@@ -50,7 +50,7 @@ test('customer cannot redeem reward with insufficient points', function () {
     expect($loyaltyAccount->total_points)->toBe(300);
 });
 
-test('customer cannot redeem inactive reward', function () {
+test('customer cannot redeem inactive reward', function (): void {
     $customer = Customer::factory()->create();
     $loyaltyAccount = CustomerLoyaltyAccount::factory()->create([
         'customer_id' => $customer->id,
@@ -66,7 +66,7 @@ test('customer cannot redeem inactive reward', function () {
     expect($result)->toBeFalse();
 });
 
-test('redemption creates transaction with negative points', function () {
+test('redemption creates transaction with negative points', function (): void {
     $customer = Customer::factory()->create();
     $loyaltyAccount = CustomerLoyaltyAccount::factory()->create([
         'customer_id' => $customer->id,
@@ -88,7 +88,7 @@ test('redemption creates transaction with negative points', function () {
         ->and($transaction->description)->toContain('10% Discount');
 });
 
-test('reward redemption count increments', function () {
+test('reward redemption count increments', function (): void {
     $customer = Customer::factory()->create();
     $loyaltyAccount = CustomerLoyaltyAccount::factory()->create([
         'customer_id' => $customer->id,
@@ -105,7 +105,7 @@ test('reward redemption count increments', function () {
     expect($reward->fresh()->times_redeemed)->toBe(6);
 });
 
-test('customer cannot redeem reward that exceeded redemption limit', function () {
+test('customer cannot redeem reward that exceeded redemption limit', function (): void {
     $customer = Customer::factory()->create();
     $loyaltyAccount = CustomerLoyaltyAccount::factory()->create([
         'customer_id' => $customer->id,
@@ -122,7 +122,7 @@ test('customer cannot redeem reward that exceeded redemption limit', function ()
     expect($result)->toBeFalse();
 });
 
-test('customer cannot redeem reward before valid_from date', function () {
+test('customer cannot redeem reward before valid_from date', function (): void {
     $customer = Customer::factory()->create();
     $loyaltyAccount = CustomerLoyaltyAccount::factory()->create([
         'customer_id' => $customer->id,
@@ -140,7 +140,7 @@ test('customer cannot redeem reward before valid_from date', function () {
     expect($result)->toBeFalse();
 });
 
-test('customer cannot redeem expired reward', function () {
+test('customer cannot redeem expired reward', function (): void {
     $customer = Customer::factory()->create();
     $loyaltyAccount = CustomerLoyaltyAccount::factory()->create([
         'customer_id' => $customer->id,
@@ -156,7 +156,7 @@ test('customer cannot redeem expired reward', function () {
     expect($result)->toBeFalse();
 });
 
-test('customer cannot redeem tier-restricted reward without required tier', function () {
+test('customer cannot redeem tier-restricted reward without required tier', function (): void {
     $customer = Customer::factory()->create();
     $loyaltyAccount = CustomerLoyaltyAccount::factory()->create([
         'customer_id' => $customer->id,
@@ -174,7 +174,7 @@ test('customer cannot redeem tier-restricted reward without required tier', func
     expect($result)->toBeFalse();
 });
 
-test('customer can redeem tier-restricted reward with sufficient tier', function () {
+test('customer can redeem tier-restricted reward with sufficient tier', function (): void {
     $customer = Customer::factory()->create();
     $loyaltyAccount = CustomerLoyaltyAccount::factory()->create([
         'customer_id' => $customer->id,
@@ -192,7 +192,7 @@ test('customer can redeem tier-restricted reward with sufficient tier', function
     expect($result)->toBeTrue();
 });
 
-test('active scope returns only active and valid rewards', function () {
+test('active scope returns only active and valid rewards', function (): void {
     LoyaltyReward::factory()->create(['is_active' => true]);
     LoyaltyReward::factory()->inactive()->create();
     LoyaltyReward::factory()->expired()->create(['is_active' => true]);
@@ -202,7 +202,7 @@ test('active scope returns only active and valid rewards', function () {
     expect($activeRewards)->toBe(1);
 });
 
-test('available scope returns rewards that can still be redeemed', function () {
+test('available scope returns rewards that can still be redeemed', function (): void {
     LoyaltyReward::factory()->create(['is_active' => true]);
     LoyaltyReward::factory()->limitedQuantity(5)->create([
         'is_active' => true,
@@ -214,14 +214,14 @@ test('available scope returns rewards that can still be redeemed', function () {
     expect($availableRewards)->toBe(1);
 });
 
-test('discount reward has correct value structure', function () {
+test('discount reward has correct value structure', function (): void {
     $reward = LoyaltyReward::factory()->discount(15)->create();
 
     expect($reward->type)->toBe(LoyaltyRewardType::Discount)
         ->and($reward->reward_value['percentage'])->toBe(15);
 });
 
-test('voucher reward has correct value structure', function () {
+test('voucher reward has correct value structure', function (): void {
     $reward = LoyaltyReward::factory()->voucher(100)->create();
 
     expect($reward->type)->toBe(LoyaltyRewardType::Voucher)
@@ -229,7 +229,7 @@ test('voucher reward has correct value structure', function () {
         ->and($reward->reward_value)->toHaveKey('code');
 });
 
-test('deduct points throws exception when insufficient balance', function () {
+test('deduct points throws exception when insufficient balance', function (): void {
     $customer = Customer::factory()->create();
     $loyaltyAccount = CustomerLoyaltyAccount::factory()->create([
         'customer_id' => $customer->id,

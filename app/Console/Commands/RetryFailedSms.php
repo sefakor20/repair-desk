@@ -35,7 +35,7 @@ class RetryFailedSms extends Command
         // Find failed messages that are ready for retry
         $logs = SmsDeliveryLog::where('status', 'failed')
             ->where('retry_count', '<', DB::raw('max_retries'))
-            ->where(function ($query) {
+            ->where(function ($query): void {
                 $query->whereNull('next_retry_at')
                     ->orWhere('next_retry_at', '<=', now());
             })

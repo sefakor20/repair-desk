@@ -8,7 +8,7 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
 
-it('renders successfully', function () {
+it('renders successfully', function (): void {
     $user = User::factory()->admin()->create();
     $sale = PosSale::factory()->create();
 
@@ -19,7 +19,7 @@ it('renders successfully', function () {
         ->assertSee($sale->sale_number);
 });
 
-it('displays sale details correctly', function () {
+it('displays sale details correctly', function (): void {
     $user = User::factory()->admin()->create();
     $customer = \App\Models\Customer::factory()->create();
     $sale = PosSale::factory()->create([
@@ -36,7 +36,7 @@ it('displays sale details correctly', function () {
         ->assertSee('100.50');
 });
 
-it('displays sale items', function () {
+it('displays sale items', function (): void {
     $user = User::factory()->admin()->create();
     $sale = PosSale::factory()->create();
     $item = \App\Models\InventoryItem::factory()->create(['name' => 'Test Product']);
@@ -56,7 +56,7 @@ it('displays sale items', function () {
         ->assertSee('25.00');
 });
 
-it('displays payment information', function () {
+it('displays payment information', function (): void {
     $user = User::factory()->admin()->create();
     $sale = PosSale::factory()->create([
         'payment_method' => 'card',

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Models\{Customer, User};
 
-test('all authenticated users can view any customers', function () {
+test('all authenticated users can view any customers', function (): void {
     $admin = User::factory()->admin()->create();
     $manager = User::factory()->manager()->create();
     $technician = User::factory()->technician()->create();
@@ -16,7 +16,7 @@ test('all authenticated users can view any customers', function () {
         ->and($frontDesk->can('viewAny', Customer::class))->toBeTrue();
 });
 
-test('all authenticated users can view a customer', function () {
+test('all authenticated users can view a customer', function (): void {
     $customer = Customer::factory()->create();
     $admin = User::factory()->admin()->create();
     $technician = User::factory()->technician()->create();
@@ -25,7 +25,7 @@ test('all authenticated users can view a customer', function () {
         ->and($technician->can('view', $customer))->toBeTrue();
 });
 
-test('all authenticated users can create customers', function () {
+test('all authenticated users can create customers', function (): void {
     $admin = User::factory()->admin()->create();
     $manager = User::factory()->manager()->create();
     $technician = User::factory()->technician()->create();
@@ -37,7 +37,7 @@ test('all authenticated users can create customers', function () {
         ->and($frontDesk->can('create', Customer::class))->toBeTrue();
 });
 
-test('all authenticated users can update customers', function () {
+test('all authenticated users can update customers', function (): void {
     $customer = Customer::factory()->create();
     $admin = User::factory()->admin()->create();
     $technician = User::factory()->technician()->create();
@@ -46,7 +46,7 @@ test('all authenticated users can update customers', function () {
         ->and($technician->can('update', $customer))->toBeTrue();
 });
 
-test('only admin and manager can delete customers', function () {
+test('only admin and manager can delete customers', function (): void {
     $customer = Customer::factory()->create();
     $admin = User::factory()->admin()->create();
     $manager = User::factory()->manager()->create();
@@ -59,7 +59,7 @@ test('only admin and manager can delete customers', function () {
         ->and($frontDesk->can('delete', $customer))->toBeFalse();
 });
 
-test('only admin can force delete customers', function () {
+test('only admin can force delete customers', function (): void {
     $customer = Customer::factory()->create();
     $admin = User::factory()->admin()->create();
     $manager = User::factory()->manager()->create();

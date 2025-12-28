@@ -6,7 +6,7 @@ use App\Models\User;
 
 uses()->group('browser', 'smoke');
 
-it('loads main pages without errors', function () {
+it('loads main pages without errors', function (): void {
     $user = User::factory()->create();
     $this->actingAs($user);
 
@@ -19,7 +19,7 @@ it('loads main pages without errors', function () {
     $pages->assertNoSmoke();
 });
 
-it('loads dashboard successfully', function () {
+it('loads dashboard successfully', function (): void {
     $user = User::factory()->create();
     $this->actingAs($user);
 
@@ -30,7 +30,7 @@ it('loads dashboard successfully', function () {
         ->assertNoConsoleLogs();
 });
 
-it('loads analytics page', function () {
+it('loads analytics page', function (): void {
     $user = User::factory()->create();
     $this->actingAs($user);
 

@@ -9,18 +9,18 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\{actingAs, get};
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = createAdmin();
     actingAs($this->user);
 });
 
-test('invoices page can be rendered', function () {
+test('invoices page can be rendered', function (): void {
     get(route('invoices.index'))
         ->assertOk()
         ->assertSeeLivewire(Index::class);
 });
 
-test('invoices page displays invoices', function () {
+test('invoices page displays invoices', function (): void {
     $ticket = Ticket::factory()->create();
     $invoice = Invoice::factory()->create([
         'ticket_id' => $ticket->id,
@@ -39,12 +39,12 @@ test('invoices page displays invoices', function () {
         ->assertSee('Pending');
 });
 
-test('invoices page shows empty state when no invoices exist', function () {
+test('invoices page shows empty state when no invoices exist', function (): void {
     Livewire::test(Index::class)
         ->assertSee('No invoices yet.');
 });
 
-test('invoices page shows filtered empty state', function () {
+test('invoices page shows filtered empty state', function (): void {
     Invoice::factory()->create(['invoice_number' => 'INV-001']);
 
     Livewire::test(Index::class)
@@ -52,7 +52,7 @@ test('invoices page shows filtered empty state', function () {
         ->assertSee('No invoices found matching your filters.');
 });
 
-test('can search invoices by invoice number', function () {
+test('can search invoices by invoice number', function (): void {
     $invoice1 = Invoice::factory()->create(['invoice_number' => 'INV-001']);
     $invoice2 = Invoice::factory()->create(['invoice_number' => 'INV-002']);
 
@@ -62,7 +62,7 @@ test('can search invoices by invoice number', function () {
         ->assertDontSee('INV-002');
 });
 
-test('can search invoices by customer name', function () {
+test('can search invoices by customer name', function (): void {
     $customer1 = Customer::factory()->create(['first_name' => 'John', 'last_name' => 'Doe']);
     $customer2 = Customer::factory()->create(['first_name' => 'Jane', 'last_name' => 'Smith']);
 
@@ -84,7 +84,7 @@ test('can search invoices by customer name', function () {
         ->assertDontSee('Jane Smith');
 });
 
-test('can filter invoices by status', function () {
+test('can filter invoices by status', function (): void {
     $pendingInvoice = Invoice::factory()->pending()->create();
     $paidInvoice = Invoice::factory()->paid()->create();
 
@@ -94,7 +94,7 @@ test('can filter invoices by status', function () {
         ->assertDontSee($pendingInvoice->invoice_number);
 });
 
-test('can clear filters', function () {
+test('can clear filters', function (): void {
     Livewire::test(Index::class)
         ->set('search', 'test')
         ->set('status', 'paid')
@@ -103,7 +103,7 @@ test('can clear filters', function () {
         ->assertSet('status', '');
 });
 
-test('authorized user can delete invoice', function () {
+test('authorized user can delete invoice', function (): void {
     $admin = User::factory()->admin()->create();
     actingAs($admin);
 
@@ -117,7 +117,7 @@ test('authorized user can delete invoice', function () {
     expect(Invoice::find($invoice->id))->toBeNull();
 });
 
-test('unauthorized user cannot delete invoice', function () {
+test('unauthorized user cannot delete invoice', function (): void {
     $technician = User::factory()->technician()->create();
     actingAs($technician);
 
@@ -131,7 +131,7 @@ test('unauthorized user cannot delete invoice', function () {
     expect(Invoice::find($invoice->id))->not->toBeNull();
 });
 
-test('can cancel delete confirmation', function () {
+test('can cancel delete confirmation', function (): void {
     $invoice = Invoice::factory()->create();
 
     Livewire::test(Index::class)

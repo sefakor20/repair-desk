@@ -6,7 +6,7 @@ use App\Livewire\Portal\Tickets\Index;
 use App\Models\Customer;
 use Livewire\Livewire;
 
-it('renders successfully', function () {
+it('renders successfully', function (): void {
     $customer = Customer::factory()->create();
 
     Livewire::test(Index::class, ['customer' => $customer])

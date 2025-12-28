@@ -64,7 +64,7 @@ function createUserWithPermissions(array $permissions = [], array $userAttribute
 
     // Determine role based on permissions needed
     $role = match (true) {
-        empty($permissions) => StaffRole::BranchManager, // Default to branch manager (all permissions)
+        $permissions === [] => StaffRole::BranchManager, // Default to branch manager (all permissions)
         in_array('manage_staff', $permissions) => StaffRole::BranchManager,
         in_array('view_assigned_tickets', $permissions) => StaffRole::Technician,
         in_array('create_tickets', $permissions) => StaffRole::Receptionist,

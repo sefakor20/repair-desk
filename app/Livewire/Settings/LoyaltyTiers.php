@@ -36,7 +36,7 @@ class LoyaltyTiers extends Component
         $this->authorize('accessSettings', auth()->user());
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         $tiers = LoyaltyTier::orderBy('min_points', 'asc')->get();
 

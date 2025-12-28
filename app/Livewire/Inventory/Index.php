@@ -32,18 +32,18 @@ class Index extends Component
 
     public ?string $deletingItemId = null;
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         $branches = Branch::active()->orderBy('name')->get();
         $items = InventoryItem::query()
-            ->when($this->search, function ($query) {
-                $query->where(function ($q) {
+            ->when($this->search, function ($query): void {
+                $query->where(function ($q): void {
                     $q->where('name', 'like', "%{$this->search}%")
                         ->orWhere('sku', 'like', "%{$this->search}%")
                         ->orWhere('description', 'like', "%{$this->search}%");
                 });
             })
-            ->when($this->status, function ($query) {
+            ->when($this->status, function ($query): void {
                 $query->where('status', InventoryStatus::from($this->status));
             })
             ->when($this->category, fn($query) => $query->where('category', $this->category))
@@ -87,7 +87,7 @@ class Index extends Component
         $this->resetPage();
     }
 
-    public function confirmDelete($itemId): void
+    public function confirmDelete(?string $itemId): void
     {
         $this->deletingItemId = $itemId;
     }

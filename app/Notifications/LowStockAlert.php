@@ -87,7 +87,7 @@ class LowStockAlert extends Notification implements ShouldQueue
     {
         return [
             'items_count' => $this->lowStockItems->count(),
-            'items' => $this->lowStockItems->map(function ($item) {
+            'items' => $this->lowStockItems->map(function ($item): array {
                 return [
                     'id' => $item->id,
                     'name' => $item->name,

@@ -32,7 +32,7 @@ class BranchContextService
      */
     public function getCurrentBranch(): ?Branch
     {
-        if ($this->currentBranch) {
+        if ($this->currentBranch instanceof \App\Models\Branch) {
             return $this->currentBranch;
         }
 

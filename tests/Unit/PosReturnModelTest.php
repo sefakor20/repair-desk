@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Enums\{PosSaleStatus, ReturnReason, ReturnStatus};
 use App\Models\{InventoryItem, PosReturn, PosSale, PosSaleItem, ReturnPolicy};
 
-test('can calculate return totals correctly', function () {
+test('can calculate return totals correctly', function (): void {
     // Create a return policy with restocking fee: 10% with $21 minimum
     $policy = ReturnPolicy::factory()->create([
         'restocking_fee_percentage' => 10,
@@ -52,7 +52,7 @@ test('can calculate return totals correctly', function () {
         ->and($return->total_refund_amount)->toEqual(189.00);
 });
 
-test('can restore inventory correctly', function () {
+test('can restore inventory correctly', function (): void {
     $item = InventoryItem::factory()->create(['quantity' => 10]);
     $sale = PosSale::factory()->create();
     $saleItem = PosSaleItem::factory()->create([
@@ -82,7 +82,7 @@ test('can restore inventory correctly', function () {
         ->and($return->inventory_restored)->toBeTrue();
 });
 
-test('prevents double restoration of inventory', function () {
+test('prevents double restoration of inventory', function (): void {
     $item = InventoryItem::factory()->create(['quantity' => 10]);
     $sale = PosSale::factory()->create();
     $saleItem = PosSaleItem::factory()->create([
@@ -112,7 +112,7 @@ test('prevents double restoration of inventory', function () {
     expect($item->quantity)->toBe(12); // Should still be 12, not 14
 });
 
-test('checks if return can be processed', function () {
+test('checks if return can be processed', function (): void {
     $pendingReturn = PosReturn::factory()->create(['status' => ReturnStatus::Pending]);
     $approvedReturn = PosReturn::factory()->create(['status' => ReturnStatus::Approved]);
     $processingReturn = PosReturn::factory()->create(['status' => ReturnStatus::Processing]);
@@ -124,7 +124,7 @@ test('checks if return can be processed', function () {
         ->and($rejectedReturn->canBeProcessed())->toBeFalse();
 });
 
-test('generates return number with correct format', function () {
+test('generates return number with correct format', function (): void {
     $return = PosReturn::factory()->create();
     $returnNumber = $return->generateReturnNumber();
 
@@ -134,7 +134,7 @@ test('generates return number with correct format', function () {
         ->toContain(now()->format('Ymd'));
 });
 
-test('checks if sale is within return window', function () {
+test('checks if sale is within return window', function (): void {
     $policy = \App\Models\ReturnPolicy::factory()->create([
         'return_window_days' => 30,
         'is_active' => true,
@@ -163,7 +163,7 @@ test('checks if sale is within return window', function () {
         ->and($oldReturn->isWithinReturnWindow())->toBeFalse();
 });
 
-test('sale can be returned only when completed', function () {
+test('sale can be returned only when completed', function (): void {
     $completedSale = PosSale::factory()->create([
         'status' => PosSaleStatus::Completed,
         'sale_date' => now()->subDay(),
@@ -178,7 +178,7 @@ test('sale can be returned only when completed', function () {
         ->and($refundedSale->canBeReturned())->toBeFalse();
 });
 
-test('sale cannot be returned if outside return window', function () {
+test('sale cannot be returned if outside return window', function (): void {
     $policy = \App\Models\ReturnPolicy::factory()->create([
         'return_window_days' => 30,
         'is_active' => true,
@@ -194,7 +194,7 @@ test('sale cannot be returned if outside return window', function () {
     expect($oldSale->canBeReturned())->toBeFalse();
 });
 
-test('return item calculates subtotal correctly', function () {
+test('return item calculates subtotal correctly', function (): void {
     $return = PosReturn::factory()->create();
     $item = $return->items()->create([
         'original_sale_item_id' => PosSaleItem::factory()->create()->id,

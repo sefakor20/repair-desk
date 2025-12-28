@@ -31,11 +31,11 @@ class ToastManager extends Component
     {
         $this->toasts = array_filter(
             $this->toasts,
-            fn($toast) => $toast['id'] !== $id,
+            fn(array $toast): bool => $toast['id'] !== $id,
         );
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         return view('livewire.toast-manager');
     }

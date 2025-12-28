@@ -54,7 +54,7 @@ class LowStockAlert extends Component
         return $this->lowStockItems->count() + $this->outOfStockItems->count();
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         return view('livewire.inventory.low-stock-alert');
     }

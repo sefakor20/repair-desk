@@ -6,7 +6,7 @@ use App\Models\{InventoryItem, Shift, User};
 
 uses()->group('browser', 'pos');
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create();
     $this->actingAs($this->user);
 
@@ -33,7 +33,7 @@ beforeEach(function () {
     ]);
 });
 
-it('loads POS page successfully with active shift', function () {
+it('loads POS page successfully with active shift', function (): void {
     $page = visit('/pos/create');
 
     $page->assertSee('New Sale')
@@ -44,7 +44,7 @@ it('loads POS page successfully with active shift', function () {
         ->assertNoJavaScriptErrors();
 });
 
-it('displays products in grid', function () {
+it('displays products in grid', function (): void {
     $page = visit('/pos/create');
 
     // Just check if product grid section is visible
@@ -53,7 +53,7 @@ it('displays products in grid', function () {
         ->assertNoJavaScriptErrors();
 });
 
-it('shows empty cart message initially', function () {
+it('shows empty cart message initially', function (): void {
     $page = visit('/pos/create');
 
     $page->assertSee('Cart is empty')
@@ -61,7 +61,7 @@ it('shows empty cart message initially', function () {
         ->assertNoJavaScriptErrors();
 });
 
-it('can add product to cart by clicking', function () {
+it('can add product to cart by clicking', function (): void {
     $page = visit('/pos/create');
 
     // Check if cart section exists and can be interacted with
@@ -69,7 +69,7 @@ it('can add product to cart by clicking', function () {
         ->assertNoJavaScriptErrors();
 });
 
-it('searches products by name', function () {
+it('searches products by name', function (): void {
     $page = visit('/pos/create');
 
     // Check if search input exists
@@ -77,7 +77,7 @@ it('searches products by name', function () {
         ->assertNoJavaScriptErrors();
 });
 
-it('shows payment method options', function () {
+it('shows payment method options', function (): void {
     // Add item to cart first by direct method
     $this->item1; // Ensure item exists
 

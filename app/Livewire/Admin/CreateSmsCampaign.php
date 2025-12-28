@@ -129,16 +129,16 @@ class CreateSmsCampaign extends Component
 
             match ($this->segmentType) {
                 'recent' => $query->where('created_at', '>=', now()->subDays($this->recentDays)),
-                'active' => $query->whereHas('tickets', function ($q) {
+                'active' => $query->whereHas('tickets', function ($q): void {
                     $q->where('created_at', '>=', now()->subMonths(3));
                 }),
-                'high_value' => $query->whereIn('id', function ($subquery) {
+                'high_value' => $query->whereIn('id', function ($subquery): void {
                     $subquery->select('customer_id')
                         ->from('invoices')
                         ->groupBy('customer_id')
                         ->havingRaw('SUM(total) >= ?', [$this->minSpent]);
                 }),
-                'frequent_customers' => $query->whereIn('id', function ($subquery) {
+                'frequent_customers' => $query->whereIn('id', function ($subquery): void {
                     $subquery->select('customer_id')
                         ->from('tickets')
                         ->where('branch_id', session('current_branch_id'))
@@ -167,7 +167,7 @@ class CreateSmsCampaign extends Component
 
     public function getSegmentCount(): int
     {
-        if (! $this->message) {
+        if ($this->message === '' || $this->message === '0') {
             return 1;
         }
 
@@ -182,7 +182,7 @@ class CreateSmsCampaign extends Component
             ->orderBy('first_name')
             ->orderBy('last_name')
             ->get()
-            ->map(function ($contact) {
+            ->map(function ($contact): array {
                 return [
                     'id' => $contact->id,
                     'name' => $contact->full_contact_info,
@@ -193,7 +193,7 @@ class CreateSmsCampaign extends Component
 
     public function showPreviewModal(): void
     {
-        if (!$this->message) {
+        if ($this->message === '' || $this->message === '0') {
             return;
         }
 
@@ -209,7 +209,7 @@ class CreateSmsCampaign extends Component
 
     public function showTestSendModal(): void
     {
-        if (!$this->message) {
+        if ($this->message === '' || $this->message === '0') {
             return;
         }
 
@@ -233,7 +233,7 @@ class CreateSmsCampaign extends Component
         ]);
 
         // Ensure we have the preview message generated
-        if (!$this->previewMessage) {
+        if ($this->previewMessage === '' || $this->previewMessage === '0') {
             $this->generatePreviewMessage();
         }
 
@@ -339,7 +339,7 @@ class CreateSmsCampaign extends Component
         $campaign = SmsCampaign::create([
             'name' => $this->name,
             'message' => $this->message,
-            'status' => $scheduledAt ? 'scheduled' : 'draft',
+            'status' => $scheduledAt instanceof \Carbon\Carbon ? 'scheduled' : 'draft',
             'recipient_type' => $recipientType,
             'segment_rules' => $segmentRules,
             'contact_ids' => $contactIds,
@@ -350,11 +350,11 @@ class CreateSmsCampaign extends Component
         ]);
 
         // Dispatch job immediately if not scheduled
-        if (! $scheduledAt) {
+        if (!$scheduledAt instanceof \Carbon\Carbon) {
             ProcessSmsCampaign::dispatch($campaign);
         }
 
-        session()->flash('success', 'Campaign ' . ($scheduledAt ? 'scheduled' : 'started') . ' successfully!');
+        session()->flash('success', 'Campaign ' . ($scheduledAt instanceof \Carbon\Carbon ? 'scheduled' : 'started') . ' successfully!');
 
         $this->redirect(route('admin.sms-campaigns'));
     }

@@ -8,7 +8,7 @@ use App\Models\{InventoryItem, User};
 
 uses()->group('browser', 'inventory');
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create(['role' => UserRole::Admin]);
     $this->actingAs($this->user);
 
@@ -28,7 +28,7 @@ beforeEach(function () {
     ]);
 });
 
-it('displays inventory list successfully', function () {
+it('displays inventory list successfully', function (): void {
     $page = visit('/inventory');
 
     $page->assertSee('Inventory')
@@ -39,7 +39,7 @@ it('displays inventory list successfully', function () {
     $page->assertSee($this->items->first()->name);
 });
 
-it('shows inventory table headers', function () {
+it('shows inventory table headers', function (): void {
     $page = visit('/inventory');
 
     $page->assertSee('Item')
@@ -49,7 +49,7 @@ it('shows inventory table headers', function () {
         ->assertNoJavaScriptErrors();
 });
 
-it('displays low stock items with indicators', function () {
+it('displays low stock items with indicators', function (): void {
     $page = visit('/inventory');
 
     $page->assertSee($this->lowStockItem->name)
@@ -57,7 +57,7 @@ it('displays low stock items with indicators', function () {
         ->assertNoJavaScriptErrors();
 });
 
-it('can navigate to create item page', function () {
+it('can navigate to create item page', function (): void {
     $page = visit('/inventory');
 
     $page->click('Add Item')
@@ -66,7 +66,7 @@ it('can navigate to create item page', function () {
         ->assertNoJavaScriptErrors();
 });
 
-it('shows search functionality', function () {
+it('shows search functionality', function (): void {
     $page = visit('/inventory');
 
     // Check for search functionality by looking for page heading
@@ -74,7 +74,7 @@ it('shows search functionality', function () {
         ->assertNoJavaScriptErrors();
 });
 
-it('displays item details when clicking on item', function () {
+it('displays item details when clicking on item', function (): void {
     $item = $this->items->first();
     $page = visit('/inventory');
 
@@ -86,7 +86,7 @@ it('displays item details when clicking on item', function () {
         ->assertNoJavaScriptErrors();
 });
 
-it('shows proper status badges', function () {
+it('shows proper status badges', function (): void {
     $page = visit('/inventory');
 
     // Status badges show Active/Inactive
@@ -94,7 +94,7 @@ it('shows proper status badges', function () {
         ->assertNoJavaScriptErrors();
 });
 
-it('displays quantity information', function () {
+it('displays quantity information', function (): void {
     $item = $this->items->first();
 
     $page = visit('/inventory');

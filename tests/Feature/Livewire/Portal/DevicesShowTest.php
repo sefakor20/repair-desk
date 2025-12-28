@@ -8,7 +8,7 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\get;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->customer = Customer::factory()
         ->create(['portal_access_token' => 'test-token-789']);
 
@@ -22,7 +22,7 @@ beforeEach(function () {
     ]);
 });
 
-test('renders successfully for authorized customer', function () {
+test('renders successfully for authorized customer', function (): void {
     get(route('portal.devices.show', [
         'customer' => $this->customer->id,
         'token' => $this->customer->portal_access_token,
@@ -31,7 +31,7 @@ test('renders successfully for authorized customer', function () {
         ->assertSeeLivewire(Show::class);
 });
 
-test('displays device information', function () {
+test('displays device information', function (): void {
     Livewire::test(Show::class, [
         'customer' => $this->customer,
         'device' => $this->device,
@@ -43,7 +43,7 @@ test('displays device information', function () {
         ->assertSee('123456789012345');
 });
 
-test('prevents unauthorized access to device', function () {
+test('prevents unauthorized access to device', function (): void {
     $otherCustomer = Customer::factory()->create();
     $otherDevice = Device::factory()->create([
         'customer_id' => $otherCustomer->id,
@@ -55,14 +55,14 @@ test('prevents unauthorized access to device', function () {
     ])->assertForbidden();
 });
 
-test('displays device registration date', function () {
+test('displays device registration date', function (): void {
     Livewire::test(Show::class, [
         'customer' => $this->customer,
         'device' => $this->device,
     ])->assertSee($this->device->created_at->format('M d, Y'));
 });
 
-test('displays total repair count', function () {
+test('displays total repair count', function (): void {
     Ticket::factory()->count(5)->create([
         'customer_id' => $this->customer->id,
         'device_id' => $this->device->id,
@@ -76,7 +76,7 @@ test('displays total repair count', function () {
 
 // Warranty field doesn't exist in devices table - tests removed
 
-test('displays device notes when available', function () {
+test('displays device notes when available', function (): void {
     $this->device->update([
         'notes' => 'Customer prefers text messages for updates',
     ]);
@@ -89,7 +89,7 @@ test('displays device notes when available', function () {
 
 // Color and storage capacity fields don't exist in devices table - tests removed
 
-test('displays repair history in descending order', function () {
+test('displays repair history in descending order', function (): void {
     $oldTicket = Ticket::factory()->create([
         'customer_id' => $this->customer->id,
         'device_id' => $this->device->id,
@@ -116,7 +116,7 @@ test('displays repair history in descending order', function () {
     expect($pos1)->toBeLessThan($pos2);
 });
 
-test('displays ticket status badge', function () {
+test('displays ticket status badge', function (): void {
     Ticket::factory()->create([
         'customer_id' => $this->customer->id,
         'device_id' => $this->device->id,
@@ -129,7 +129,7 @@ test('displays ticket status badge', function () {
     ])->assertSee('Completed');
 });
 
-test('displays ticket priority badge', function () {
+test('displays ticket priority badge', function (): void {
     Ticket::factory()->create([
         'customer_id' => $this->customer->id,
         'device_id' => $this->device->id,
@@ -142,7 +142,7 @@ test('displays ticket priority badge', function () {
     ])->assertSee('High Priority');
 });
 
-test('displays assigned technician', function () {
+test('displays assigned technician', function (): void {
     $technician = User::factory()->create(['name' => 'John Smith']);
 
     Ticket::factory()->create([
@@ -157,7 +157,7 @@ test('displays assigned technician', function () {
     ])->assertSee('John Smith');
 });
 
-test('displays ticket created date', function () {
+test('displays ticket created date', function (): void {
     $createdDate = now()->subDays(3);
 
     Ticket::factory()->create([
@@ -173,7 +173,7 @@ test('displays ticket created date', function () {
     ])->assertSee($createdDate->format('M d, Y'));
 });
 
-test('displays invoice information for tickets', function () {
+test('displays invoice information for tickets', function (): void {
     $ticket = Ticket::factory()->create([
         'customer_id' => $this->customer->id,
         'device_id' => $this->device->id,
@@ -196,7 +196,7 @@ test('displays invoice information for tickets', function () {
         ->assertSee('Paid');
 });
 
-test('displays invoice status badge', function () {
+test('displays invoice status badge', function (): void {
     $ticket = Ticket::factory()->create([
         'customer_id' => $this->customer->id,
         'device_id' => $this->device->id,
@@ -214,7 +214,7 @@ test('displays invoice status badge', function () {
     ])->assertSee('Pending');
 });
 
-test('displays balance due for unpaid invoices', function () {
+test('displays balance due for unpaid invoices', function (): void {
     $ticket = Ticket::factory()->create([
         'customer_id' => $this->customer->id,
         'device_id' => $this->device->id,
@@ -233,7 +233,7 @@ test('displays balance due for unpaid invoices', function () {
     ])->assertSee('Balance Due: GH₵ 500.00');
 });
 
-test('displays empty state when no repairs exist', function () {
+test('displays empty state when no repairs exist', function (): void {
     Livewire::test(Show::class, [
         'customer' => $this->customer,
         'device' => $this->device,
@@ -242,7 +242,7 @@ test('displays empty state when no repairs exist', function () {
         ->assertSee("hasn't been serviced yet", false);
 });
 
-test('back button links to devices index', function () {
+test('back button links to devices index', function (): void {
     $expectedRoute = route('portal.devices.index', [
         'customer' => $this->customer->id,
         'token' => $this->customer->portal_access_token,
@@ -254,7 +254,7 @@ test('back button links to devices index', function () {
     ])->assertSee($expectedRoute);
 });
 
-test('view details button links to ticket show page', function () {
+test('view details button links to ticket show page', function (): void {
     $ticket = Ticket::factory()->create([
         'customer_id' => $this->customer->id,
         'device_id' => $this->device->id,
@@ -272,7 +272,7 @@ test('view details button links to ticket show page', function () {
     ])->assertSee($expectedRoute);
 });
 
-test('generates portal access token if missing', function () {
+test('generates portal access token if missing', function (): void {
     $customer = Customer::factory()->create(['portal_access_token' => null]);
     $device = Device::factory()->create(['customer_id' => $customer->id]);
 
@@ -288,7 +288,7 @@ test('generates portal access token if missing', function () {
     expect($customer->portal_access_token)->not->toBeNull();
 });
 
-test('displays ticket problem description', function () {
+test('displays ticket problem description', function (): void {
     Ticket::factory()->create([
         'customer_id' => $this->customer->id,
         'device_id' => $this->device->id,

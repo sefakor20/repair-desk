@@ -63,7 +63,7 @@ class OpenShift extends Component
         $this->redirect(route('shifts.index'), navigate: true);
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         return view('livewire.shifts.open-shift');
     }

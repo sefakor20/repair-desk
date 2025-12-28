@@ -7,7 +7,7 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create(['role' => 'admin']);
     $this->branches = Branch::factory()->count(3)->create();
 });
@@ -19,14 +19,14 @@ dataset('branchModules', [
     [\App\Livewire\Reports\Index::class, null, null], // Reports is aggregate, test filter UI
 ]);
 
-it('shows branch filter dropdown in all modules', function (string $component, $modelClass, $dataKey) {
+it('shows branch filter dropdown in all modules', function (string $component, $modelClass, $dataKey): void {
     actingAs($this->user);
 
     Livewire::test($component)
         ->assertSee('All Branches');
 })->with('branchModules');
 
-it('filters by branch in tickets, inventory, and pos', function (string $component, $modelClass, $dataKey) {
+it('filters by branch in tickets, inventory, and pos', function (string $component, $modelClass, $dataKey): void {
     if (!$modelClass) {
         $this->markTestSkipped('Not applicable for reports');
     }

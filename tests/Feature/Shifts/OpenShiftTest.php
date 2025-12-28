@@ -9,7 +9,7 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\{actingAs, assertDatabaseHas};
 
-test('user can view open shift page when no active shift', function () {
+test('user can view open shift page when no active shift', function (): void {
     $user = createAdmin();
 
     actingAs($user)
@@ -18,7 +18,7 @@ test('user can view open shift page when no active shift', function () {
         ->assertSeeLivewire(OpenShift::class);
 });
 
-test('user cannot view open shift page when shift already open', function () {
+test('user cannot view open shift page when shift already open', function (): void {
     $user = createAdmin();
 
     Shift::factory()->open()->create(['opened_by' => $user->id]);
@@ -28,7 +28,7 @@ test('user cannot view open shift page when shift already open', function () {
         ->assertForbidden();
 });
 
-test('user can open shift with valid data', function () {
+test('user can open shift with valid data', function (): void {
     $user = createAdmin();
 
     Livewire::actingAs($user)
@@ -47,7 +47,7 @@ test('user can open shift with valid data', function () {
     ]);
 });
 
-test('shift name is required', function () {
+test('shift name is required', function (): void {
     $user = createAdmin();
 
     Livewire::actingAs($user)
@@ -57,7 +57,7 @@ test('shift name is required', function () {
         ->assertHasErrors(['shift_name' => 'required']);
 });
 
-test('shift name cannot exceed 255 characters', function () {
+test('shift name cannot exceed 255 characters', function (): void {
     $user = createAdmin();
 
     Livewire::actingAs($user)
@@ -67,7 +67,7 @@ test('shift name cannot exceed 255 characters', function () {
         ->assertHasErrors(['shift_name' => 'max']);
 });
 
-test('opening notes are optional', function () {
+test('opening notes are optional', function (): void {
     $user = createAdmin();
 
     Livewire::actingAs($user)
@@ -84,7 +84,7 @@ test('opening notes are optional', function () {
     ]);
 });
 
-test('opening notes cannot exceed 500 characters', function () {
+test('opening notes cannot exceed 500 characters', function (): void {
     $user = createAdmin();
 
     Livewire::actingAs($user)
@@ -95,7 +95,7 @@ test('opening notes cannot exceed 500 characters', function () {
         ->assertHasErrors(['opening_notes' => 'max']);
 });
 
-test('cannot open shift when user already has open shift', function () {
+test('cannot open shift when user already has open shift', function (): void {
     $user = createAdmin();
 
     Shift::factory()->open()->create(['opened_by' => $user->id]);
@@ -105,7 +105,7 @@ test('cannot open shift when user already has open shift', function () {
         ->assertForbidden();
 });
 
-test('shift initializes with zero values', function () {
+test('shift initializes with zero values', function (): void {
     $user = createAdmin();
 
     Livewire::actingAs($user)
@@ -123,7 +123,7 @@ test('shift initializes with zero values', function () {
     expect($shift->bank_transfer_sales)->toBe('0.00');
 });
 
-test('shift suggests name based on time of day', function () {
+test('shift suggests name based on time of day', function (): void {
     $user = createAdmin();
 
     $component = Livewire::actingAs($user)->test(OpenShift::class);

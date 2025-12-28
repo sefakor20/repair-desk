@@ -53,10 +53,10 @@ class LoyaltyReward extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true)
-            ->where(function ($q) {
+            ->where(function ($q): void {
                 $q->whereNull('valid_from')->orWhere('valid_from', '<=', now());
             })
-            ->where(function ($q) {
+            ->where(function ($q): void {
                 $q->whereNull('valid_until')->orWhere('valid_until', '>=', now());
             });
     }
@@ -64,7 +64,7 @@ class LoyaltyReward extends Model
     public function scopeAvailable($query)
     {
         return $query->active()
-            ->where(function ($q) {
+            ->where(function ($q): void {
                 $q->whereNull('redemption_limit')
                     ->orWhereRaw('times_redeemed < redemption_limit');
             });
@@ -91,12 +91,7 @@ class LoyaltyReward extends Model
         if ($this->valid_until && $this->valid_until->isPast()) {
             return false;
         }
-
-        if ($this->redemption_limit && $this->times_redeemed >= $this->redemption_limit) {
-            return false;
-        }
-
-        return true;
+        return !($this->redemption_limit && $this->times_redeemed >= $this->redemption_limit);
     }
 
     public function redeem(CustomerLoyaltyAccount $account): LoyaltyTransaction

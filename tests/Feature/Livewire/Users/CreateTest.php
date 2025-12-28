@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Livewire;
 
-test('only admin can access user create page', function () {
+test('only admin can access user create page', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -15,7 +15,7 @@ test('only admin can access user create page', function () {
         ->assertSuccessful();
 });
 
-test('non-admin users cannot access user create page', function () {
+test('non-admin users cannot access user create page', function (): void {
     $manager = User::factory()->manager()->create();
     $technician = User::factory()->technician()->create();
     $frontDesk = User::factory()->create();
@@ -33,7 +33,7 @@ test('non-admin users cannot access user create page', function () {
         ->assertForbidden();
 });
 
-test('admin can create a new user', function () {
+test('admin can create a new user', function (): void {
     $admin = User::factory()->admin()->create();
 
     expect(User::count())->toBe(1);
@@ -62,7 +62,7 @@ test('admin can create a new user', function () {
         ->and(Hash::check('password123', $user->password))->toBeTrue();
 });
 
-test('name is required', function () {
+test('name is required', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -75,7 +75,7 @@ test('name is required', function () {
         ->assertHasErrors(['name' => 'required']);
 });
 
-test('email is required', function () {
+test('email is required', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -88,7 +88,7 @@ test('email is required', function () {
         ->assertHasErrors(['email' => 'required']);
 });
 
-test('email must be valid', function () {
+test('email must be valid', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -101,7 +101,7 @@ test('email must be valid', function () {
         ->assertHasErrors(['email']);
 });
 
-test('email must be unique', function () {
+test('email must be unique', function (): void {
     $admin = User::factory()->admin()->create();
     $existingUser = User::factory()->create(['email' => 'existing@example.com']);
 
@@ -115,7 +115,7 @@ test('email must be unique', function () {
         ->assertHasErrors(['email']);
 });
 
-test('password is required', function () {
+test('password is required', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -128,7 +128,7 @@ test('password is required', function () {
         ->assertHasErrors(['password' => 'required']);
 });
 
-test('password must be confirmed', function () {
+test('password must be confirmed', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -141,7 +141,7 @@ test('password must be confirmed', function () {
         ->assertHasErrors(['password']);
 });
 
-test('password must meet minimum requirements', function () {
+test('password must meet minimum requirements', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -154,7 +154,7 @@ test('password must meet minimum requirements', function () {
         ->assertHasErrors(['password']);
 });
 
-test('role is required', function () {
+test('role is required', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -168,7 +168,7 @@ test('role is required', function () {
         ->assertHasErrors(['role' => 'required']);
 });
 
-test('role must be valid', function () {
+test('role must be valid', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -182,7 +182,7 @@ test('role must be valid', function () {
         ->assertHasErrors(['role']);
 });
 
-test('phone is optional', function () {
+test('phone is optional', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -199,7 +199,7 @@ test('phone is optional', function () {
     expect(User::where('email', 'john@example.com')->first()->phone)->toBeNull();
 });
 
-test('user can be created as inactive', function () {
+test('user can be created as inactive', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)

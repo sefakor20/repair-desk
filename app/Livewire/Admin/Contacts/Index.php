@@ -40,8 +40,8 @@ class Index extends Component
     public function getContactsProperty()
     {
         return Contact::query()
-            ->when($this->search, function ($query) {
-                $query->where(function ($q) {
+            ->when($this->search, function ($query): void {
+                $query->where(function ($q): void {
                     $q->where('first_name', 'like', '%' . $this->search . '%')
                         ->orWhere('last_name', 'like', '%' . $this->search . '%')
                         ->orWhere('email', 'like', '%' . $this->search . '%')
@@ -54,7 +54,7 @@ class Index extends Component
     }
 
     #[Layout('components.layouts.app')]
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         return view('livewire.admin.contacts.index');
     }

@@ -7,7 +7,7 @@ use App\Services\SmsService;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
 
-test('failed sms can be retried', function () {
+test('failed sms can be retried', function (): void {
     config([
         'services.texttango.api_key' => 'test-key',
         'services.texttango.url' => 'https://api.texttango.test/sms',
@@ -36,7 +36,7 @@ test('failed sms can be retried', function () {
     expect($log->fresh()->last_retry_at)->not->toBeNull();
 });
 
-test('retry increments retry count', function () {
+test('retry increments retry count', function (): void {
     config([
         'services.texttango.api_key' => 'test-key',
         'services.texttango.url' => 'https://api.texttango.test/sms',
@@ -65,7 +65,7 @@ test('retry increments retry count', function () {
     expect($log->next_retry_at)->not->toBeNull();
 });
 
-test('retry respects max retries limit', function () {
+test('retry respects max retries limit', function (): void {
     $log = SmsDeliveryLog::create([
         'phone' => '+1234567890',
         'message' => 'Test message',
@@ -85,7 +85,7 @@ test('retry respects max retries limit', function () {
     expect($log->fresh()->retry_count)->toBe(3);
 });
 
-test('retry command finds and retries failed messages', function () {
+test('retry command finds and retries failed messages', function (): void {
     config([
         'services.texttango.api_key' => 'test-key',
         'services.texttango.url' => 'https://api.texttango.test/sms',
@@ -134,7 +134,7 @@ test('retry command finds and retries failed messages', function () {
     expect(SmsDeliveryLog::where('status', 'failed')->count())->toBe(1);
 });
 
-test('exponential backoff increases delay between retries', function () {
+test('exponential backoff increases delay between retries', function (): void {
     config([
         'services.texttango.api_key' => 'test-key',
         'services.texttango.url' => 'https://api.texttango.test/sms',

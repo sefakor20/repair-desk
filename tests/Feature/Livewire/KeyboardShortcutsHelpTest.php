@@ -8,22 +8,22 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create();
     actingAs($this->user);
 });
 
-test('keyboard shortcuts help can be rendered', function () {
+test('keyboard shortcuts help can be rendered', function (): void {
     Livewire::test(KeyboardShortcutsHelp::class)
         ->assertOk();
 });
 
-test('keyboard shortcuts help is closed by default', function () {
+test('keyboard shortcuts help is closed by default', function (): void {
     Livewire::test(KeyboardShortcutsHelp::class)
         ->assertSet('isOpen', false);
 });
 
-test('keyboard shortcuts help can be toggled', function () {
+test('keyboard shortcuts help can be toggled', function (): void {
     Livewire::test(KeyboardShortcutsHelp::class)
         ->call('toggle')
         ->assertSet('isOpen', true)
@@ -31,14 +31,14 @@ test('keyboard shortcuts help can be toggled', function () {
         ->assertSet('isOpen', false);
 });
 
-test('keyboard shortcuts help can be closed', function () {
+test('keyboard shortcuts help can be closed', function (): void {
     Livewire::test(KeyboardShortcutsHelp::class)
         ->set('isOpen', true)
         ->call('close')
         ->assertSet('isOpen', false);
 });
 
-test('keyboard shortcuts help displays general shortcuts', function () {
+test('keyboard shortcuts help displays general shortcuts', function (): void {
     Livewire::test(KeyboardShortcutsHelp::class)
         ->assertSee('General')
         ->assertSee('Open command palette')
@@ -47,7 +47,7 @@ test('keyboard shortcuts help displays general shortcuts', function () {
         ->assertSee('Close modals/palettes');
 });
 
-test('keyboard shortcuts help displays navigation shortcuts', function () {
+test('keyboard shortcuts help displays navigation shortcuts', function (): void {
     Livewire::test(KeyboardShortcutsHelp::class)
         ->assertSee('Navigation')
         ->assertSee('Dashboard')
@@ -57,14 +57,14 @@ test('keyboard shortcuts help displays navigation shortcuts', function () {
         ->assertSee('Invoices');
 });
 
-test('keyboard shortcuts help displays action shortcuts', function () {
+test('keyboard shortcuts help displays action shortcuts', function (): void {
     Livewire::test(KeyboardShortcutsHelp::class)
         ->assertSee('Actions')
         ->assertSee('Create new item')
         ->assertSee('Edit current item');
 });
 
-test('keyboard shortcuts help displays pro tips', function () {
+test('keyboard shortcuts help displays pro tips', function (): void {
     Livewire::test(KeyboardShortcutsHelp::class)
         ->assertSee('Pro Tips')
         ->assertSee('G then D')

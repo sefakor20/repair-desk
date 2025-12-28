@@ -73,11 +73,11 @@ class Dashboard extends Component
             'progress' => $progress,
             'availableRewards' => LoyaltyReward::available()
                 ->where('points_required', '<=', $this->account->total_points)
-                ->where(function ($query) {
+                ->where(function ($query): void {
                     $query->whereNull('min_tier_id')
-                        ->orWhere(function ($q) {
+                        ->orWhere(function ($q): void {
                             if ($this->account->loyaltyTier) {
-                                $q->whereHas('minTier', function ($tierQuery) {
+                                $q->whereHas('minTier', function ($tierQuery): void {
                                     $tierQuery->where('priority', '<=', $this->account->loyaltyTier->priority);
                                 });
                             }

@@ -45,7 +45,7 @@ class ProcessSmsCampaign implements ShouldQueue
             }
 
             // Process recipients in chunks
-            $recipients->chunk($this->batchSize)->each(function ($chunk) use ($smsService) {
+            $recipients->chunk($this->batchSize)->each(function ($chunk) use ($smsService): void {
                 foreach ($chunk as $recipient) {
                     try {
                         // Check if recipient can receive SMS
@@ -148,7 +148,7 @@ class ProcessSmsCampaign implements ShouldQueue
                 ->where('created_at', '>=', now()->subDays($segmentRules['days'] ?? 30))
                 ->get(),
             'active' => $query->whereNotNull('phone')
-                ->whereHas('tickets', function ($q) {
+                ->whereHas('tickets', function ($q): void {
                     $q->where('created_at', '>=', now()->subMonths(3));
                 })
                 ->get(),

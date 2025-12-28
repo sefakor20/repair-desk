@@ -48,7 +48,7 @@ class History extends Component
     public function render(): View
     {
         $transactions = $this->account->transactions()
-            ->when($this->filterType !== 'all', function ($query) {
+            ->when($this->filterType !== 'all', function ($query): void {
                 $query->where('type', $this->filterType);
             })
             ->latest()

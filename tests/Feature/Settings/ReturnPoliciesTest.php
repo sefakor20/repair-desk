@@ -9,27 +9,27 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->admin = User::factory()->create(['role' => 'admin']);
     $this->manager = User::factory()->create(['role' => 'manager']);
     $this->technician = User::factory()->create(['role' => 'technician']);
 });
 
-test('only admin can access return policies settings page', function () {
+test('only admin can access return policies settings page', function (): void {
     actingAs($this->admin);
 
     Livewire::test(ReturnPolicies::class)
         ->assertSuccessful();
 });
 
-test('non-admin users cannot access return policies settings page', function () {
+test('non-admin users cannot access return policies settings page', function (): void {
     actingAs($this->technician);
 
     Livewire::test(ReturnPolicies::class)
         ->assertForbidden();
 });
 
-test('return policies page displays all policies', function () {
+test('return policies page displays all policies', function (): void {
     actingAs($this->admin);
 
     $policies = ReturnPolicy::factory()->count(3)->create();
@@ -40,7 +40,7 @@ test('return policies page displays all policies', function () {
         ->assertSee($policies[2]->name);
 });
 
-test('admin can create a new return policy', function () {
+test('admin can create a new return policy', function (): void {
     actingAs($this->admin);
 
     Livewire::test(ReturnPolicies::class)
@@ -68,7 +68,7 @@ test('admin can create a new return policy', function () {
         ->and($policy->allowed_conditions)->toContain(ReturnCondition::New->value);
 });
 
-test('policy name is required', function () {
+test('policy name is required', function (): void {
     actingAs($this->admin);
 
     Livewire::test(ReturnPolicies::class)
@@ -80,7 +80,7 @@ test('policy name is required', function () {
         ->assertHasErrors(['name']);
 });
 
-test('return window days is required', function () {
+test('return window days is required', function (): void {
     actingAs($this->admin);
 
     Livewire::test(ReturnPolicies::class)
@@ -92,7 +92,7 @@ test('return window days is required', function () {
         ->assertHasErrors(['return_window_days']);
 });
 
-test('return window days must be between 1 and 365', function () {
+test('return window days must be between 1 and 365', function (): void {
     actingAs($this->admin);
 
     Livewire::test(ReturnPolicies::class)
@@ -112,7 +112,7 @@ test('return window days must be between 1 and 365', function () {
         ->assertHasErrors(['return_window_days']);
 });
 
-test('restocking fee percentage must be between 0 and 100', function () {
+test('restocking fee percentage must be between 0 and 100', function (): void {
     actingAs($this->admin);
 
     Livewire::test(ReturnPolicies::class)
@@ -134,7 +134,7 @@ test('restocking fee percentage must be between 0 and 100', function () {
         ->assertHasErrors(['restocking_fee_percentage']);
 });
 
-test('at least one allowed condition is required', function () {
+test('at least one allowed condition is required', function (): void {
     actingAs($this->admin);
 
     Livewire::test(ReturnPolicies::class)
@@ -146,7 +146,7 @@ test('at least one allowed condition is required', function () {
         ->assertHasErrors(['allowed_conditions']);
 });
 
-test('admin can edit an existing return policy', function () {
+test('admin can edit an existing return policy', function (): void {
     actingAs($this->admin);
 
     $policy = ReturnPolicy::factory()->create([
@@ -166,7 +166,7 @@ test('admin can edit an existing return policy', function () {
         ->and($policy->return_window_days)->toBe(60);
 });
 
-test('admin can delete a return policy', function () {
+test('admin can delete a return policy', function (): void {
     actingAs($this->admin);
 
     $policy = ReturnPolicy::factory()->create();
@@ -179,7 +179,7 @@ test('admin can delete a return policy', function () {
     expect(ReturnPolicy::count())->toBe(0);
 });
 
-test('admin can toggle policy active status', function () {
+test('admin can toggle policy active status', function (): void {
     actingAs($this->admin);
 
     $policy = ReturnPolicy::factory()->create(['is_active' => true]);
@@ -197,7 +197,7 @@ test('admin can toggle policy active status', function () {
     expect($policy->is_active)->toBeTrue();
 });
 
-test('policy correctly identifies eligible returns based on time window', function () {
+test('policy correctly identifies eligible returns based on time window', function (): void {
     $policy = ReturnPolicy::factory()->create([
         'return_window_days' => 30,
         'is_active' => true,
@@ -216,7 +216,7 @@ test('policy correctly identifies eligible returns based on time window', functi
     expect($policy->isReturnEligible($oldSale))->toBeFalse();
 });
 
-test('inactive policy is not eligible for returns', function () {
+test('inactive policy is not eligible for returns', function (): void {
     $policy = ReturnPolicy::factory()->create([
         'is_active' => false,
         'return_window_days' => 30,
@@ -229,7 +229,7 @@ test('inactive policy is not eligible for returns', function () {
     expect($policy->isReturnEligible($sale))->toBeFalse();
 });
 
-test('policy calculates restocking fee correctly', function () {
+test('policy calculates restocking fee correctly', function (): void {
     $policy = ReturnPolicy::factory()->create([
         'restocking_fee_percentage' => 15,
         'minimum_restocking_fee' => 10,
@@ -244,7 +244,7 @@ test('policy calculates restocking fee correctly', function () {
     expect($fee2)->toBe(10.0); // minimum fee
 });
 
-test('policy with zero restocking fee works correctly', function () {
+test('policy with zero restocking fee works correctly', function (): void {
     $policy = ReturnPolicy::factory()->create([
         'restocking_fee_percentage' => 0,
         'minimum_restocking_fee' => 0,
@@ -254,7 +254,7 @@ test('policy with zero restocking fee works correctly', function () {
     expect($fee)->toBe(0.0);
 });
 
-test('policy shows correct allowed conditions labels', function () {
+test('policy shows correct allowed conditions labels', function (): void {
     $policy = ReturnPolicy::factory()->create([
         'allowed_conditions' => [
             ReturnCondition::New->value,
@@ -268,7 +268,7 @@ test('policy shows correct allowed conditions labels', function () {
         ->and($labels)->toHaveCount(2);
 });
 
-test('edit modal is pre-populated with policy data', function () {
+test('edit modal is pre-populated with policy data', function (): void {
     actingAs($this->admin);
 
     $policy = ReturnPolicy::factory()->create([
@@ -288,7 +288,7 @@ test('edit modal is pre-populated with policy data', function () {
         ->assertSet('restocking_fee_percentage', 20.0);
 });
 
-test('form resets after closing modal', function () {
+test('form resets after closing modal', function (): void {
     actingAs($this->admin);
 
     Livewire::test(ReturnPolicies::class)
@@ -301,7 +301,7 @@ test('form resets after closing modal', function () {
         ->assertSet('showModal', false);
 });
 
-test('success message is shown after creating policy', function () {
+test('success message is shown after creating policy', function (): void {
     actingAs($this->admin);
 
     Livewire::test(ReturnPolicies::class)
@@ -315,7 +315,7 @@ test('success message is shown after creating policy', function () {
     expect(ReturnPolicy::where('name', 'Test Policy')->exists())->toBeTrue();
 });
 
-test('success message is shown after updating policy', function () {
+test('success message is shown after updating policy', function (): void {
     actingAs($this->admin);
 
     $policy = ReturnPolicy::factory()->create(['name' => 'Original']);

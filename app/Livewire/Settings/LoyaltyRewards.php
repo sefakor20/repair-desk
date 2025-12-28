@@ -56,7 +56,7 @@ class LoyaltyRewards extends Component
         $this->authorize('accessSettings', auth()->user());
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         $rewards = LoyaltyReward::with('minTier')
             ->orderBy('is_active', 'desc')
@@ -65,7 +65,7 @@ class LoyaltyRewards extends Component
 
         $tiers = LoyaltyTier::active()->orderedByPriority()->get();
 
-        $rewardTypes = collect(LoyaltyRewardType::cases())->map(fn($case) => [
+        $rewardTypes = collect(LoyaltyRewardType::cases())->map(fn($case): array => [
             'value' => $case->value,
             'label' => $case->label(),
         ]);
@@ -164,7 +164,7 @@ class LoyaltyRewards extends Component
     {
         return match ($this->type) {
             'discount' => [
-                'percentage' => (float) $this->discount_percentage,
+                'percentage' => $this->discount_percentage,
             ],
             'free_product' => [
                 'sku' => $this->product_sku,
@@ -173,7 +173,7 @@ class LoyaltyRewards extends Component
                 'service_name' => $this->service_name,
             ],
             'voucher' => [
-                'amount' => (float) $this->voucher_amount,
+                'amount' => $this->voucher_amount,
             ],
             'custom' => [
                 'instructions' => $this->custom_instructions,

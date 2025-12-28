@@ -47,7 +47,7 @@ class CloseShift extends Component
         $this->redirect(route('shifts.index'), navigate: true);
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         return view('livewire.shifts.close-shift', [
             'duration' => $this->shift->started_at->diffForHumans(now(), true),

@@ -8,7 +8,7 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
 
-test('admin can view sms templates index', function () {
+test('admin can view sms templates index', function (): void {
     $admin = User::factory()->create();
     $admin->role = \App\Enums\UserRole::Admin;
     $admin->save();
@@ -28,7 +28,7 @@ test('admin can view sms templates index', function () {
         ->assertStatus(200);
 });
 
-test('admin can create sms template', function () {
+test('admin can create sms template', function (): void {
     $admin = User::factory()->create();
     $admin->role = \App\Enums\UserRole::Admin;
     $admin->save();
@@ -47,7 +47,7 @@ test('admin can create sms template', function () {
     expect(SmsTemplate::where('key', 'new_template')->exists())->toBeTrue();
 });
 
-test('admin can edit sms template', function () {
+test('admin can edit sms template', function (): void {
     $admin = User::factory()->create();
     $admin->role = \App\Enums\UserRole::Admin;
     $admin->save();
@@ -71,7 +71,7 @@ test('admin can edit sms template', function () {
         ->and($template->fresh()->message)->toBe('Updated message {{variable}}');
 });
 
-test('admin can toggle template status', function () {
+test('admin can toggle template status', function (): void {
     $admin = User::factory()->create();
     $admin->role = \App\Enums\UserRole::Admin;
     $admin->save();
@@ -92,7 +92,7 @@ test('admin can toggle template status', function () {
     expect($template->fresh()->is_active)->toBeFalse();
 });
 
-test('admin can delete template', function () {
+test('admin can delete template', function (): void {
     $admin = User::factory()->create();
     $admin->role = \App\Enums\UserRole::Admin;
     $admin->save();
@@ -113,7 +113,7 @@ test('admin can delete template', function () {
     expect(SmsTemplate::where('id', $template->id)->exists())->toBeFalse();
 });
 
-test('template renders variables correctly', function () {
+test('template renders variables correctly', function (): void {
     $template = SmsTemplate::create([
         'name' => 'Test Template',
         'key' => 'test_template',
@@ -129,7 +129,7 @@ test('template renders variables correctly', function () {
     expect($rendered)->toBe('Hello John Doe, your T-12345 is ready!');
 });
 
-test('template extracts variables correctly', function () {
+test('template extracts variables correctly', function (): void {
     $template = SmsTemplate::create([
         'name' => 'Test Template',
         'key' => 'test_template',
@@ -142,7 +142,7 @@ test('template extracts variables correctly', function () {
     expect($variables)->toBe(['customer_name', 'ticket_number']);
 });
 
-test('template key must be unique', function () {
+test('template key must be unique', function (): void {
     $admin = User::factory()->create();
     $admin->role = \App\Enums\UserRole::Admin;
     $admin->save();
@@ -164,7 +164,7 @@ test('template key must be unique', function () {
         ->assertHasErrors(['key']);
 });
 
-test('template requires all mandatory fields', function () {
+test('template requires all mandatory fields', function (): void {
     $admin = User::factory()->create();
     $admin->role = \App\Enums\UserRole::Admin;
     $admin->save();
@@ -179,7 +179,7 @@ test('template requires all mandatory fields', function () {
         ->assertHasErrors(['name', 'key', 'message']);
 });
 
-test('non-admin cannot access sms templates', function () {
+test('non-admin cannot access sms templates', function (): void {
     $user = User::factory()->create();
     $user->role = \App\Enums\UserRole::Technician;
     $user->save();

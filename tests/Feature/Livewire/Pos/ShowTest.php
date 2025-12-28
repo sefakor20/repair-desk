@@ -9,7 +9,7 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\{actingAs, get};
 
-test('pos show page can be rendered', function () {
+test('pos show page can be rendered', function (): void {
     $user = createAdmin();
     actingAs($user);
 
@@ -21,14 +21,14 @@ test('pos show page can be rendered', function () {
         ->assertSuccessful();
 });
 
-test('unauthorized user cannot access pos show page', function () {
+test('unauthorized user cannot access pos show page', function (): void {
     $sale = PosSale::factory()->create();
 
     get(route('pos.show', $sale))
         ->assertRedirect(route('login'));
 });
 
-test('displays sale details correctly', function () {
+test('displays sale details correctly', function (): void {
     $user = createAdmin();
     actingAs($user);
 
@@ -49,7 +49,7 @@ test('displays sale details correctly', function () {
         ->assertSee('103.50');
 });
 
-test('displays sale items', function () {
+test('displays sale items', function (): void {
     $user = createAdmin();
     actingAs($user);
 
@@ -76,7 +76,7 @@ test('displays sale items', function () {
         ->assertSee('50.00');
 });
 
-test('displays walk-in customer for sales without customer', function () {
+test('displays walk-in customer for sales without customer', function (): void {
     $user = createAdmin();
     actingAs($user);
 
@@ -89,7 +89,7 @@ test('displays walk-in customer for sales without customer', function () {
         ->assertSee('Walk-in Customer');
 });
 
-test('displays sale status badge', function () {
+test('displays sale status badge', function (): void {
     $user = createAdmin();
     actingAs($user);
 
@@ -102,7 +102,7 @@ test('displays sale status badge', function () {
         ->assertSee('Completed');
 });
 
-test('only admin and manager can see refund button', function () {
+test('only admin and manager can see refund button', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
     actingAs($admin);
 
@@ -115,7 +115,7 @@ test('only admin and manager can see refund button', function () {
         ->assertSee('Refund Sale');
 });
 
-test('technician cannot see refund button', function () {
+test('technician cannot see refund button', function (): void {
     $technician = User::factory()->create(['role' => UserRole::Technician]);
     actingAs($technician);
 
@@ -128,7 +128,7 @@ test('technician cannot see refund button', function () {
         ->assertSee('Back to Sales');
 });
 
-test('can open refund modal', function () {
+test('can open refund modal', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
     actingAs($admin);
 
@@ -142,7 +142,7 @@ test('can open refund modal', function () {
         ->assertSet('showRefundModal', true);
 });
 
-test('cannot open refund modal for already refunded sale', function () {
+test('cannot open refund modal for already refunded sale', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
     actingAs($admin);
 
@@ -156,7 +156,7 @@ test('cannot open refund modal for already refunded sale', function () {
         ->assertHasErrors('refund');
 });
 
-test('can close refund modal', function () {
+test('can close refund modal', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
     actingAs($admin);
 
@@ -172,7 +172,7 @@ test('can close refund modal', function () {
         ->assertSet('refundReason', '');
 });
 
-test('refund reason is required', function () {
+test('refund reason is required', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
     actingAs($admin);
 
@@ -187,7 +187,7 @@ test('refund reason is required', function () {
         ->assertHasErrors(['refundReason' => 'required']);
 });
 
-test('can process refund', function () {
+test('can process refund', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
     actingAs($admin);
 
@@ -218,7 +218,7 @@ test('can process refund', function () {
     expect($sale->notes)->toContain('Customer not satisfied');
 });
 
-test('inventory is restored after refund', function () {
+test('inventory is restored after refund', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
     actingAs($admin);
 
@@ -247,7 +247,7 @@ test('inventory is restored after refund', function () {
     expect($item->quantity)->toBe($initialQuantity + 3);
 });
 
-test('cannot process refund for already refunded sale', function () {
+test('cannot process refund for already refunded sale', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
     actingAs($admin);
 
@@ -262,7 +262,7 @@ test('cannot process refund for already refunded sale', function () {
         ->assertHasErrors('refund');
 });
 
-test('displays sale notes when present', function () {
+test('displays sale notes when present', function (): void {
     $user = createAdmin();
     actingAs($user);
 
@@ -275,7 +275,7 @@ test('displays sale notes when present', function () {
         ->assertSee('Special discount for loyal customer');
 });
 
-test('displays payment method', function () {
+test('displays payment method', function (): void {
     $user = createAdmin();
     actingAs($user);
 

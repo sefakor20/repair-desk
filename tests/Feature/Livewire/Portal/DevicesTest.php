@@ -8,12 +8,12 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\get;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->customer = Customer::factory()
         ->create(['portal_access_token' => 'test-token-456']);
 });
 
-test('renders successfully for authorized customer', function () {
+test('renders successfully for authorized customer', function (): void {
     get(route('portal.devices.index', [
         'customer' => $this->customer->id,
         'token' => $this->customer->portal_access_token,
@@ -21,7 +21,7 @@ test('renders successfully for authorized customer', function () {
         ->assertSeeLivewire(Index::class);
 });
 
-test('displays all customer devices', function () {
+test('displays all customer devices', function (): void {
     Device::factory()->create([
         'customer_id' => $this->customer->id,
         'brand' => 'Samsung',
@@ -41,7 +41,7 @@ test('displays all customer devices', function () {
         ->assertSee('iPhone 14');
 });
 
-test('searches devices by brand', function () {
+test('searches devices by brand', function (): void {
     Device::factory()->create([
         'customer_id' => $this->customer->id,
         'brand' => 'Apple',
@@ -60,7 +60,7 @@ test('searches devices by brand', function () {
         ->assertDontSee('Galaxy S23');
 });
 
-test('searches devices by model', function () {
+test('searches devices by model', function (): void {
     Device::factory()->create([
         'customer_id' => $this->customer->id,
         'brand' => 'Apple',
@@ -79,7 +79,7 @@ test('searches devices by model', function () {
         ->assertDontSee('iPhone 14 Pro');
 });
 
-test('searches devices by serial number', function () {
+test('searches devices by serial number', function (): void {
     Device::factory()->create([
         'customer_id' => $this->customer->id,
         'serial_number' => 'SN12345',
@@ -96,7 +96,7 @@ test('searches devices by serial number', function () {
         ->assertDontSee('SN67890');
 });
 
-test('searches devices by imei', function () {
+test('searches devices by imei', function (): void {
     Device::factory()->create([
         'customer_id' => $this->customer->id,
         'imei' => '123456789012345',
@@ -113,7 +113,7 @@ test('searches devices by imei', function () {
         ->assertDontSee('987654321098765');
 });
 
-test('displays repair count for each device', function () {
+test('displays repair count for each device', function (): void {
     $device = Device::factory()->create(['customer_id' => $this->customer->id]);
 
     Ticket::factory()->count(3)->create([
@@ -125,26 +125,26 @@ test('displays repair count for each device', function () {
         ->assertSee('3'); // Repair count badge
 });
 
-test('displays zero repair count for devices without tickets', function () {
+test('displays zero repair count for devices without tickets', function (): void {
     Device::factory()->create(['customer_id' => $this->customer->id]);
 
     Livewire::test(Index::class, ['customer' => $this->customer])
         ->assertSee('0'); // No repairs
 });
 
-test('clears search correctly', function () {
+test('clears search correctly', function (): void {
     Livewire::test(Index::class, ['customer' => $this->customer])
         ->set('search', 'test search')
         ->call('clearSearch')
         ->assertSet('search', '');
 });
 
-test('displays empty state when no devices exist', function () {
+test('displays empty state when no devices exist', function (): void {
     Livewire::test(Index::class, ['customer' => $this->customer])
         ->assertSee('No devices found');
 });
 
-test('displays contextual empty state message when search returns no results', function () {
+test('displays contextual empty state message when search returns no results', function (): void {
     Device::factory()->create(['customer_id' => $this->customer->id]);
 
     Livewire::test(Index::class, ['customer' => $this->customer])
@@ -152,17 +152,17 @@ test('displays contextual empty state message when search returns no results', f
         ->assertSee('Try adjusting your search');
 });
 
-test('paginates devices correctly', function () {
+test('paginates devices correctly', function (): void {
     // Create 15 devices (more than one page)
     Device::factory()->count(15)->create(['customer_id' => $this->customer->id]);
 
     Livewire::test(Index::class, ['customer' => $this->customer])
-        ->assertViewHas('devices', function ($devices) {
+        ->assertViewHas('devices', function ($devices): bool {
             return $devices->count() === 12; // Default per page
         });
 });
 
-test('only displays devices belonging to the customer', function () {
+test('only displays devices belonging to the customer', function (): void {
     $otherCustomer = Customer::factory()->create();
 
     $myDevice = Device::factory()->create([
@@ -180,7 +180,7 @@ test('only displays devices belonging to the customer', function () {
         ->assertDontSee('OtherBrand');
 });
 
-test('displays device type', function () {
+test('displays device type', function (): void {
     Device::factory()->create([
         'customer_id' => $this->customer->id,
         'type' => 'Smartphone',
@@ -190,7 +190,7 @@ test('displays device type', function () {
         ->assertSee('Smartphone');
 });
 
-test('displays device registration date', function () {
+test('displays device registration date', function (): void {
     $device = Device::factory()->create([
         'customer_id' => $this->customer->id,
         'created_at' => now()->subDays(10),
@@ -200,14 +200,14 @@ test('displays device registration date', function () {
         ->assertSee($device->created_at->format('M d, Y'));
 });
 
-test('shows summary with total devices count', function () {
+test('shows summary with total devices count', function (): void {
     Device::factory()->count(5)->create(['customer_id' => $this->customer->id]);
 
     Livewire::test(Index::class, ['customer' => $this->customer])
         ->assertSee('5'); // Total devices count
 });
 
-test('shows summary with total repairs count', function () {
+test('shows summary with total repairs count', function (): void {
     $device = Device::factory()->create(['customer_id' => $this->customer->id]);
 
     Ticket::factory()->count(7)->create([
@@ -219,14 +219,14 @@ test('shows summary with total repairs count', function () {
         ->assertSee('7'); // Total repairs count
 });
 
-test('resets page when updating search', function () {
+test('resets page when updating search', function (): void {
     Livewire::test(Index::class, ['customer' => $this->customer])
         ->set('search', 'initial')
         ->assertSet('search', 'initial')
         ->set('search', 'updated');
 });
 
-test('generates portal access token if missing', function () {
+test('generates portal access token if missing', function (): void {
     $customer = Customer::factory()->create(['portal_access_token' => null]);
 
     expect($customer->portal_access_token)->toBeNull();
@@ -238,7 +238,7 @@ test('generates portal access token if missing', function () {
     expect($customer->portal_access_token)->not->toBeNull();
 });
 
-test('displays serial number when available', function () {
+test('displays serial number when available', function (): void {
     Device::factory()->create([
         'customer_id' => $this->customer->id,
         'serial_number' => 'ABC123XYZ',
@@ -248,7 +248,7 @@ test('displays serial number when available', function () {
         ->assertSee('ABC123XYZ');
 });
 
-test('displays imei when available', function () {
+test('displays imei when available', function (): void {
     Device::factory()->create([
         'customer_id' => $this->customer->id,
         'imei' => '123456789012345',

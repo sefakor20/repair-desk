@@ -8,12 +8,12 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\{get};
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->customer = Customer::factory()
         ->create(['portal_access_token' => 'test-token-123']);
 });
 
-test('renders successfully for authorized customer', function () {
+test('renders successfully for authorized customer', function (): void {
     get(route('portal.invoices.index', [
         'customer' => $this->customer->id,
         'token' => $this->customer->portal_access_token,
@@ -21,7 +21,7 @@ test('renders successfully for authorized customer', function () {
         ->assertSeeLivewire(Index::class);
 });
 
-test('displays all customer invoices', function () {
+test('displays all customer invoices', function (): void {
     $device = Device::factory()->create(['customer_id' => $this->customer->id]);
     $ticket = Ticket::factory()->create([
         'customer_id' => $this->customer->id,
@@ -40,7 +40,7 @@ test('displays all customer invoices', function () {
         ->assertSee('GH₵ 500.00');
 });
 
-test('filters invoices by status', function () {
+test('filters invoices by status', function (): void {
     $device = Device::factory()->create(['customer_id' => $this->customer->id]);
     $ticket = Ticket::factory()->create([
         'customer_id' => $this->customer->id,
@@ -67,7 +67,7 @@ test('filters invoices by status', function () {
         ->assertDontSee('INV-PENDING');
 });
 
-test('searches invoices by invoice number', function () {
+test('searches invoices by invoice number', function (): void {
     $device = Device::factory()->create(['customer_id' => $this->customer->id]);
     $ticket = Ticket::factory()->create([
         'customer_id' => $this->customer->id,
@@ -92,7 +92,7 @@ test('searches invoices by invoice number', function () {
         ->assertDontSee('INV-OTHER-002');
 });
 
-test('searches invoices by ticket number', function () {
+test('searches invoices by ticket number', function (): void {
     $device = Device::factory()->create(['customer_id' => $this->customer->id]);
 
     $ticket1 = Ticket::factory()->create([
@@ -125,7 +125,7 @@ test('searches invoices by ticket number', function () {
         ->assertDontSee('INV-002');
 });
 
-test('displays correct summary calculations', function () {
+test('displays correct summary calculations', function (): void {
     $device = Device::factory()->create(['customer_id' => $this->customer->id]);
     $ticket = Ticket::factory()->create([
         'customer_id' => $this->customer->id,
@@ -160,7 +160,7 @@ test('displays correct summary calculations', function () {
         ->assertSee('GH₵ 150.00'); // Paid from $pendingInvoice (50 payment)
 });
 
-test('clear filters resets status and search', function () {
+test('clear filters resets status and search', function (): void {
     Livewire::test(Index::class, ['customer' => $this->customer])
         ->set('filterStatus', 'paid')
         ->set('search', 'test')
@@ -169,12 +169,12 @@ test('clear filters resets status and search', function () {
         ->assertSet('search', '');
 });
 
-test('displays empty state when no invoices exist', function () {
+test('displays empty state when no invoices exist', function (): void {
     Livewire::test(Index::class, ['customer' => $this->customer])
         ->assertSee('No invoices found');
 });
 
-test('displays empty state with search message when search returns no results', function () {
+test('displays empty state with search message when search returns no results', function (): void {
     Device::factory()->create(['customer_id' => $this->customer->id]);
 
     Livewire::test(Index::class, ['customer' => $this->customer])
@@ -183,7 +183,7 @@ test('displays empty state with search message when search returns no results', 
         ->assertSee('Try adjusting');
 });
 
-test('paginates invoices correctly', function () {
+test('paginates invoices correctly', function (): void {
     $device = Device::factory()->create(['customer_id' => $this->customer->id]);
     $ticket = Ticket::factory()->create([
         'customer_id' => $this->customer->id,
@@ -197,12 +197,12 @@ test('paginates invoices correctly', function () {
     ]);
 
     Livewire::test(Index::class, ['customer' => $this->customer])
-        ->assertViewHas('invoices', function ($invoices) {
+        ->assertViewHas('invoices', function ($invoices): bool {
             return $invoices->count() === 10; // Default per page
         });
 });
 
-test('only displays invoices belonging to the customer', function () {
+test('only displays invoices belonging to the customer', function (): void {
     $otherCustomer = Customer::factory()->create();
 
     $device1 = Device::factory()->create(['customer_id' => $this->customer->id]);
@@ -235,7 +235,7 @@ test('only displays invoices belonging to the customer', function () {
         ->assertDontSee('INV-OTHER');
 });
 
-test('displays device information for each invoice', function () {
+test('displays device information for each invoice', function (): void {
     $device = Device::factory()->create([
         'customer_id' => $this->customer->id,
         'brand' => 'Apple',
@@ -257,14 +257,14 @@ test('displays device information for each invoice', function () {
         ->assertSee('iPhone 14 Pro');
 });
 
-test('resetting page when updating search', function () {
+test('resetting page when updating search', function (): void {
     Livewire::test(Index::class, ['customer' => $this->customer])
         ->set('search', 'initial')
         ->assertSet('search', 'initial')
         ->set('search', 'updated');
 });
 
-test('generates portal access token if missing', function () {
+test('generates portal access token if missing', function (): void {
     $customer = Customer::factory()->create(['portal_access_token' => null]);
 
     expect($customer->portal_access_token)->toBeNull();

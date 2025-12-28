@@ -44,7 +44,7 @@ class Edit extends Component
     public string $status = 'active';
 
     #[Validate('nullable|image|max:2048')]
-    public $image_path = null;
+    public $image_path;
 
     public function mount(InventoryItem $item): void
     {
@@ -102,7 +102,7 @@ class Edit extends Component
         $this->redirect(route('inventory.index'), navigate: true);
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         return view('livewire.inventory.edit', [
             'categories' => InventoryItem::distinct()->pluck('category')->filter()->sort()->values(),

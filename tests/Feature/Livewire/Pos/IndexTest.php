@@ -9,19 +9,19 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\{actingAs, get};
 
-test('pos index page can be rendered', function () {
+test('pos index page can be rendered', function (): void {
     actingAs(createAdmin());
 
     get(route('pos.index'))
         ->assertSuccessful();
 });
 
-test('unauthorized user cannot access pos index page', function () {
+test('unauthorized user cannot access pos index page', function (): void {
     get(route('pos.index'))
         ->assertRedirect(route('login'));
 });
 
-test('pos index page displays sales', function () {
+test('pos index page displays sales', function (): void {
     $user = createAdmin();
     actingAs($user);
 
@@ -38,14 +38,14 @@ test('pos index page displays sales', function () {
         ->assertSee(number_format((float) $sale->total_amount, 2));
 });
 
-test('pos index shows empty state when no sales exist', function () {
+test('pos index shows empty state when no sales exist', function (): void {
     actingAs(createAdmin());
 
     Livewire::test(Index::class)
         ->assertSee('No sales yet');
 });
 
-test('can search sales by sale number', function () {
+test('can search sales by sale number', function (): void {
     $user = createAdmin();
     actingAs($user);
 
@@ -64,7 +64,7 @@ test('can search sales by sale number', function () {
         ->assertDontSee($sale2->sale_number);
 });
 
-test('can search sales by customer name', function () {
+test('can search sales by customer name', function (): void {
     $user = createAdmin();
     actingAs($user);
 
@@ -86,7 +86,7 @@ test('can search sales by customer name', function () {
         ->assertDontSee($sale2->sale_number);
 });
 
-test('can filter sales by status', function () {
+test('can filter sales by status', function (): void {
     $user = createAdmin();
     actingAs($user);
 
@@ -105,7 +105,7 @@ test('can filter sales by status', function () {
         ->assertDontSee($refundedSale->sale_number);
 });
 
-test('can filter sales by payment method', function () {
+test('can filter sales by payment method', function (): void {
     $user = createAdmin();
     actingAs($user);
 
@@ -124,7 +124,7 @@ test('can filter sales by payment method', function () {
         ->assertDontSee($cardSale->sale_number);
 });
 
-test('can clear all filters', function () {
+test('can clear all filters', function (): void {
     $user = createAdmin();
     actingAs($user);
 
@@ -138,7 +138,7 @@ test('can clear all filters', function () {
         ->assertSet('paymentMethodFilter', '');
 });
 
-test('sales are paginated', function () {
+test('sales are paginated', function (): void {
     $user = createAdmin();
     actingAs($user);
 
@@ -151,7 +151,7 @@ test('sales are paginated', function () {
         ->assertSee('2');
 });
 
-test('displays walk-in customer for sales without customer', function () {
+test('displays walk-in customer for sales without customer', function (): void {
     $user = createAdmin();
     actingAs($user);
 

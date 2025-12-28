@@ -9,12 +9,12 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\{actingAs, get};
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create(['role' => UserRole::Technician]);
     actingAs($this->user);
 });
 
-test('device edit page can be rendered', function () {
+test('device edit page can be rendered', function (): void {
     $device = Device::factory()->create();
 
     get(route('devices.edit', $device))
@@ -22,7 +22,7 @@ test('device edit page can be rendered', function () {
         ->assertSeeLivewire(Edit::class);
 });
 
-test('device edit requires authentication', function () {
+test('device edit requires authentication', function (): void {
     auth()->logout();
     $device = Device::factory()->create();
 
@@ -30,7 +30,7 @@ test('device edit requires authentication', function () {
         ->assertRedirect(route('login'));
 });
 
-test('form is pre-populated with device data', function () {
+test('form is pre-populated with device data', function (): void {
     $device = Device::factory()->create([
         'type' => 'Smartphone',
         'brand' => 'Apple',
@@ -50,7 +50,7 @@ test('form is pre-populated with device data', function () {
         ->assertSet('form.notes', 'Test notes');
 });
 
-test('form handles null optional fields', function () {
+test('form handles null optional fields', function (): void {
     $device = Device::factory()->create([
         'serial_number' => null,
         'imei' => null,
@@ -63,7 +63,7 @@ test('form handles null optional fields', function () {
         ->assertSet('form.notes', '');
 });
 
-test('can update device with all fields', function () {
+test('can update device with all fields', function (): void {
     $device = Device::factory()->create();
     $newCustomer = Customer::factory()->create();
 
@@ -89,7 +89,7 @@ test('can update device with all fields', function () {
     expect($device->notes)->toBe('Updated notes');
 });
 
-test('can update device with partial fields', function () {
+test('can update device with partial fields', function (): void {
     $device = Device::factory()->create([
         'brand' => 'Apple',
         'model' => 'iPhone 14',
@@ -106,7 +106,7 @@ test('can update device with partial fields', function () {
     expect($device->model)->toBe('Galaxy S24');
 });
 
-test('customer_id is required', function () {
+test('customer_id is required', function (): void {
     $device = Device::factory()->create();
 
     Livewire::test(Edit::class, ['device' => $device])
@@ -115,7 +115,7 @@ test('customer_id is required', function () {
         ->assertHasErrors(['form.customer_id' => 'required']);
 });
 
-test('customer_id must exist', function () {
+test('customer_id must exist', function (): void {
     $device = Device::factory()->create();
 
     Livewire::test(Edit::class, ['device' => $device])
@@ -124,7 +124,7 @@ test('customer_id must exist', function () {
         ->assertHasErrors(['form.customer_id']);
 });
 
-test('type is required', function () {
+test('type is required', function (): void {
     $device = Device::factory()->create();
 
     Livewire::test(Edit::class, ['device' => $device])
@@ -133,7 +133,7 @@ test('type is required', function () {
         ->assertHasErrors(['form.type' => 'required']);
 });
 
-test('brand is required', function () {
+test('brand is required', function (): void {
     $device = Device::factory()->create();
 
     Livewire::test(Edit::class, ['device' => $device])
@@ -142,7 +142,7 @@ test('brand is required', function () {
         ->assertHasErrors(['form.brand' => 'required']);
 });
 
-test('model is required', function () {
+test('model is required', function (): void {
     $device = Device::factory()->create();
 
     Livewire::test(Edit::class, ['device' => $device])
@@ -151,7 +151,7 @@ test('model is required', function () {
         ->assertHasErrors(['form.model' => 'required']);
 });
 
-test('serial_number is optional', function () {
+test('serial_number is optional', function (): void {
     $device = Device::factory()->create();
 
     Livewire::test(Edit::class, ['device' => $device])
@@ -163,7 +163,7 @@ test('serial_number is optional', function () {
     expect($device->serial_number)->toBeEmpty();
 });
 
-test('imei is optional', function () {
+test('imei is optional', function (): void {
     $device = Device::factory()->create();
 
     Livewire::test(Edit::class, ['device' => $device])
@@ -175,7 +175,7 @@ test('imei is optional', function () {
     expect($device->imei)->toBeEmpty();
 });
 
-test('notes is optional', function () {
+test('notes is optional', function (): void {
     $device = Device::factory()->create();
 
     Livewire::test(Edit::class, ['device' => $device])
@@ -187,7 +187,7 @@ test('notes is optional', function () {
     expect($device->notes)->toBeEmpty();
 });
 
-test('type cannot exceed 255 characters', function () {
+test('type cannot exceed 255 characters', function (): void {
     $device = Device::factory()->create();
 
     Livewire::test(Edit::class, ['device' => $device])
@@ -196,7 +196,7 @@ test('type cannot exceed 255 characters', function () {
         ->assertHasErrors(['form.type']);
 });
 
-test('brand cannot exceed 255 characters', function () {
+test('brand cannot exceed 255 characters', function (): void {
     $device = Device::factory()->create();
 
     Livewire::test(Edit::class, ['device' => $device])
@@ -205,7 +205,7 @@ test('brand cannot exceed 255 characters', function () {
         ->assertHasErrors(['form.brand']);
 });
 
-test('model cannot exceed 255 characters', function () {
+test('model cannot exceed 255 characters', function (): void {
     $device = Device::factory()->create();
 
     Livewire::test(Edit::class, ['device' => $device])
@@ -214,7 +214,7 @@ test('model cannot exceed 255 characters', function () {
         ->assertHasErrors(['form.model']);
 });
 
-test('serial_number cannot exceed 255 characters', function () {
+test('serial_number cannot exceed 255 characters', function (): void {
     $device = Device::factory()->create();
 
     Livewire::test(Edit::class, ['device' => $device])
@@ -223,7 +223,7 @@ test('serial_number cannot exceed 255 characters', function () {
         ->assertHasErrors(['form.serial_number']);
 });
 
-test('imei cannot exceed 255 characters', function () {
+test('imei cannot exceed 255 characters', function (): void {
     $device = Device::factory()->create();
 
     Livewire::test(Edit::class, ['device' => $device])
@@ -232,7 +232,7 @@ test('imei cannot exceed 255 characters', function () {
         ->assertHasErrors(['form.imei']);
 });
 
-test('redirects to device show page after update', function () {
+test('redirects to device show page after update', function (): void {
     $device = Device::factory()->create();
 
     Livewire::test(Edit::class, ['device' => $device])
@@ -243,7 +243,7 @@ test('redirects to device show page after update', function () {
     expect(session('success'))->toBe('Device updated successfully.');
 });
 
-test('displays customer dropdown with all customers', function () {
+test('displays customer dropdown with all customers', function (): void {
     $customer1 = Customer::factory()->create();
     $customer2 = Customer::factory()->create();
     $device = Device::factory()->for($customer1)->create();

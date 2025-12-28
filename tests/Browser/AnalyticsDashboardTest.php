@@ -7,7 +7,7 @@ use App\Models\{PosSale, User};
 
 uses()->group('browser', 'analytics');
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create();
     $this->actingAs($this->user);
 
@@ -27,7 +27,7 @@ beforeEach(function () {
     ]);
 });
 
-it('loads analytics dashboard successfully', function () {
+it('loads analytics dashboard successfully', function (): void {
     $page = visit('/analytics');
 
     $page->assertSee('Sales Analytics')
@@ -39,7 +39,7 @@ it('loads analytics dashboard successfully', function () {
         ->assertNoJavaScriptErrors();
 });
 
-it('displays metric cards with currency values', function () {
+it('displays metric cards with currency values', function (): void {
     $page = visit('/analytics');
 
     // Verify metrics are displayed with currency
@@ -50,7 +50,7 @@ it('displays metric cards with currency values', function () {
         ->assertNoJavaScriptErrors();
 });
 
-it('shows period filter dropdown', function () {
+it('shows period filter dropdown', function (): void {
     $page = visit('/analytics');
 
     // Check for period filter - select element exists
@@ -58,14 +58,14 @@ it('shows period filter dropdown', function () {
         ->assertNoJavaScriptErrors();
 });
 
-it('displays sales over time section', function () {
+it('displays sales over time section', function (): void {
     $page = visit('/analytics');
 
     $page->assertSee('Sales Over Time')
         ->assertNoJavaScriptErrors();
 });
 
-it('displays payment methods breakdown', function () {
+it('displays payment methods breakdown', function (): void {
     $page = visit('/analytics');
 
     $page->assertSee('Payment Methods')
@@ -73,7 +73,7 @@ it('displays payment methods breakdown', function () {
         ->assertNoJavaScriptErrors();
 });
 
-it('displays top selling products table', function () {
+it('displays top selling products table', function (): void {
     $page = visit('/analytics');
 
     $page->assertSee('Top Selling Products')
@@ -81,7 +81,7 @@ it('displays top selling products table', function () {
         ->assertNoJavaScriptErrors();
 });
 
-it('shows all five metric cards', function () {
+it('shows all five metric cards', function (): void {
     $page = visit('/analytics');
 
     // Verify all 5 metrics are present
@@ -93,14 +93,14 @@ it('shows all five metric cards', function () {
         ->assertNoJavaScriptErrors();
 });
 
-it('handles navigation without errors', function () {
+it('handles navigation without errors', function (): void {
     $page = visit('/analytics');
 
     $page->assertNoJavaScriptErrors()
         ->assertNoConsoleLogs();
 });
 
-it('displays data when sales exist', function () {
+it('displays data when sales exist', function (): void {
     $page = visit('/analytics');
 
     // Should show numeric values, not just zeros

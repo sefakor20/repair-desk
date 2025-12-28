@@ -55,7 +55,7 @@ class ProcessReturn extends Component
     #[Computed]
     public function returnableItems()
     {
-        return $this->sale->items->filter(function ($item) {
+        return $this->sale->items->filter(function ($item): bool {
             // Check if item has been previously returned
             $alreadyReturned = PosReturnItem::where('original_sale_item_id', $item->id)
                 ->sum('quantity_returned');
@@ -68,7 +68,7 @@ class ProcessReturn extends Component
     public function subtotalReturned(): float
     {
         $total = 0;
-        foreach ($this->selectedItems as $itemId => $data) {
+        foreach ($this->selectedItems as $data) {
             if ($data['selected'] && $data['quantity'] > 0) {
                 $total += $data['quantity'] * $data['unit_price'];
             }
@@ -132,7 +132,7 @@ class ProcessReturn extends Component
             return;
         }
 
-        DB::transaction(function () {
+        DB::transaction(function (): void {
             // Create the return
             $return = PosReturn::create([
                 'return_number' => PosReturn::generateReturnNumber(),
@@ -183,7 +183,7 @@ class ProcessReturn extends Component
         $this->redirect(route('pos.returns.index'), navigate: true);
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         return view('livewire.pos.process-return');
     }

@@ -40,7 +40,7 @@ class DevicePhoto extends Model
 
     protected static function booted(): void
     {
-        static::deleting(function (DevicePhoto $photo) {
+        static::deleting(function (DevicePhoto $photo): void {
             // Delete the actual file when the record is deleted
             if (Storage::disk('public')->exists($photo->photo_path)) {
                 Storage::disk('public')->delete($photo->photo_path);

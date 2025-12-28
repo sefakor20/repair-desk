@@ -16,7 +16,7 @@ class SmsAutomationTriggers extends Component
 
     public $search = '';
     public $showCreateModal = false;
-    public $editingTrigger = null;
+    public $editingTrigger;
 
     // Form fields
     public $name = '';
@@ -58,8 +58,8 @@ class SmsAutomationTriggers extends Component
     {
         return SmsAutomationTrigger::query()
             ->with(['smsTemplate'])
-            ->when($this->search, function ($query) {
-                $query->where(function ($subQuery) {
+            ->when($this->search, function ($query): void {
+                $query->where(function ($subQuery): void {
                     $subQuery->where('name', 'like', '%' . $this->search . '%')
                         ->orWhere('description', 'like', '%' . $this->search . '%')
                         ->orWhere('trigger_event', 'like', '%' . $this->search . '%');
@@ -76,7 +76,7 @@ class SmsAutomationTriggers extends Component
     }
 
     #[Computed]
-    public function availableTriggerEvents()
+    public function availableTriggerEvents(): array
     {
         return SmsAutomationTrigger::TRIGGER_EVENTS;
     }
@@ -207,7 +207,7 @@ class SmsAutomationTriggers extends Component
 
     public function removeRecipient(string $recipient): void
     {
-        $this->additional_recipients = array_values(array_filter($this->additional_recipients, fn($r) => $r !== $recipient));
+        $this->additional_recipients = array_values(array_filter($this->additional_recipients, fn($r): bool => $r !== $recipient));
     }
 
     public function resetForm(): void
@@ -255,7 +255,7 @@ class SmsAutomationTriggers extends Component
         return $display;
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         return view('livewire.settings.sms-automation-triggers');
     }

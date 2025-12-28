@@ -6,7 +6,7 @@ use App\Livewire\Portal\Loyalty\Dashboard;
 use App\Models\{Customer, CustomerLoyaltyAccount, LoyaltyReward, LoyaltyTier, LoyaltyTransaction};
 use Livewire\Livewire;
 
-it('can mount with customer and creates loyalty account if missing', function () {
+it('can mount with customer and creates loyalty account if missing', function (): void {
     $customer = Customer::factory()->create();
 
     Livewire::test(Dashboard::class, ['customer' => $customer])
@@ -16,7 +16,7 @@ it('can mount with customer and creates loyalty account if missing', function ()
     expect($customer->fresh()->loyaltyAccount)->not->toBeNull();
 });
 
-it('displays customer welcome message', function () {
+it('displays customer welcome message', function (): void {
     $customer = Customer::factory()->create(['first_name' => 'John']);
     CustomerLoyaltyAccount::factory()->for($customer)->create();
 
@@ -24,7 +24,7 @@ it('displays customer welcome message', function () {
         ->assertSee('Welcome back, John!');
 });
 
-it('displays total points correctly', function () {
+it('displays total points correctly', function (): void {
     $customer = Customer::factory()->create();
     $account = CustomerLoyaltyAccount::factory()->for($customer)->create([
         'total_points' => 5000,
@@ -36,7 +36,7 @@ it('displays total points correctly', function () {
         ->assertSee('7,500');
 });
 
-it('displays current tier information', function () {
+it('displays current tier information', function (): void {
     $customer = Customer::factory()->create();
     $tier = LoyaltyTier::factory()->create([
         'name' => 'Gold',
@@ -53,7 +53,7 @@ it('displays current tier information', function () {
     expect($html)->toContain('discount');
 });
 
-it('displays no tier message when customer has no tier', function () {
+it('displays no tier message when customer has no tier', function (): void {
     $customer = Customer::factory()->create();
     CustomerLoyaltyAccount::factory()->for($customer)->create(['loyalty_tier_id' => null]);
 
@@ -62,7 +62,7 @@ it('displays no tier message when customer has no tier', function () {
         ->assertSee('Start earning to unlock tiers');
 });
 
-it('displays progress to next tier', function () {
+it('displays progress to next tier', function (): void {
     $customer = Customer::factory()->create();
     $currentTier = LoyaltyTier::factory()->create([
         'name' => 'Bronze',
@@ -83,7 +83,7 @@ it('displays progress to next tier', function () {
         ->assertSee('500 more points needed');
 });
 
-it('displays available rewards', function () {
+it('displays available rewards', function (): void {
     $customer = Customer::factory()->create();
     $account = CustomerLoyaltyAccount::factory()->for($customer)->create(['total_points' => 1000]);
     $reward = LoyaltyReward::factory()->create([
@@ -97,7 +97,7 @@ it('displays available rewards', function () {
         ->assertSee('500');
 });
 
-it('displays recent transactions', function () {
+it('displays recent transactions', function (): void {
     $customer = Customer::factory()->create();
     $account = CustomerLoyaltyAccount::factory()->for($customer)->create();
     LoyaltyTransaction::factory()->for($account, 'loyaltyAccount')->create([
@@ -110,7 +110,7 @@ it('displays recent transactions', function () {
         ->assertSee('+100');
 });
 
-it('displays empty state for rewards when none available', function () {
+it('displays empty state for rewards when none available', function (): void {
     $customer = Customer::factory()->create();
     CustomerLoyaltyAccount::factory()->for($customer)->create(['total_points' => 0]);
 
@@ -118,7 +118,7 @@ it('displays empty state for rewards when none available', function () {
         ->assertSee('No rewards available yet');
 });
 
-it('displays empty state for activity when no transactions', function () {
+it('displays empty state for activity when no transactions', function (): void {
     $customer = Customer::factory()->create();
     CustomerLoyaltyAccount::factory()->for($customer)->create();
 

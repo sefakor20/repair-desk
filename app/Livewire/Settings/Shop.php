@@ -84,7 +84,7 @@ class Shop extends Component
         $this->dispatch('settings-saved');
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         return view('livewire.settings.shop');
     }

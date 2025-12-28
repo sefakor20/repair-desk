@@ -71,7 +71,7 @@ class Invoice extends Model
 
     public function getBalanceDueAttribute(): float
     {
-        return (float) ($this->total - $this->getTotalPaidAttribute());
+        return $this->total - $this->getTotalPaidAttribute();
     }
 
     public function isPaid(): bool
@@ -86,7 +86,7 @@ class Invoice extends Model
         // Apply branch scoping globally
         static::addGlobalScope(new BranchScoped());
 
-        static::creating(function ($invoice) {
+        static::creating(function ($invoice): void {
             if (empty($invoice->invoice_number)) {
                 $invoice->invoice_number = 'INV-' . mb_strtoupper(uniqid());
             }

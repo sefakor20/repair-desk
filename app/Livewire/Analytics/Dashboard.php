@@ -155,7 +155,7 @@ class Dashboard extends Component
         $results = $query->get();
         $totalRevenue = $this->totalRevenue();
 
-        return $results->map(function ($result) use ($totalRevenue) {
+        return $results->map(function ($result) use ($totalRevenue): array {
             $paymentMethod = is_string($result->payment_method)
                 ? PaymentMethod::from($result->payment_method)
                 : $result->payment_method;
@@ -195,7 +195,7 @@ class Dashboard extends Component
             ->orderBy('date')
             ->get();
 
-        return $sales->map(function ($sale) {
+        return $sales->map(function ($sale): array {
             return [
                 'date' => Carbon::parse($sale->date)->format('M d'),
                 'count' => $sale->count,

@@ -54,14 +54,14 @@ class Index extends Component
     {
         $tickets = $this->customer->tickets()
             ->with(['device', 'assignedTo'])
-            ->when($this->filterStatus !== 'all', function ($query) {
+            ->when($this->filterStatus !== 'all', function ($query): void {
                 $query->where('status', $this->filterStatus);
             })
-            ->when($this->search, function ($query) {
-                $query->where(function ($q) {
+            ->when($this->search, function ($query): void {
+                $query->where(function ($q): void {
                     $q->where('ticket_number', 'like', "%{$this->search}%")
                         ->orWhere('problem_description', 'like', "%{$this->search}%")
-                        ->orWhereHas('device', function ($deviceQuery) {
+                        ->orWhereHas('device', function ($deviceQuery): void {
                             $deviceQuery->where('brand', 'like', "%{$this->search}%")
                                 ->orWhere('model', 'like', "%{$this->search}%");
                         });

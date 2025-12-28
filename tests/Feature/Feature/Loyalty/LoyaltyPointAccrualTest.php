@@ -7,7 +7,7 @@ use App\Enums\{PosSaleStatus};
 
 use function Pest\Laravel\actingAs;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create();
     actingAs($this->user);
 
@@ -18,7 +18,7 @@ beforeEach(function () {
     LoyaltyTier::factory()->platinum()->create();
 });
 
-test('customer earns points when completing a purchase', function () {
+test('customer earns points when completing a purchase', function (): void {
     $customer = Customer::factory()->create();
     $item = InventoryItem::factory()->create(['selling_price' => 100]);
 
@@ -42,7 +42,7 @@ test('customer earns points when completing a purchase', function () {
         ->and($loyaltyAccount->loyalty_tier_id)->not->toBeNull(); // Should get bronze tier
 });
 
-test('points are calculated as 1 point per dollar spent', function () {
+test('points are calculated as 1 point per dollar spent', function (): void {
     $customer = Customer::factory()->create();
 
     PosSale::factory()->create([
@@ -55,7 +55,7 @@ test('points are calculated as 1 point per dollar spent', function () {
     expect($loyaltyAccount->total_points)->toBe(250); // floor(250.75)
 });
 
-test('loyalty account is created automatically on first purchase', function () {
+test('loyalty account is created automatically on first purchase', function (): void {
     $customer = Customer::factory()->create();
 
     expect(CustomerLoyaltyAccount::where('customer_id', $customer->id)->exists())->toBeFalse();
@@ -69,7 +69,7 @@ test('loyalty account is created automatically on first purchase', function () {
     expect(CustomerLoyaltyAccount::where('customer_id', $customer->id)->exists())->toBeTrue();
 });
 
-test('points multiplier is applied based on customer tier', function () {
+test('points multiplier is applied based on customer tier', function (): void {
     $silverTier = LoyaltyTier::where('name', 'Silver')->first();
     $customer = Customer::factory()->create();
 
@@ -90,7 +90,7 @@ test('points multiplier is applied based on customer tier', function () {
     expect($loyaltyAccount->total_points)->toBe(2125);
 });
 
-test('no points awarded for sales without customer', function () {
+test('no points awarded for sales without customer', function (): void {
     PosSale::factory()->create([
         'customer_id' => null,
         'total_amount' => 100.00,
@@ -100,7 +100,7 @@ test('no points awarded for sales without customer', function () {
     expect(CustomerLoyaltyAccount::count())->toBe(0);
 });
 
-test('points transaction is recorded with correct details', function () {
+test('points transaction is recorded with correct details', function (): void {
     $customer = Customer::factory()->create();
 
     $sale = PosSale::factory()->create([
@@ -119,7 +119,7 @@ test('points transaction is recorded with correct details', function () {
         ->and($transaction->description)->toContain($sale->sale_number);
 });
 
-test('lifetime points accumulate separately from total points', function () {
+test('lifetime points accumulate separately from total points', function (): void {
     $customer = Customer::factory()->create();
     $loyaltyAccount = CustomerLoyaltyAccount::factory()->create([
         'customer_id' => $customer->id,
@@ -139,7 +139,7 @@ test('lifetime points accumulate separately from total points', function () {
         ->and($loyaltyAccount->lifetime_points)->toBe(1050);
 });
 
-test('points are awarded even for small purchases', function () {
+test('points are awarded even for small purchases', function (): void {
     $customer = Customer::factory()->create();
 
     PosSale::factory()->create([
@@ -152,7 +152,7 @@ test('points are awarded even for small purchases', function () {
     expect($loyaltyAccount->total_points)->toBe(5);
 });
 
-test('zero points for purchases under 1 dollar', function () {
+test('zero points for purchases under 1 dollar', function (): void {
     $customer = Customer::factory()->create();
 
     PosSale::factory()->create([

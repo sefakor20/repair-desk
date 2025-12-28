@@ -23,7 +23,7 @@ class Show extends Component
         $this->sale = $sale->load(['customer', 'soldBy', 'items.inventoryItem']);
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         return view('livewire.pos.show');
     }
@@ -60,7 +60,7 @@ class Show extends Component
             'refundReason' => ['required', 'string', 'max:500'],
         ]);
 
-        DB::transaction(function () use ($validated) {
+        DB::transaction(function () use ($validated): void {
             // Update sale status
             $this->sale->update([
                 'status' => PosSaleStatus::Refunded,

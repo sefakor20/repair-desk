@@ -222,13 +222,13 @@ class CommandPalette extends Component
 
     private function getFilteredCommands(): array
     {
-        if (empty($this->query)) {
+        if ($this->query === '' || $this->query === '0') {
             return $this->commands;
         }
 
         $query = mb_strtolower($this->query);
 
-        return array_filter($this->commands, function ($command) use ($query) {
+        return array_filter($this->commands, function (array $command) use ($query): bool {
             // Search in title
             if (str_contains(mb_strtolower($command['title']), $query)) {
                 return true;
@@ -250,7 +250,7 @@ class CommandPalette extends Component
         });
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         return view('livewire.command-palette', [
             'filteredCommands' => $this->getFilteredCommands(),

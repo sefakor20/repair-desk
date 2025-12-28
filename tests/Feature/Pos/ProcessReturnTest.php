@@ -7,7 +7,7 @@ use App\Livewire\Pos\ProcessReturn;
 use App\Models\{Customer, InventoryItem, PosReturn, PosSale, PosSaleItem, User};
 use Livewire\Livewire;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create();
     $this->actingAs($this->user);
 
@@ -35,13 +35,13 @@ beforeEach(function () {
     ]);
 });
 
-test('can mount process return page', function () {
+test('can mount process return page', function (): void {
     Livewire::test(ProcessReturn::class, ['sale' => $this->sale])
         ->assertSuccessful()
         ->assertSee($this->sale->sale_number);
 });
 
-test('can process return with all items', function () {
+test('can process return with all items', function (): void {
     Livewire::test(ProcessReturn::class, ['sale' => $this->sale])
         ->set('returnReason', ReturnReason::Defective->value)
         ->set('selectedItems.' . $this->saleItem->id . '.selected', true)
@@ -62,7 +62,7 @@ test('can process return with all items', function () {
         ->and($return->inventory_restored)->toBeTrue();
 });
 
-test('can process partial return', function () {
+test('can process partial return', function (): void {
     Livewire::test(ProcessReturn::class, ['sale' => $this->sale])
         ->set('returnReason', ReturnReason::CustomerChanged->value)
         ->set('selectedItems.' . $this->saleItem->id . '.selected', true)
@@ -77,7 +77,7 @@ test('can process partial return', function () {
         ->and($return->items()->first()->quantity_returned)->toBe(1);
 });
 
-test('calculates refund correctly with restocking fee', function () {
+test('calculates refund correctly with restocking fee', function (): void {
     Livewire::test(ProcessReturn::class, ['sale' => $this->sale])
         ->set('returnReason', ReturnReason::CustomerChanged->value)
         ->set('restockingFeePercentage', 10.00)
@@ -89,7 +89,7 @@ test('calculates refund correctly with restocking fee', function () {
         ->assertSet('totalRefund', 189.00); // (200 + 10) - 21
 });
 
-test('restocking fee adjusts when return reason changes', function () {
+test('restocking fee adjusts when return reason changes', function (): void {
     Livewire::test(ProcessReturn::class, ['sale' => $this->sale])
         ->set('returnReason', ReturnReason::CustomerChanged->value)
         ->set('selectedItems.' . $this->saleItem->id . '.selected', true)
@@ -98,21 +98,21 @@ test('restocking fee adjusts when return reason changes', function () {
         ->assertSet('restockingFeePercentage', 0.00);
 });
 
-test('validates return reason is required', function () {
+test('validates return reason is required', function (): void {
     Livewire::test(ProcessReturn::class, ['sale' => $this->sale])
         ->set('selectedItems.' . $this->saleItem->id . '.selected', true)
         ->call('processReturn')
         ->assertHasErrors(['returnReason' => 'required']);
 });
 
-test('validates at least one item must be selected', function () {
+test('validates at least one item must be selected', function (): void {
     Livewire::test(ProcessReturn::class, ['sale' => $this->sale])
         ->set('returnReason', ReturnReason::Defective->value)
         ->call('processReturn')
         ->assertHasErrors(['selectedItems']);
 });
 
-test('validates return notes max length', function () {
+test('validates return notes max length', function (): void {
     Livewire::test(ProcessReturn::class, ['sale' => $this->sale])
         ->set('returnNotes', str_repeat('a', 501))
         ->set('returnReason', ReturnReason::Defective->value)
@@ -121,7 +121,7 @@ test('validates return notes max length', function () {
         ->assertHasErrors(['returnNotes' => 'max']);
 });
 
-test('restores inventory when auto-approved and restore flag is true', function () {
+test('restores inventory when auto-approved and restore flag is true', function (): void {
     $initialQuantity = $this->item->quantity;
 
     Livewire::test(ProcessReturn::class, ['sale' => $this->sale])
@@ -137,7 +137,7 @@ test('restores inventory when auto-approved and restore flag is true', function 
     expect($this->item->quantity)->toBe($initialQuantity + 2);
 });
 
-test('does not restore inventory when restore flag is false', function () {
+test('does not restore inventory when restore flag is false', function (): void {
     $initialQuantity = $this->item->quantity;
 
     Livewire::test(ProcessReturn::class, ['sale' => $this->sale])
@@ -153,7 +153,7 @@ test('does not restore inventory when restore flag is false', function () {
     expect($this->item->quantity)->toBe($initialQuantity);
 });
 
-test('tracks item condition for each returned item', function () {
+test('tracks item condition for each returned item', function (): void {
     Livewire::test(ProcessReturn::class, ['sale' => $this->sale])
         ->set('returnReason', ReturnReason::Damaged->value)
         ->set('selectedItems.' . $this->saleItem->id . '.selected', true)
@@ -170,7 +170,7 @@ test('tracks item condition for each returned item', function () {
         ->and($returnItem->item_notes)->toBe('Water damage on screen');
 });
 
-test('generates unique return number', function () {
+test('generates unique return number', function (): void {
     Livewire::test(ProcessReturn::class, ['sale' => $this->sale])
         ->set('returnReason', ReturnReason::Defective->value)
         ->set('selectedItems.' . $this->saleItem->id . '.selected', true)

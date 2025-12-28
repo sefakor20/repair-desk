@@ -47,7 +47,7 @@ class Create extends Component
     public string $status = 'active';
 
     #[Validate('nullable|image|max:2048')]
-    public $image_path = null;
+    public $image_path;
 
     public function save(): void
     {
@@ -71,14 +71,14 @@ class Create extends Component
             $data['image_path'] = $this->image_path->store('inventory', 'public');
         }
 
-        $item = InventoryItem::create($data);
+        InventoryItem::create($data);
 
         session()->flash('success', 'Inventory item created successfully.');
 
         $this->redirect(route('inventory.index'), navigate: true);
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         return view('livewire.inventory.create', [
             'categories' => InventoryItem::distinct()->pluck('category')->filter()->sort()->values(),

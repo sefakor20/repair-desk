@@ -11,12 +11,12 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\{actingAs, get};
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = createAdmin();
     actingAs($this->user);
 });
 
-test('show invoice page can be rendered', function () {
+test('show invoice page can be rendered', function (): void {
     $invoice = Invoice::factory()->create();
 
     get(route('invoices.show', $invoice))
@@ -24,7 +24,7 @@ test('show invoice page can be rendered', function () {
         ->assertSeeLivewire(Show::class);
 });
 
-test('show page displays invoice details', function () {
+test('show page displays invoice details', function (): void {
     $invoice = Invoice::factory()->create([
         'invoice_number' => 'INV-TEST-001',
         'subtotal' => '100.00',
@@ -46,7 +46,7 @@ test('show page displays invoice details', function () {
         ->assertSee('Pending');
 });
 
-test('authorized user can open payment modal', function () {
+test('authorized user can open payment modal', function (): void {
     $frontDesk = createAdmin(); // Default role is FrontDesk
     actingAs($frontDesk);
 
@@ -58,7 +58,7 @@ test('authorized user can open payment modal', function () {
         ->assertSet('amount', (string) $invoice->balance_due);
 });
 
-test('unauthorized user cannot open payment modal', function () {
+test('unauthorized user cannot open payment modal', function (): void {
     $technician = User::factory()->technician()->create();
     actingAs($technician);
 
@@ -69,7 +69,7 @@ test('unauthorized user cannot open payment modal', function () {
         ->assertForbidden();
 });
 
-test('can close payment modal', function () {
+test('can close payment modal', function (): void {
     $frontDesk = createAdmin(); // Default role is FrontDesk
     actingAs($frontDesk);
 
@@ -81,7 +81,7 @@ test('can close payment modal', function () {
         ->assertSet('showPaymentModal', false);
 });
 
-test('can record payment', function () {
+test('can record payment', function (): void {
     $frontDesk = createAdmin(); // Default role is FrontDesk
     actingAs($frontDesk);
 
@@ -106,7 +106,7 @@ test('can record payment', function () {
         ->and($payment->processed_by)->toBe($frontDesk->id);
 });
 
-test('invoice status updates to paid when fully paid', function () {
+test('invoice status updates to paid when fully paid', function (): void {
     $frontDesk = createAdmin(); // Default role is FrontDesk
     actingAs($frontDesk);
 
@@ -123,7 +123,7 @@ test('invoice status updates to paid when fully paid', function () {
     expect($invoice->status)->toBe(InvoiceStatus::Paid);
 });
 
-test('payment amount is required', function () {
+test('payment amount is required', function (): void {
     $frontDesk = createAdmin(); // Default role is FrontDesk
     actingAs($frontDesk);
 
@@ -135,7 +135,7 @@ test('payment amount is required', function () {
         ->assertHasErrors(['amount' => 'required']);
 });
 
-test('payment amount must be numeric', function () {
+test('payment amount must be numeric', function (): void {
     $frontDesk = createAdmin(); // Default role is FrontDesk
     actingAs($frontDesk);
 
@@ -148,7 +148,7 @@ test('payment amount must be numeric', function () {
         ->assertHasErrors(['amount' => 'numeric']);
 });
 
-test('payment amount cannot exceed balance due', function () {
+test('payment amount cannot exceed balance due', function (): void {
     $frontDesk = createAdmin(); // Default role is FrontDesk
     actingAs($frontDesk);
 
@@ -161,7 +161,7 @@ test('payment amount cannot exceed balance due', function () {
         ->assertHasErrors(['amount' => 'max']);
 });
 
-test('payment method is required', function () {
+test('payment method is required', function (): void {
     $frontDesk = createAdmin(); // Default role is FrontDesk
     actingAs($frontDesk);
 
@@ -173,7 +173,7 @@ test('payment method is required', function () {
         ->assertHasErrors(['paymentMethod' => 'required']);
 });
 
-test('shows payment history', function () {
+test('shows payment history', function (): void {
     $invoice = Invoice::factory()->create();
     $payment = Payment::factory()->create([
         'invoice_id' => $invoice->id,
@@ -188,7 +188,7 @@ test('shows payment history', function () {
         ->assertSee($payment->processedBy->name);
 });
 
-test('displays balance due correctly', function () {
+test('displays balance due correctly', function (): void {
     $invoice = Invoice::factory()->create(['total' => '100.00']);
     Payment::factory()->create([
         'invoice_id' => $invoice->id,
@@ -206,7 +206,7 @@ test('displays balance due correctly', function () {
         ->assertSee('70.00'); // Balance Due
 });
 
-test('sends receipt email after recording payment', function () {
+test('sends receipt email after recording payment', function (): void {
     Mail::fake();
 
     $invoice = Invoice::factory()->create([
@@ -225,7 +225,7 @@ test('sends receipt email after recording payment', function () {
     });
 });
 
-test('does not send receipt email when customer has no email', function () {
+test('does not send receipt email when customer has no email', function (): void {
     Mail::fake();
 
     $invoice = Invoice::factory()->create([

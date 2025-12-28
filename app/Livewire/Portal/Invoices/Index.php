@@ -54,13 +54,13 @@ class Index extends Component
     {
         $invoices = $this->customer->invoices()
             ->with(['ticket.device', 'payments'])
-            ->when($this->filterStatus !== 'all', function ($query) {
+            ->when($this->filterStatus !== 'all', function ($query): void {
                 $query->where('status', $this->filterStatus);
             })
-            ->when($this->search, function ($query) {
-                $query->where(function ($q) {
+            ->when($this->search, function ($query): void {
+                $query->where(function ($q): void {
                     $q->where('invoice_number', 'like', "%{$this->search}%")
-                        ->orWhereHas('ticket', function ($ticketQuery) {
+                        ->orWhereHas('ticket', function ($ticketQuery): void {
                             $ticketQuery->where('ticket_number', 'like', "%{$this->search}%");
                         });
                 });

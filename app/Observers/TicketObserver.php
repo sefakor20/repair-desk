@@ -33,10 +33,8 @@ class TicketObserver
             }
 
             // Send repair completed notification when status is completed
-            if ($ticket->status === TicketStatus::Completed) {
-                if ($ticket->customer && $ticket->customer->email) {
-                    $ticket->customer->notify(new RepairCompleted($ticket));
-                }
+            if ($ticket->status === TicketStatus::Completed && ($ticket->customer && $ticket->customer->email)) {
+                $ticket->customer->notify(new RepairCompleted($ticket));
             }
         }
     }

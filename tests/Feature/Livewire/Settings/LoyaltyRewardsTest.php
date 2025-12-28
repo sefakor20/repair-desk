@@ -9,7 +9,7 @@ use App\Models\LoyaltyTier;
 use App\Models\User;
 use Livewire\Livewire;
 
-test('only admin can access loyalty rewards settings page', function () {
+test('only admin can access loyalty rewards settings page', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
 
     Livewire::actingAs($admin)
@@ -17,7 +17,7 @@ test('only admin can access loyalty rewards settings page', function () {
         ->assertStatus(200);
 });
 
-test('non-admin users cannot access loyalty rewards settings page', function () {
+test('non-admin users cannot access loyalty rewards settings page', function (): void {
     $user = User::factory()->create(['role' => UserRole::Technician]);
 
     Livewire::actingAs($user)
@@ -25,7 +25,7 @@ test('non-admin users cannot access loyalty rewards settings page', function () 
         ->assertForbidden();
 });
 
-test('loyalty rewards page displays all rewards', function () {
+test('loyalty rewards page displays all rewards', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
     $rewards = LoyaltyReward::factory()->count(3)->create();
 
@@ -36,7 +36,7 @@ test('loyalty rewards page displays all rewards', function () {
         ->assertSee($rewards[2]->name);
 });
 
-test('admin can create a discount reward', function () {
+test('admin can create a discount reward', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
 
     Livewire::actingAs($admin)
@@ -56,7 +56,7 @@ test('admin can create a discount reward', function () {
     expect($reward->reward_value['percentage'])->toBe(10);
 });
 
-test('admin can create a voucher reward', function () {
+test('admin can create a voucher reward', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
 
     Livewire::actingAs($admin)
@@ -73,7 +73,7 @@ test('admin can create a voucher reward', function () {
     expect($reward->reward_value['amount'])->toBe(25);
 });
 
-test('reward name is required', function () {
+test('reward name is required', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
 
     Livewire::actingAs($admin)
@@ -86,7 +86,7 @@ test('reward name is required', function () {
         ->assertHasErrors(['name']);
 });
 
-test('reward type is required', function () {
+test('reward type is required', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
 
     Livewire::actingAs($admin)
@@ -99,7 +99,7 @@ test('reward type is required', function () {
         ->assertHasErrors(['type']);
 });
 
-test('points required must be at least 1', function () {
+test('points required must be at least 1', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
 
     Livewire::actingAs($admin)
@@ -112,7 +112,7 @@ test('points required must be at least 1', function () {
         ->assertHasErrors(['points_required']);
 });
 
-test('valid until must be after valid from', function () {
+test('valid until must be after valid from', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
 
     Livewire::actingAs($admin)
@@ -127,7 +127,7 @@ test('valid until must be after valid from', function () {
         ->assertHasErrors(['valid_until']);
 });
 
-test('admin can edit an existing reward', function () {
+test('admin can edit an existing reward', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
     $reward = LoyaltyReward::factory()->create(['name' => 'Old Name']);
 
@@ -141,7 +141,7 @@ test('admin can edit an existing reward', function () {
     expect($reward->fresh()->name)->toBe('Updated Name');
 });
 
-test('admin can delete a reward', function () {
+test('admin can delete a reward', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
     $reward = LoyaltyReward::factory()->create();
 
@@ -152,7 +152,7 @@ test('admin can delete a reward', function () {
     expect(LoyaltyReward::find($reward->id))->toBeNull();
 });
 
-test('admin can toggle reward active status', function () {
+test('admin can toggle reward active status', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
     $reward = LoyaltyReward::factory()->create(['is_active' => true]);
 
@@ -163,7 +163,7 @@ test('admin can toggle reward active status', function () {
     expect($reward->fresh()->is_active)->toBeFalse();
 });
 
-test('admin can create tier-restricted reward', function () {
+test('admin can create tier-restricted reward', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
     $tier = LoyaltyTier::factory()->create();
 
@@ -182,7 +182,7 @@ test('admin can create tier-restricted reward', function () {
     expect($reward->min_tier_id)->toBe($tier->id);
 });
 
-test('edit modal is pre-populated with reward data', function () {
+test('edit modal is pre-populated with reward data', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
     $reward = LoyaltyReward::factory()->discount(15)->create([
         'name' => 'Test Reward',
@@ -197,7 +197,7 @@ test('edit modal is pre-populated with reward data', function () {
         ->assertSet('type', 'discount');
 });
 
-test('form resets after closing modal', function () {
+test('form resets after closing modal', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
 
     Livewire::actingAs($admin)
@@ -209,7 +209,7 @@ test('form resets after closing modal', function () {
         ->assertSet('showModal', false);
 });
 
-test('admin can create reward successfully', function () {
+test('admin can create reward successfully', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
 
     Livewire::actingAs($admin)
@@ -225,7 +225,7 @@ test('admin can create reward successfully', function () {
     expect(LoyaltyReward::where('name', 'Test Reward')->exists())->toBeTrue();
 });
 
-test('admin can update reward successfully', function () {
+test('admin can update reward successfully', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
     $reward = LoyaltyReward::factory()->create();
 

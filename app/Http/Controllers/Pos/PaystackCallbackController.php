@@ -37,17 +37,15 @@ class PaystackCallbackController extends Controller
                 return redirect()
                     ->route('pos.show', $sale)
                     ->with('success', 'Payment completed successfully!');
-            } else {
-                // Payment was not successful
-                $sale->update([
-                    'payment_status' => 'failed',
-                    'payment_metadata' => $response['data'] ?? null,
-                ]);
-
-                return redirect()
-                    ->route('pos.show', $sale)
-                    ->with('error', 'Payment verification failed: ' . $response['message']);
             }
+            // Payment was not successful
+            $sale->update([
+                'payment_status' => 'failed',
+                'payment_metadata' => $response['data'] ?? null,
+            ]);
+            return redirect()
+                ->route('pos.show', $sale)
+                ->with('error', 'Payment verification failed: ' . $response['message']);
         } catch (Exception $e) {
             $sale->update([
                 'payment_status' => 'failed',

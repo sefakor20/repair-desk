@@ -68,7 +68,7 @@ class Create extends Component
         $this->redirect(route('devices.show', $device), navigate: true);
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         return view('livewire.devices.create', [
             'customers' => Customer::orderBy('first_name')->get(),

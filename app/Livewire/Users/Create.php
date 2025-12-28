@@ -60,7 +60,7 @@ class Create extends Component
         $this->redirect(route('users.index'), navigate: true);
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         return view('livewire.users.create', [
             'roles' => UserRole::cases(),

@@ -10,7 +10,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Queue;
 use Livewire\Livewire;
 
-it('renders successfully for admin user', function () {
+it('renders successfully for admin user', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -18,7 +18,7 @@ it('renders successfully for admin user', function () {
         ->assertStatus(200);
 });
 
-it('requires manage_settings permission', function () {
+it('requires manage_settings permission', function (): void {
     $user = User::factory()->create();
 
     Livewire::actingAs($user)
@@ -26,7 +26,7 @@ it('requires manage_settings permission', function () {
         ->assertStatus(403);
 });
 
-it('can create and send campaign immediately', function () {
+it('can create and send campaign immediately', function (): void {
     Queue::fake();
     $admin = User::factory()->admin()->create();
     Customer::factory()->count(5)->create(['phone' => '+1234567890']);
@@ -51,7 +51,7 @@ it('can create and send campaign immediately', function () {
     Queue::assertPushed(ProcessSmsCampaign::class);
 });
 
-it('can create and schedule campaign for later', function () {
+it('can create and schedule campaign for later', function (): void {
     Queue::fake();
     $admin = User::factory()->admin()->create();
     Customer::factory()->count(3)->create(['phone' => '+1234567890']);
@@ -83,7 +83,7 @@ it('can create and schedule campaign for later', function () {
     Queue::assertNotPushed(ProcessSmsCampaign::class);
 });
 
-it('validates required fields', function () {
+it('validates required fields', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -92,7 +92,7 @@ it('validates required fields', function () {
         ->assertHasErrors(['name', 'message']);
 });
 
-it('calculates estimated recipients and cost', function () {
+it('calculates estimated recipients and cost', function (): void {
     $admin = User::factory()->admin()->create();
     Customer::factory()->count(10)->create(['phone' => '+1234567890']);
 
