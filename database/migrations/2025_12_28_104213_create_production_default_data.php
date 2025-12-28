@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Enums\UserRole;
 use App\Models\{Branch, ShopSettings, SmsTemplate};
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\{Hash, App};
 
 return new class extends Migration {
     /**
@@ -13,9 +13,15 @@ return new class extends Migration {
      *
      * This migration creates essential default data needed for the application to function in production.
      * It only inserts data if it doesn't already exist to avoid duplicates.
+     * This migration will NOT run in testing environment to avoid interfering with tests.
      */
     public function up(): void
     {
+        // Skip this migration during testing to avoid test interference
+        if (App::environment('testing')) {
+            return;
+        }
+
         // Create main branch if no branches exist
         if (Branch::count() === 0) {
             Branch::create([
