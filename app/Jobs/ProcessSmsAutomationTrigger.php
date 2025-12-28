@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
+use Exception;
 
 class ProcessSmsAutomationTrigger implements ShouldQueue
 {
@@ -18,7 +19,7 @@ class ProcessSmsAutomationTrigger implements ShouldQueue
     public function __construct(
         public SmsAutomationTrigger $trigger,
         public Model $model,
-        public array $eventData = []
+        public array $eventData = [],
     ) {}
 
     public function handle(): void
@@ -63,7 +64,7 @@ class ProcessSmsAutomationTrigger implements ShouldQueue
                     phoneNumber: $recipient,
                     message: $message,
                     notificationType: 'automation_trigger',
-                    notificationId: $this->model->id
+                    notificationId: $this->model->id,
                 );
             }
 
@@ -72,7 +73,7 @@ class ProcessSmsAutomationTrigger implements ShouldQueue
                 'model_id' => $this->model->id,
                 'recipients_count' => count($recipients),
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Failed to process SMS automation trigger', [
                 'trigger_id' => $this->trigger->id,
                 'model_id' => $this->model->id,

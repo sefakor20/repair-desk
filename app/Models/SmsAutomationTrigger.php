@@ -36,7 +36,7 @@ class SmsAutomationTrigger extends Model
     /**
      * Available trigger events.
      */
-    const TRIGGER_EVENTS = [
+    public const TRIGGER_EVENTS = [
         'ticket_created' => 'Ticket Created',
         'ticket_status_changed' => 'Ticket Status Changed',
         'appointment_created' => 'Appointment Created',

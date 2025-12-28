@@ -163,7 +163,7 @@ class SmsTemplates extends Component
                 'date' => now()->addDays(3)->format('M d, Y'),
                 'expiry_date' => now()->addDays(30)->format('M d, Y'),
                 'appointment_date' => now()->addDays(2)->format('M d, Y g:i A'),
-                default => '[' . strtoupper($variable) . ']',
+                default => '[' . mb_strtoupper($variable) . ']',
             };
         }
 

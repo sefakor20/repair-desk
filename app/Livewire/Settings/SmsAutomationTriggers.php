@@ -6,7 +6,6 @@ namespace App\Livewire\Settings;
 
 use App\Models\SmsAutomationTrigger;
 use App\Models\SmsTemplate;
-use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithPagination;
