@@ -222,6 +222,7 @@ class CreateSmsCampaign extends Component
         $this->showTestSend = false;
         $this->testPhoneNumber = '';
         $this->previewMessage = '';
+        $this->resetErrorBag(['testPhoneNumber']);
     }
 
     public function sendTest(): void
@@ -230,6 +231,11 @@ class CreateSmsCampaign extends Component
             'testPhoneNumber' => ['required', 'string', 'regex:/^\+?[1-9]\d{1,14}$/'],
             'message' => ['required', 'string'],
         ]);
+
+        // Ensure we have the preview message generated
+        if (!$this->previewMessage) {
+            $this->generatePreviewMessage();
+        }
 
         $smsService = new SmsService();
         $success = $smsService->send(
@@ -240,7 +246,8 @@ class CreateSmsCampaign extends Component
         );
 
         if ($success) {
-            session()->flash('success', 'Test message sent successfully!');
+            session()->flash('success', 'Test message sent successfully to ' . $this->testPhoneNumber . '!');
+            $this->dispatch('test-sent'); // Dispatch event for JS handling
         } else {
             session()->flash('error', 'Failed to send test message. Please check your configuration.');
         }
@@ -250,9 +257,27 @@ class CreateSmsCampaign extends Component
 
     private function generatePreviewMessage(): void
     {
-        // For now, just use the message as-is
-        // In the future, this could include variable replacement
-        $this->previewMessage = $this->message;
+        $message = $this->message;
+
+        // Replace common template variables with sample data
+        $sampleData = [
+            '{customer_name}' => 'John Doe',
+            '{date}' => now()->addDays(3)->format('M d, Y'),
+            '{device}' => 'iPhone 12 Pro',
+            '{amount}' => format_currency(150.00),
+            '{status}' => 'In Progress',
+            '{expiry_date}' => now()->addDays(30)->format('M d, Y'),
+            '{appointment_date}' => now()->addDays(2)->format('M d, Y \\a\\t g:i A'),
+            '{branch_name}' => session('current_branch')?->name ?? 'Main Branch',
+            '{branch_phone}' => session('current_branch')?->phone ?? '+233123456789',
+        ];
+
+        // Replace variables in message
+        foreach ($sampleData as $variable => $value) {
+            $message = str_replace($variable, $value, $message);
+        }
+
+        $this->previewMessage = $message;
     }
 
     public function getAvailableTemplatesProperty(): array

@@ -151,14 +151,18 @@ class SmsTemplates extends Component
         foreach ($variables as $variable) {
             $sampleData[$variable] = match ($variable) {
                 'customer_name' => 'John Doe',
-                'customer_phone' => '+1234567890',
+                'customer_phone' => '+233123456789',
                 'ticket_number' => 'TKT-2024-001',
                 'device' => 'iPhone 12 Pro',
                 'status' => 'In Progress',
-                'branch_name' => 'Main Branch',
-                'branch_phone' => '+1234567890',
+                'branch_name' => session('current_branch')?->name ?? 'Main Branch',
+                'branch_phone' => session('current_branch')?->phone ?? '+233123456789',
                 'current_date' => now()->format('M j, Y'),
                 'current_time' => now()->format('g:i A'),
+                'amount' => format_currency(150.00),
+                'date' => now()->addDays(3)->format('M d, Y'),
+                'expiry_date' => now()->addDays(30)->format('M d, Y'),
+                'appointment_date' => now()->addDays(2)->format('M d, Y g:i A'),
                 default => '[' . strtoupper($variable) . ']',
             };
         }
@@ -166,7 +170,7 @@ class SmsTemplates extends Component
         return $sampleData;
     }
 
-    public function resetForm(): void
+    protected function resetForm(): void
     {
         $this->editingTemplate = null;
         $this->name = '';
@@ -174,12 +178,6 @@ class SmsTemplates extends Component
         $this->message = '';
         $this->description = '';
         $this->is_active = true;
-        $this->resetValidation();
-    }
-
-    public function updatedSearch(): void
-    {
-        $this->resetPage();
     }
 
     public function render()

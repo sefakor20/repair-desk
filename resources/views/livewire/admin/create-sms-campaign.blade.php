@@ -323,46 +323,96 @@
 
     {{-- Preview Modal --}}
     @if ($showPreview)
-        <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog"
-            aria-modal="true">
-            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 bg-zinc-500 bg-opacity-75 transition-opacity" wire:click="closePreview">
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4" x-data x-show="true"
+            x-transition.opacity>
+            <div class="fixed inset-0 bg-black/50" wire:click="closePreview"></div>
+
+            <div class="relative bg-white dark:bg-zinc-900 rounded-lg shadow-xl w-full max-w-md mx-auto p-6"
+                x-show="true" x-transition>
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                        Message Preview
+                    </h3>
+                    <button wire:click="closePreview"
+                        class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
                 </div>
 
-                <div
-                    class="inline-block align-bottom bg-white dark:bg-zinc-900 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-medium text-zinc-900 dark:text-zinc-100" id="modal-title">
-                                Message Preview
-                            </h3>
-                            <flux:button variant="ghost" size="sm" wire:click="closePreview" icon="x-mark">
-                            </flux:button>
-                        </div>
-
-                        <div class="bg-zinc-50 dark:bg-zinc-800 rounded-lg p-4 mb-4">
-                            <div class="text-xs text-zinc-500 dark:text-zinc-400 mb-2">SMS Preview:</div>
-                            <div class="text-sm text-zinc-900 dark:text-zinc-100 whitespace-pre-wrap">
-                                {{ $previewMessage }}</div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4 text-xs text-zinc-600 dark:text-zinc-400">
-                            <div>
-                                <div class="font-medium">Characters:</div>
-                                <div>{{ strlen($previewMessage) }}</div>
+                {{-- Phone Mockup --}}
+                <div class="bg-zinc-100 dark:bg-zinc-800 rounded-2xl p-4 mb-6 max-w-xs mx-auto">
+                    <div class="bg-white dark:bg-zinc-700 rounded-lg p-3 shadow-sm">
+                        <div class="flex items-center mb-3">
+                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z">
+                                    </path>
+                                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                                </svg>
                             </div>
-                            <div>
-                                <div class="font-medium">Segments:</div>
-                                <div>{{ $this->getSegmentCount() }}</div>
+                            <div class="ml-2">
+                                <div class="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                                    {{ session('current_branch')?->name ?? 'Your Business' }}</div>
+                                <div class="text-xs text-zinc-500 dark:text-zinc-400">SMS</div>
                             </div>
                         </div>
+                        <div class="text-sm text-zinc-900 dark:text-zinc-100 whitespace-pre-wrap leading-relaxed">
+                            {{ $previewMessage ?: $message }}
+                        </div>
+                        <div class="text-xs text-zinc-400 dark:text-zinc-500 mt-2 text-right">
+                            {{ now()->format('g:i A') }}
+                        </div>
                     </div>
+                </div>
 
-                    <div class="mt-5 sm:mt-6">
-                        <flux:button variant="primary" class="w-full" wire:click="closePreview">
-                            Close Preview
-                        </flux:button>
+                {{-- Message Details --}}
+                <div class="bg-zinc-50 dark:bg-zinc-800 rounded-lg p-4 mb-6">
+                    <h4 class="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-3">Message Details</h4>
+                    <div class="grid grid-cols-3 gap-4 text-center">
+                        <div>
+                            <div class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                                {{ strlen($previewMessage ?: $message) }}
+                            </div>
+                            <div class="text-xs text-zinc-500 dark:text-zinc-400">Characters</div>
+                        </div>
+                        <div>
+                            <div class="text-lg font-semibold text-emerald-600 dark:text-emerald-400">
+                                {{ $this->getSegmentCount() }}
+                            </div>
+                            <div class="text-xs text-zinc-500 dark:text-zinc-400">SMS Parts</div>
+                        </div>
+                        <div>
+                            <div class="text-lg font-semibold text-blue-600 dark:text-blue-400">
+                                {{ $estimatedRecipients ?? 0 }}
+                            </div>
+                            <div class="text-xs text-zinc-500 dark:text-zinc-400">Recipients</div>
+                        </div>
                     </div>
+                </div>
+
+                {{-- Cost Estimate --}}
+                @if ($estimatedCost)
+                    <div class="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-4 mb-6">
+                        <div class="text-sm text-emerald-800 dark:text-emerald-200">
+                            <strong>Estimated Cost:</strong> {{ format_currency($estimatedCost) }}
+                            <span class="text-emerald-600 dark:text-emerald-300">
+                                ({{ format_currency($estimatedCost / max($estimatedRecipients, 1)) }} per message)
+                            </span>
+                        </div>
+                    </div>
+                @endif
+
+                {{-- Actions --}}
+                <div class="flex gap-3">
+                    <flux:button variant="ghost" class="flex-1" wire:click="closePreview">
+                        Close
+                    </flux:button>
+                    <flux:button variant="primary" class="flex-1" wire:click="showTestSendModal">
+                        Send Test
+                    </flux:button>
                 </div>
             </div>
         </div>
@@ -370,50 +420,60 @@
 
     {{-- Test Send Modal --}}
     @if ($showTestSend)
-        <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog"
-            aria-modal="true">
-            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 bg-zinc-500 bg-opacity-75 transition-opacity" wire:click="closeTestSend">
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4" x-data x-show="true"
+            x-transition.opacity>
+            <div class="fixed inset-0 bg-black/50" wire:click="closeTestSend"></div>
+
+            <div class="relative bg-white dark:bg-zinc-900 rounded-lg shadow-xl w-full max-w-md mx-auto p-6"
+                x-show="true" x-transition>
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                        Send Test Message
+                    </h3>
+                    <button wire:click="closeTestSend"
+                        class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
                 </div>
 
-                <div
-                    class="inline-block align-bottom bg-white dark:bg-zinc-900 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                <div class="space-y-4">
                     <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-medium text-zinc-900 dark:text-zinc-100" id="modal-title">
-                                Send Test Message
-                            </h3>
-                            <flux:button variant="ghost" size="sm" wire:click="closeTestSend" icon="x-mark">
-                            </flux:button>
-                        </div>
-
-                        <div class="space-y-4">
-                            <div>
-                                <flux:input wire:model="testPhoneNumber" label="Test Phone Number"
-                                    placeholder="+1234567890" type="tel" />
-                                @error('testPhoneNumber')
-                                    <span class="mt-1 text-xs text-red-600">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-                            <div class="bg-zinc-50 dark:bg-zinc-800 rounded-lg p-4">
-                                <div class="text-xs text-zinc-500 dark:text-zinc-400 mb-2">Message to send:</div>
-                                <div class="text-sm text-zinc-900 dark:text-zinc-100 whitespace-pre-wrap">
-                                    {{ $previewMessage }}</div>
-                            </div>
+                        <flux:input wire:model="testPhoneNumber" label="Test Phone Number"
+                            placeholder="+233123456789" type="tel" />
+                        @error('testPhoneNumber')
+                            <span class="mt-1 text-xs text-red-600">{{ $message }}</span>
+                        @enderror
+                        <div class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                            Include country code (e.g., +233 for Ghana)
                         </div>
                     </div>
 
-                    <div class="mt-5 sm:mt-6 flex gap-3">
-                        <flux:button variant="ghost" class="flex-1" wire:click="closeTestSend">
-                            Cancel
-                        </flux:button>
-                        <flux:button variant="primary" class="flex-1" wire:click="sendTest"
-                            wire:loading.attr="disabled" wire:target="sendTest">
-                            <span wire:loading.remove wire:target="sendTest">Send Test</span>
-                            <span wire:loading wire:target="sendTest">Sending...</span>
-                        </flux:button>
+                    <div class="bg-zinc-50 dark:bg-zinc-800 rounded-lg p-4">
+                        <div class="text-xs text-zinc-500 dark:text-zinc-400 mb-2">Preview message:</div>
+                        <div
+                            class="text-sm text-zinc-900 dark:text-zinc-100 whitespace-pre-wrap leading-relaxed border-l-3 border-blue-500 pl-3">
+                            {{ $previewMessage ?: $message }}
+                        </div>
+                        <div
+                            class="mt-2 pt-2 border-t border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500 dark:text-zinc-400">
+                            {{ strlen($previewMessage ?: $message) }} characters • {{ $this->getSegmentCount() }} SMS
+                            part{{ $this->getSegmentCount() !== 1 ? 's' : '' }}
+                        </div>
                     </div>
+                </div>
+
+                <div class="mt-6 flex gap-3">
+                    <flux:button variant="ghost" class="flex-1" wire:click="closeTestSend">
+                        Cancel
+                    </flux:button>
+                    <flux:button variant="primary" class="flex-1" wire:click="sendTest" wire:loading.attr="disabled"
+                        wire:target="sendTest">
+                        <span wire:loading.remove wire:target="sendTest">Send Test</span>
+                        <span wire:loading wire:target="sendTest">Sending...</span>
+                    </flux:button>
                 </div>
             </div>
         </div>

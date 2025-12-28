@@ -169,11 +169,11 @@
             <flux:field>
                 <flux:label>Message Template</flux:label>
                 <flux:textarea wire:model="message"
-                    placeholder="Hello {{ customer_name }}, your appointment for {{ device }} is scheduled for {{ appointment_date }}."
+                    placeholder="Hello {customer_name}, your appointment for {device} is scheduled for {appointment_date}."
                     rows="4" />
                 <flux:error name="message" />
                 <flux:description>
-                    Use {{ variable_name }} for dynamic content. Available variables: customer_name, customer_phone,
+                    Use {variable_name} for dynamic content. Available variables: customer_name, customer_phone,
                     ticket_number, device, status, branch_name, current_date, current_time
                 </flux:description>
             </flux:field>

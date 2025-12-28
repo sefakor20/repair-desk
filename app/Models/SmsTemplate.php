@@ -39,7 +39,7 @@ class SmsTemplate extends Model
         $message = $this->message;
 
         foreach ($variables as $key => $value) {
-            $message = str_replace('{{' . $key . '}}', (string) $value, $message);
+            $message = str_replace('{' . $key . '}', (string) $value, $message);
         }
 
         return $message;
@@ -50,7 +50,7 @@ class SmsTemplate extends Model
      */
     public function extractVariables(): array
     {
-        preg_match_all('/\{\{(\w+)\}\}/', $this->message, $matches);
+        preg_match_all('/\{(\w+)\}/', $this->message, $matches);
 
         return array_unique($matches[1] ?? []);
     }
