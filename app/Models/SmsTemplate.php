@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SmsTemplate extends Model
 {
@@ -21,6 +22,14 @@ class SmsTemplate extends Model
         'variables' => 'array',
         'is_active' => 'boolean',
     ];
+
+    /**
+     * Automation triggers using this template.
+     */
+    public function automationTriggers(): HasMany
+    {
+        return $this->hasMany(SmsAutomationTrigger::class);
+    }
 
     /**
      * Render the template with provided variables.
@@ -43,7 +52,7 @@ class SmsTemplate extends Model
     {
         preg_match_all('/\{\{(\w+)\}\}/', $this->message, $matches);
 
-        return $matches[1] ?? [];
+        return array_unique($matches[1] ?? []);
     }
 
     /**
