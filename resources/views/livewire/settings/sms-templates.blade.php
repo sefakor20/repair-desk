@@ -146,11 +146,13 @@
 
     <!-- Create/Edit Template Modal -->
     <flux:modal name="template-modal" :show="$showCreateModal">
-        <flux:modal.header>
-            {{ $editingTemplate ? 'Edit Template' : 'Create New Template' }}
-        </flux:modal.header>
+        <!-- Modal Header -->
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <flux:heading>{{ $editingTemplate ? 'Edit Template' : 'Create New Template' }}</flux:heading>
+        </div>
 
-        <div class="space-y-6">
+        <!-- Modal Body -->
+        <div class="px-6 py-4 space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <flux:field>
                     <flux:label>Template Name</flux:label>
@@ -191,12 +193,13 @@
             </flux:field>
         </div>
 
-        <flux:modal.footer>
+        <!-- Modal Footer -->
+        <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3">
             <flux:button variant="ghost" wire:click="resetForm">Cancel</flux:button>
             <flux:button variant="primary" wire:click="save">
                 {{ $editingTemplate ? 'Update Template' : 'Create Template' }}
             </flux:button>
-        </flux:modal.footer>
+        </div>
     </flux:modal>
 
     <!-- Scripts for handling events -->

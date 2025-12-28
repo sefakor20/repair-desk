@@ -164,11 +164,14 @@
 
     <!-- Create/Edit Trigger Modal -->
     <flux:modal name="trigger-modal" :show="$showCreateModal" class="w-full max-w-4xl">
-        <flux:modal.header>
-            {{ $editingTrigger ? 'Edit Automation Trigger' : 'Create New Automation Trigger' }}
-        </flux:modal.header>
+        <!-- Modal Header -->
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <flux:heading>{{ $editingTrigger ? 'Edit Automation Trigger' : 'Create New Automation Trigger' }}
+            </flux:heading>
+        </div>
 
-        <div class="space-y-6">
+        <!-- Modal Body -->
+        <div class="px-6 py-4 space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <flux:field>
                     <flux:label>Trigger Name</flux:label>
@@ -180,7 +183,7 @@
                     <flux:label>Trigger Event</flux:label>
                     <flux:select wire:model="trigger_event" placeholder="Select an event">
                         @foreach ($this->availableTriggerEvents as $key => $label)
-                            <flux:option value="{{ $key }}">{{ $label }}</flux:option>
+                            <option value="{{ $key }}">{{ $label }}</option>
                         @endforeach
                     </flux:select>
                     <flux:error name="trigger_event" />
@@ -199,7 +202,7 @@
                     <flux:label>SMS Template</flux:label>
                     <flux:select wire:model="sms_template_id" placeholder="Select a template">
                         @foreach ($this->availableTemplates as $template)
-                            <flux:option value="{{ $template->id }}">{{ $template->name }}</flux:option>
+                            <option value="{{ $template->id }}">{{ $template->name }}</option>
                         @endforeach
                     </flux:select>
                     <flux:error name="sms_template_id" />
@@ -302,12 +305,13 @@
             </flux:field>
         </div>
 
-        <flux:modal.footer>
+        <!-- Modal Footer -->
+        <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3">
             <flux:button variant="ghost" wire:click="resetForm">Cancel</flux:button>
             <flux:button variant="primary" wire:click="save">
                 {{ $editingTrigger ? 'Update Trigger' : 'Create Trigger' }}
             </flux:button>
-        </flux:modal.footer>
+        </div>
     </flux:modal>
 
     <!-- Scripts for handling events -->

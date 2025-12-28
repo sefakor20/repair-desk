@@ -50,7 +50,7 @@ class SmsAutomationTriggers extends Component
 
     public function mount(): void
     {
-        $this->authorize('manage_sms');
+        $this->authorize('viewAny', SmsAutomationTrigger::class);
     }
 
     #[Computed]
