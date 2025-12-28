@@ -165,4 +165,37 @@ class User extends Authenticatable
         return app(\App\Services\StaffPermissionService::class)
             ->getActiveStaffAssignment($this);
     }
+
+    /**
+     * Get the user's tours
+     */
+    public function tours(): HasMany
+    {
+        return $this->hasMany(UserTour::class);
+    }
+
+    /**
+     * Check if user has completed a specific tour
+     */
+    public function hasCompletedTour(string $tourName): bool
+    {
+        return $this->tours()
+            ->where('tour_name', $tourName)
+            ->where(function ($query) {
+                $query->where('is_completed', true)
+                    ->orWhere('is_skipped', true);
+            })
+            ->exists();
+    }
+
+    /**
+     * Get or create a tour for the user
+     */
+    public function getOrCreateTour(string $tourName): UserTour
+    {
+        return $this->tours()->firstOrCreate(
+            ['tour_name' => $tourName],
+            ['started_at' => now()],
+        );
+    }
 }

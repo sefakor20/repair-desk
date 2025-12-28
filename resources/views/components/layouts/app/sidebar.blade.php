@@ -6,45 +6,53 @@
 </head>
 
 <body class="min-h-screen bg-white dark:bg-zinc-800">
-    <flux:sidebar sticky stashable class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+    <flux:sidebar sticky stashable class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900"
+        data-tour="sidebar">
         <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
-        <a href="{{ route('dashboard') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
+        <a href="{{ route('dashboard') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate
+            data-tour="dashboard">
             <x-app-logo />
         </a>
 
         <flux:navlist variant="outline">
             <flux:navlist.group :heading="__('Overview')" class="grid">
                 <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
-                    wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
+                    wire:navigate data-tour="dashboard">{{ __('Dashboard') }}</flux:navlist.item>
 
                 <flux:navlist.item icon="chart-pie" :href="route('analytics.dashboard')"
-                    :current="request()->routeIs('analytics.*')" wire:navigate>{{ __('Analytics') }}
+                    :current="request()->routeIs('analytics.*')" wire:navigate data-tour="analytics-nav">
+                    {{ __('Analytics') }}
                 </flux:navlist.item>
 
                 @hasAnyStaffPermission(['view_reports', 'manage_settings'])
                     <flux:navlist.item icon="chart-bar" :href="route('reports.index')"
-                        :current="request()->routeIs('reports.*')" wire:navigate>{{ __('Reports') }}</flux:navlist.item>
+                        :current="request()->routeIs('reports.*')" wire:navigate data-tour="reports-nav">{{ __('Reports') }}
+                    </flux:navlist.item>
                 @endhasAnyStaffPermission
             </flux:navlist.group>
 
             <flux:navlist.group :heading="__('Operations')" class="grid">
                 @hasAnyStaffPermission(['manage_customers', 'create_tickets', 'view_assigned_tickets'])
                     <flux:navlist.item icon="user-group" :href="route('customers.index')"
-                        :current="request()->routeIs('customers.*')" wire:navigate>{{ __('Customers') }}</flux:navlist.item>
+                        :current="request()->routeIs('customers.*')" wire:navigate data-tour="customers-nav">
+                        {{ __('Customers') }}</flux:navlist.item>
                 @endhasAnyStaffPermission
 
                 <flux:navlist.item icon="device-phone-mobile" :href="route('devices.index')"
-                    :current="request()->routeIs('devices.*')" wire:navigate>{{ __('Devices') }}</flux:navlist.item>
+                    :current="request()->routeIs('devices.*')" wire:navigate data-tour="devices-section">
+                    {{ __('Devices') }}</flux:navlist.item>
 
                 @hasAnyStaffPermission(['manage_tickets', 'view_assigned_tickets', 'create_tickets'])
                     <flux:navlist.item icon="wrench-screwdriver" :href="route('tickets.index')"
-                        :current="request()->routeIs('tickets.*')" wire:navigate>{{ __('Tickets') }}</flux:navlist.item>
+                        :current="request()->routeIs('tickets.*')" wire:navigate data-tour="tickets-nav">
+                        {{ __('Tickets') }}</flux:navlist.item>
                 @endhasAnyStaffPermission
 
                 @hasAnyStaffPermission(['manage_inventory', 'view_inventory', 'use_inventory'])
                     <flux:navlist.item icon="cube" :href="route('inventory.index')"
-                        :current="request()->routeIs('inventory.*')" wire:navigate>{{ __('Inventory') }}
+                        :current="request()->routeIs('inventory.*')" wire:navigate data-tour="inventory-nav">
+                        {{ __('Inventory') }}
                     </flux:navlist.item>
                 @endhasAnyStaffPermission
             </flux:navlist.group>
@@ -52,12 +60,14 @@
             <flux:navlist.group :heading="__('Sales & Payments')" class="grid">
                 @hasAnyStaffPermission(['create_invoices', 'view_sales', 'process_payments'])
                     <flux:navlist.item icon="document-text" :href="route('invoices.index')"
-                        :current="request()->routeIs('invoices.*')" wire:navigate>{{ __('Invoices') }}</flux:navlist.item>
+                        :current="request()->routeIs('invoices.*')" wire:navigate data-tour="invoices-section">
+                        {{ __('Invoices') }}</flux:navlist.item>
                 @endhasAnyStaffPermission
 
                 @hasAnyStaffPermission(['create_sales', 'view_sales'])
                     <flux:navlist.item icon="shopping-cart" :href="route('pos.index')"
-                        :current="request()->routeIs('pos.*') && !request()->routeIs('pos.returns.*')" wire:navigate>
+                        :current="request()->routeIs('pos.*') && !request()->routeIs('pos.returns.*')" wire:navigate
+                        data-tour="pos-nav">
                         {{ __('POS') }}</flux:navlist.item>
                 @endhasAnyStaffPermission
 
@@ -81,12 +91,14 @@
             <flux:navlist.group :heading="__('Management')" class="grid">
                 @can('viewAny', App\Models\Branch::class)
                     <flux:navlist.item icon="store" :href="route('branches.index')"
-                        :current="request()->routeIs('branches.*')" wire:navigate>{{ __('Branches') }}</flux:navlist.item>
+                        :current="request()->routeIs('branches.*')" wire:navigate data-tour="branches-nav">
+                        {{ __('Branches') }}</flux:navlist.item>
                 @endcan
 
                 @can('viewAny', App\Models\User::class)
                     <flux:navlist.item icon="users" :href="route('users.index')"
-                        :current="request()->routeIs('users.*')" wire:navigate>{{ __('Users') }}</flux:navlist.item>
+                        :current="request()->routeIs('users.*')" wire:navigate data-tour="users-nav">{{ __('Users') }}
+                    </flux:navlist.item>
                 @endcan
 
                 <flux:sidebar.group expandable icon="chat-bubble-left-right" heading="SMS" class="grid">
@@ -139,7 +151,7 @@
         </flux:navlist>  --}}
 
         <!-- Desktop User Menu -->
-        <flux:dropdown class="hidden lg:block" position="bottom" align="start">
+        <flux:dropdown class="hidden lg:block" position="bottom" align="start" data-tour="profile-menu">
             <flux:profile :name="auth()->user()->name" :initials="auth()->user()->initials()"
                 icon-trailing="chevrons-up-down" />
 
@@ -231,6 +243,9 @@
     </flux:header>
 
     {{ $slot }}
+
+    {{-- Onboarding Tour --}}
+    <livewire:onboarding-tour />
 
     {{-- Toast Notifications --}}
     <livewire:toast-manager />
