@@ -9,7 +9,7 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
 
-test('user can view cash drawer index page', function () {
+test('user can view cash drawer index page', function (): void {
     $user = createAdmin();
 
     actingAs($user)
@@ -18,7 +18,7 @@ test('user can view cash drawer index page', function () {
         ->assertSeeLivewire(Index::class);
 });
 
-test('index page shows open button when no active session', function () {
+test('index page shows open button when no active session', function (): void {
     $user = createAdmin();
 
     actingAs($user)
@@ -26,7 +26,7 @@ test('index page shows open button when no active session', function () {
         ->assertSee('Open Drawer');
 });
 
-test('index page shows close button when session is active', function () {
+test('index page shows close button when session is active', function (): void {
     $user = createAdmin();
     CashDrawerSession::factory()->open()->create();
 
@@ -35,7 +35,7 @@ test('index page shows close button when session is active', function () {
         ->assertSee('Close Drawer');
 });
 
-test('index page displays active session details', function () {
+test('index page displays active session details', function (): void {
     $user = createAdmin();
     $session = CashDrawerSession::factory()->open()->create([
         'opened_by' => $user->id,
@@ -51,7 +51,7 @@ test('index page displays active session details', function () {
         ->assertSee('200.00');
 });
 
-test('index page shows empty state when no sessions exist', function () {
+test('index page shows empty state when no sessions exist', function (): void {
     $user = createAdmin();
 
     actingAs($user)
@@ -59,7 +59,7 @@ test('index page shows empty state when no sessions exist', function () {
         ->assertSee('No cash drawer sessions');
 });
 
-test('index page lists all sessions', function () {
+test('index page lists all sessions', function (): void {
     $user = createAdmin();
     $sessions = CashDrawerSession::factory()->count(3)->closed()->create();
 
@@ -70,7 +70,7 @@ test('index page lists all sessions', function () {
         ->assertSee($sessions[2]->openedBy->name);
 });
 
-test('search filters sessions by user name', function () {
+test('search filters sessions by user name', function (): void {
     $user = createAdmin();
     $targetUser = User::factory()->create(['name' => 'John Doe']);
     $otherUser = User::factory()->create(['name' => 'Jane Smith']);
@@ -85,7 +85,7 @@ test('search filters sessions by user name', function () {
         ->assertDontSee('Jane Smith');
 });
 
-test('index displays discrepancy for closed sessions', function () {
+test('index displays discrepancy for closed sessions', function (): void {
     $user = createAdmin();
     $session = CashDrawerSession::factory()->closed()->create([
         'expected_balance' => 500.00,
@@ -98,7 +98,7 @@ test('index displays discrepancy for closed sessions', function () {
         ->assertSee('-10.00');
 });
 
-test('pagination works correctly', function () {
+test('pagination works correctly', function (): void {
     $user = createAdmin();
     CashDrawerSession::factory()->count(20)->closed()->create();
 
@@ -108,7 +108,7 @@ test('pagination works correctly', function () {
         ->assertSee('15');
 });
 
-test('active session shows expected balance', function () {
+test('active session shows expected balance', function (): void {
     $user = createAdmin();
     CashDrawerSession::factory()->open()->create([
         'opening_balance' => 100.00,
@@ -124,7 +124,7 @@ test('active session shows expected balance', function () {
         ->assertSee(number_format($expectedBalance, 2));
 });
 
-test('closed session shows all balance details', function () {
+test('closed session shows all balance details', function (): void {
     $user = createAdmin();
     CashDrawerSession::factory()->closed()->create([
         'opening_balance' => 100.00,

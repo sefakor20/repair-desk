@@ -106,7 +106,7 @@ class Staff extends Model
     {
         parent::boot();
 
-        static::deleting(function ($staff) {
+        static::deleting(function ($staff): false {
             // Prevent deletion - set inactive instead
             $staff->update(['is_active' => false]);
 

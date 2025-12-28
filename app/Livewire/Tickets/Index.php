@@ -82,31 +82,31 @@ class Index extends Component
         return view('livewire.tickets.index', [
             'tickets' => Ticket::query()
                 ->with(['customer', 'device', 'assignedTo'])
-                ->when($this->search, function ($query) {
-                    $query->where(function ($q) {
+                ->when($this->search, function ($query): void {
+                    $query->where(function ($q): void {
                         $q->where('ticket_number', 'like', "%{$this->search}%")
                             ->orWhere('problem_description', 'like', "%{$this->search}%")
-                            ->orWhereHas('customer', function ($customerQuery) {
+                            ->orWhereHas('customer', function ($customerQuery): void {
                                 $customerQuery->where('first_name', 'like', "%{$this->search}%")
                                     ->orWhere('last_name', 'like', "%{$this->search}%")
                                     ->orWhere('email', 'like', "%{$this->search}%");
                             });
                     });
                 })
-                ->when($this->statusFilter, function ($query) {
+                ->when($this->statusFilter, function ($query): void {
                     $query->where('status', $this->statusFilter);
                 })
-                ->when($this->priorityFilter, function ($query) {
+                ->when($this->priorityFilter, function ($query): void {
                     $query->where('priority', $this->priorityFilter);
                 })
-                ->when($this->assignedFilter, function ($query) {
+                ->when($this->assignedFilter, function ($query): void {
                     if ($this->assignedFilter === 'unassigned') {
                         $query->whereNull('assigned_to');
                     } else {
                         $query->where('assigned_to', $this->assignedFilter);
                     }
                 })
-                ->when($this->branchFilter, function ($query) {
+                ->when($this->branchFilter, function ($query): void {
                     $query->where('branch_id', $this->branchFilter);
                 })
                 ->latest()

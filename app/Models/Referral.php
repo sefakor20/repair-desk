@@ -58,7 +58,7 @@ class Referral extends Model
     public function scopeActive($query)
     {
         return $query->where('status', '!=', 'expired')
-            ->where(function ($q) {
+            ->where(function ($q): void {
                 $q->whereNull('expires_at')
                     ->orWhere('expires_at', '>', now());
             });

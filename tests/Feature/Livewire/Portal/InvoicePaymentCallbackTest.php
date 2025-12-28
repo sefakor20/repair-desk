@@ -347,7 +347,7 @@ test('sends receipt email after successful payment', function (): void {
         'reference' => 'PS_TEST_EMAIL',
     ]));
 
-    Mail::assertQueued(PaymentReceiptMail::class, function ($mail) {
+    Mail::assertQueued(PaymentReceiptMail::class, function ($mail): bool {
         return $mail->hasTo($this->customer->email)
             && $mail->payment->transaction_reference === 'PS_TEST_EMAIL';
     });

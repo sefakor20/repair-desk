@@ -120,19 +120,19 @@ class PosSale extends Model
         // Apply branch scoping globally
         static::addGlobalScope(new BranchScoped());
 
-        static::creating(function ($sale) {
+        static::creating(function ($sale): void {
             if (empty($sale->sale_number)) {
                 $sale->sale_number = 'POS-' . mb_strtoupper(uniqid());
             }
         });
 
-        static::created(function ($sale) {
+        static::created(function ($sale): void {
             if ($sale->customer_id && $sale->status === PosSaleStatus::Completed) {
                 $sale->awardLoyaltyPoints();
             }
         });
 
-        static::updated(function ($sale) {
+        static::updated(function ($sale): void {
             if ($sale->customer_id && $sale->wasChanged('status') && $sale->status === PosSaleStatus::Completed) {
                 $sale->awardLoyaltyPoints();
             }

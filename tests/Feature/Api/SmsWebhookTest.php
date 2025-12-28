@@ -7,11 +7,11 @@ use Illuminate\Support\Facades\Config;
 
 use function Pest\Laravel\postJson;
 
-beforeEach(function () {
+beforeEach(function (): void {
     Config::set('services.texttango.webhook_secret', 'test_secret_key');
 });
 
-test('webhook updates sms delivery status successfully', function () {
+test('webhook updates sms delivery status successfully', function (): void {
     $log = SmsDeliveryLog::create([
         'phone' => '+1234567890',
         'message' => 'Test message',
@@ -40,7 +40,7 @@ test('webhook updates sms delivery status successfully', function () {
     expect($log->fresh()->status)->toBe('sent');
 });
 
-test('webhook rejects invalid signature', function () {
+test('webhook rejects invalid signature', function (): void {
     $log = SmsDeliveryLog::create([
         'phone' => '+1234567890',
         'message' => 'Test message',
@@ -66,7 +66,7 @@ test('webhook rejects invalid signature', function () {
     expect($log->fresh()->status)->toBe('pending');
 });
 
-test('webhook requires signature when secret is configured', function () {
+test('webhook requires signature when secret is configured', function (): void {
     $log = SmsDeliveryLog::create([
         'phone' => '+1234567890',
         'message' => 'Test message',
@@ -86,8 +86,8 @@ test('webhook requires signature when secret is configured', function () {
     expect($log->fresh()->status)->toBe('pending');
 });
 
-test('webhook works without signature when secret not configured', function () {
-    Config::set('services.texttango.webhook_secret', null);
+test('webhook works without signature when secret not configured', function (): void {
+    Config::set('services.texttango.webhook_secret');
 
     $log = SmsDeliveryLog::create([
         'phone' => '+1234567890',
@@ -108,7 +108,7 @@ test('webhook works without signature when secret not configured', function () {
     expect($log->fresh()->status)->toBe('sent');
 });
 
-test('webhook handles failed status', function () {
+test('webhook handles failed status', function (): void {
     $log = SmsDeliveryLog::create([
         'phone' => '+1234567890',
         'message' => 'Test message',
@@ -136,7 +136,7 @@ test('webhook handles failed status', function () {
         ->and($log->error_message)->toBe('Invalid phone number');
 });
 
-test('webhook returns 404 for non-existent message', function () {
+test('webhook returns 404 for non-existent message', function (): void {
     $payload = [
         'message_id' => 'non_existent_id',
         'status' => 'delivered',
@@ -155,7 +155,7 @@ test('webhook returns 404 for non-existent message', function () {
         ]);
 });
 
-test('webhook validates required fields', function () {
+test('webhook validates required fields', function (): void {
     $payload = [
         'status' => 'delivered',
         // missing message_id

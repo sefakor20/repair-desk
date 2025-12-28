@@ -9,12 +9,12 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\{actingAs, get};
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = createAdmin(); // Default role is FrontDesk
     actingAs($this->user);
 });
 
-test('edit invoice page can be rendered', function () {
+test('edit invoice page can be rendered', function (): void {
     $invoice = Invoice::factory()->create();
 
     get(route('invoices.edit', $invoice))
@@ -22,7 +22,7 @@ test('edit invoice page can be rendered', function () {
         ->assertSeeLivewire(Edit::class);
 });
 
-test('unauthorized user cannot access edit invoice page', function () {
+test('unauthorized user cannot access edit invoice page', function (): void {
     $technician = User::factory()->technician()->create();
     actingAs($technician);
 
@@ -32,7 +32,7 @@ test('unauthorized user cannot access edit invoice page', function () {
         ->assertForbidden();
 });
 
-test('can update invoice', function () {
+test('can update invoice', function (): void {
     $invoice = Invoice::factory()->create([
         'subtotal' => '100.00',
         'tax_rate' => '10.00',
@@ -59,7 +59,7 @@ test('can update invoice', function () {
         ->and($invoice->notes)->toBe('Updated notes');
 });
 
-test('subtotal field is required on update', function () {
+test('subtotal field is required on update', function (): void {
     $invoice = Invoice::factory()->create();
 
     Livewire::test(Edit::class, ['invoice' => $invoice])
@@ -68,7 +68,7 @@ test('subtotal field is required on update', function () {
         ->assertHasErrors(['subtotal' => 'required']);
 });
 
-test('subtotal must be numeric on update', function () {
+test('subtotal must be numeric on update', function (): void {
     $invoice = Invoice::factory()->create();
 
     Livewire::test(Edit::class, ['invoice' => $invoice])
@@ -77,7 +77,7 @@ test('subtotal must be numeric on update', function () {
         ->assertHasErrors(['subtotal' => 'numeric']);
 });
 
-test('status field is required on update', function () {
+test('status field is required on update', function (): void {
     $invoice = Invoice::factory()->create();
 
     Livewire::test(Edit::class, ['invoice' => $invoice])
@@ -86,7 +86,7 @@ test('status field is required on update', function () {
         ->assertHasErrors(['status' => 'required']);
 });
 
-test('recalculates totals on update', function () {
+test('recalculates totals on update', function (): void {
     $invoice = Invoice::factory()->create();
 
     Livewire::test(Edit::class, ['invoice' => $invoice])

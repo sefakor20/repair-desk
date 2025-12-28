@@ -29,7 +29,7 @@ class Create extends Component
         }
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         $tickets = Ticket::with(['customer', 'device'])
             ->whereDoesntHave('invoice')
@@ -67,7 +67,7 @@ class Create extends Component
         $taxAmount = ($subtotal - $discount) * ($taxRate / 100);
         $total = $subtotal - $discount + $taxAmount;
 
-        DB::transaction(function () use ($ticket, $subtotal, $taxRate, $taxAmount, $discount, $total, $validated) {
+        DB::transaction(function () use ($ticket, $subtotal, $taxRate, $taxAmount, $discount, $total, $validated): void {
             Invoice::create([
                 'ticket_id' => $ticket->id,
                 'customer_id' => $ticket->customer_id,

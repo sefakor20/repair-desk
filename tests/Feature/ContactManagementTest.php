@@ -6,11 +6,11 @@ use App\Models\Contact;
 use App\Models\User;
 use Livewire\Livewire;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->admin()->create();
 });
 
-test('user can view contacts index page', function () {
+test('user can view contacts index page', function (): void {
     $contacts = Contact::factory()->count(3)->create();
 
     $this->actingAs($this->user)
@@ -18,7 +18,7 @@ test('user can view contacts index page', function () {
         ->assertStatus(200);
 });
 
-test('contacts index shows contact list', function () {
+test('contacts index shows contact list', function (): void {
     $contact = Contact::factory()->create([
         'first_name' => 'John',
         'last_name' => 'Doe',
@@ -33,7 +33,7 @@ test('contacts index shows contact list', function () {
         ->assertSee('+233241234567');
 });
 
-test('user can create a new contact', function () {
+test('user can create a new contact', function (): void {
     Livewire::actingAs($this->user)
         ->test(\App\Livewire\Admin\Contacts\Create::class)
         ->set('first_name', 'Jane')
@@ -49,7 +49,7 @@ test('user can create a new contact', function () {
         ->toBeTrue();
 });
 
-test('user can edit an existing contact', function () {
+test('user can edit an existing contact', function (): void {
     $contact = Contact::factory()->create([
         'first_name' => 'John',
         'last_name' => 'Doe',
@@ -69,7 +69,7 @@ test('user can edit an existing contact', function () {
     expect($contact->email)->toBe('johnny@example.com');
 });
 
-test('contacts appear in sms campaign creation', function () {
+test('contacts appear in sms campaign creation', function (): void {
     $contact = Contact::factory()->create([
         'first_name' => 'John',
         'last_name' => 'Doe',

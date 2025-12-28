@@ -29,7 +29,7 @@ class Show extends Component
         $this->invoice = $invoice->load(['customer', 'ticket.device', 'payments.processedBy']);
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         return view('livewire.invoices.show');
     }
@@ -60,7 +60,7 @@ class Show extends Component
             'paymentNotes' => ['nullable', 'string', 'max:500'],
         ]);
 
-        DB::transaction(function () use ($validated) {
+        DB::transaction(function () use ($validated): void {
             $payment = Payment::create([
                 'invoice_id' => $this->invoice->id,
                 'ticket_id' => $this->invoice->ticket_id,

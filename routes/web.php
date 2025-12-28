@@ -180,6 +180,12 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('admin/sms-templates/create', \App\Livewire\Admin\SmsTemplates\Form::class)->name('admin.sms-templates.create')->middleware('staff.permission:manage_settings');
     Route::get('admin/sms-templates/{templateId}/edit', \App\Livewire\Admin\SmsTemplates\Form::class)->name('admin.sms-templates.edit')->middleware('staff.permission:manage_settings');
 
+    // SMS Template Management (New System)
+    Route::get('settings/sms-templates', \App\Livewire\Settings\SmsTemplates::class)->name('settings.sms-templates')->middleware('staff.permission:manage_settings');
+
+    // SMS Automation Triggers
+    Route::get('settings/sms-automation', \App\Livewire\Settings\SmsAutomationTriggers::class)->name('settings.sms-automation')->middleware('staff.permission:manage_settings');
+
     Route::get('settings/two-factor', TwoFactor::class)
         ->middleware(
             when(
@@ -260,10 +266,10 @@ Route::prefix('portal')->name('portal.')->group(function (): void {
 });
 
 // Create a portal access route (allows customers to access via emailed link)
-Route::get('portal/access/{customer}/{token}', function ($customer, $token) {
+Route::get('portal/access/{customer}/{token}', function ($customer, string $token) {
     $customer = \App\Models\Customer::validatePortalToken($token, $customer);
 
-    if (! $customer) {
+    if (!$customer instanceof \App\Models\Customer) {
         return redirect()->route('portal.login')->with('error', 'Invalid or expired access link.');
     }
 

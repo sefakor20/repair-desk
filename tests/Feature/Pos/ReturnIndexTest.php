@@ -7,19 +7,19 @@ use App\Livewire\Pos\ReturnIndex;
 use App\Models\{Customer, InventoryItem, PosReturn, PosSale, PosSaleItem, User};
 use Livewire\Livewire;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create();
     $this->actingAs($this->user);
 });
 
-test('can mount return index page', function () {
+test('can mount return index page', function (): void {
     Livewire::test(ReturnIndex::class)
         ->assertSuccessful()
         ->assertSee('Returns', false)
         ->assertSee('Refunds', false);
 });
 
-test('displays all returns by default', function () {
+test('displays all returns by default', function (): void {
     $returns = PosReturn::factory()->count(3)->create();
 
     Livewire::test(ReturnIndex::class)
@@ -29,7 +29,7 @@ test('displays all returns by default', function () {
         ->assertSee($returns[2]->return_number);
 });
 
-test('can filter returns by status', function () {
+test('can filter returns by status', function (): void {
     $pendingReturn = PosReturn::factory()->create(['status' => ReturnStatus::Pending]);
     $approvedReturn = PosReturn::factory()->create(['status' => ReturnStatus::Approved]);
 
@@ -39,7 +39,7 @@ test('can filter returns by status', function () {
         ->assertDontSee($approvedReturn->return_number);
 });
 
-test('can search returns by return number', function () {
+test('can search returns by return number', function (): void {
     $return1 = PosReturn::factory()->create(['return_number' => 'RET-001']);
     $return2 = PosReturn::factory()->create(['return_number' => 'RET-002']);
 
@@ -49,7 +49,7 @@ test('can search returns by return number', function () {
         ->assertDontSee($return2->return_number);
 });
 
-test('can search returns by sale number', function () {
+test('can search returns by sale number', function (): void {
     $sale = PosSale::factory()->create(['sale_number' => 'SALE-12345']);
     $return = PosReturn::factory()->create(['original_sale_id' => $sale->id]);
 
@@ -58,7 +58,7 @@ test('can search returns by sale number', function () {
         ->assertSee($return->return_number);
 });
 
-test('can search returns by customer name', function () {
+test('can search returns by customer name', function (): void {
     $customer = Customer::factory()->create(['first_name' => 'John', 'last_name' => 'Doe']);
     $sale = PosSale::factory()->create(['customer_id' => $customer->id]);
     $return = PosReturn::factory()->create([
@@ -71,7 +71,7 @@ test('can search returns by customer name', function () {
         ->assertSee($return->return_number, false);
 });
 
-test('displays correct stats', function () {
+test('displays correct stats', function (): void {
     PosReturn::factory()->count(2)->create(['status' => ReturnStatus::Pending]);
     PosReturn::factory()->count(3)->create(['status' => ReturnStatus::Approved]);
     PosReturn::factory()->count(1)->create([
@@ -89,7 +89,7 @@ test('displays correct stats', function () {
         ->and($stats['total_refunded'])->toEqual(100.00);
 });
 
-test('can approve pending return', function () {
+test('can approve pending return', function (): void {
     $return = PosReturn::factory()->create([
         'status' => ReturnStatus::Pending,
         'inventory_restored' => false,
@@ -105,7 +105,7 @@ test('can approve pending return', function () {
         ->and($return->inventory_restored)->toBeTrue();
 });
 
-test('can reject pending return', function () {
+test('can reject pending return', function (): void {
     $return = PosReturn::factory()->create(['status' => ReturnStatus::Pending]);
 
     Livewire::test(ReturnIndex::class)
@@ -116,13 +116,13 @@ test('can reject pending return', function () {
     expect($return->status)->toBe(ReturnStatus::Rejected);
 });
 
-test('displays empty state when no returns', function () {
+test('displays empty state when no returns', function (): void {
     Livewire::test(ReturnIndex::class)
         ->assertSee('No returns')
         ->assertSee('found');
 });
 
-test('displays filtered empty state', function () {
+test('displays filtered empty state', function (): void {
     PosReturn::factory()->create(['status' => ReturnStatus::Pending]);
 
     Livewire::test(ReturnIndex::class)
@@ -130,7 +130,7 @@ test('displays filtered empty state', function () {
         ->assertSee('Try adjusting your filters');
 });
 
-test('paginates returns', function () {
+test('paginates returns', function (): void {
     PosReturn::factory()->count(20)->create();
 
     Livewire::test(ReturnIndex::class)
@@ -138,7 +138,7 @@ test('paginates returns', function () {
         ->assertSee('2');
 });
 
-test('url query params are synced with filters', function () {
+test('url query params are synced with filters', function (): void {
     Livewire::test(ReturnIndex::class)
         ->set('search', 'test')
         ->set('status', 'pending')
@@ -146,7 +146,7 @@ test('url query params are synced with filters', function () {
         ->assertSet('status', 'pending');
 });
 
-test('restores inventory when approving return', function () {
+test('restores inventory when approving return', function (): void {
     $item = InventoryItem::factory()->create(['quantity' => 10]);
     $sale = PosSale::factory()->create();
     $saleItem = PosSaleItem::factory()->create([

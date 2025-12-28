@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Livewire;
 
-test('admin can access user edit page', function () {
+test('admin can access user edit page', function (): void {
     $admin = User::factory()->admin()->create();
     $user = User::factory()->create();
 
@@ -16,7 +16,7 @@ test('admin can access user edit page', function () {
         ->assertSuccessful();
 });
 
-test('user can edit their own profile', function () {
+test('user can edit their own profile', function (): void {
     $user = User::factory()->create();
 
     Livewire::actingAs($user)
@@ -24,7 +24,7 @@ test('user can edit their own profile', function () {
         ->assertSuccessful();
 });
 
-test('user cannot edit another users profile', function () {
+test('user cannot edit another users profile', function (): void {
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
 
@@ -33,7 +33,7 @@ test('user cannot edit another users profile', function () {
         ->assertForbidden();
 });
 
-test('admin can update a user', function () {
+test('admin can update a user', function (): void {
     $admin = User::factory()->admin()->create();
     $user = User::factory()->create([
         'name' => 'Original Name',
@@ -60,7 +60,7 @@ test('admin can update a user', function () {
         ->and($user->active)->toBeFalse();
 });
 
-test('password can be updated', function () {
+test('password can be updated', function (): void {
     $admin = User::factory()->admin()->create();
     $user = User::factory()->create(['password' => Hash::make('oldpassword')]);
 
@@ -74,7 +74,7 @@ test('password can be updated', function () {
     expect(Hash::check('newpassword123', $user->fresh()->password))->toBeTrue();
 });
 
-test('password is optional when editing', function () {
+test('password is optional when editing', function (): void {
     $admin = User::factory()->admin()->create();
     $user = User::factory()->create(['password' => Hash::make('oldpassword')]);
     $originalPassword = $user->password;
@@ -90,7 +90,7 @@ test('password is optional when editing', function () {
     expect($user->fresh()->password)->toBe($originalPassword);
 });
 
-test('password must be confirmed when updating', function () {
+test('password must be confirmed when updating', function (): void {
     $admin = User::factory()->admin()->create();
     $user = User::factory()->create();
 
@@ -102,7 +102,7 @@ test('password must be confirmed when updating', function () {
         ->assertHasErrors(['password']);
 });
 
-test('name is required', function () {
+test('name is required', function (): void {
     $admin = User::factory()->admin()->create();
     $user = User::factory()->create();
 
@@ -113,7 +113,7 @@ test('name is required', function () {
         ->assertHasErrors(['name' => 'required']);
 });
 
-test('email is required', function () {
+test('email is required', function (): void {
     $admin = User::factory()->admin()->create();
     $user = User::factory()->create();
 
@@ -124,7 +124,7 @@ test('email is required', function () {
         ->assertHasErrors(['email' => 'required']);
 });
 
-test('email must be valid', function () {
+test('email must be valid', function (): void {
     $admin = User::factory()->admin()->create();
     $user = User::factory()->create();
 
@@ -135,7 +135,7 @@ test('email must be valid', function () {
         ->assertHasErrors(['email']);
 });
 
-test('email must be unique except for current user', function () {
+test('email must be unique except for current user', function (): void {
     $admin = User::factory()->admin()->create();
     $user = User::factory()->create(['email' => 'user@example.com']);
     $otherUser = User::factory()->create(['email' => 'other@example.com']);
@@ -155,7 +155,7 @@ test('email must be unique except for current user', function () {
         ->assertHasErrors(['email']);
 });
 
-test('role is required', function () {
+test('role is required', function (): void {
     $admin = User::factory()->admin()->create();
     $user = User::factory()->create();
 
@@ -166,7 +166,7 @@ test('role is required', function () {
         ->assertHasErrors(['role' => 'required']);
 });
 
-test('role must be valid', function () {
+test('role must be valid', function (): void {
     $admin = User::factory()->admin()->create();
     $user = User::factory()->create();
 
@@ -177,7 +177,7 @@ test('role must be valid', function () {
         ->assertHasErrors(['role']);
 });
 
-test('form is pre-filled with user data', function () {
+test('form is pre-filled with user data', function (): void {
     $admin = User::factory()->admin()->create();
     $user = User::factory()->create([
         'name' => 'Test User',
@@ -196,7 +196,7 @@ test('form is pre-filled with user data', function () {
         ->assertSet('active', false);
 });
 
-test('phone can be cleared', function () {
+test('phone can be cleared', function (): void {
     $admin = User::factory()->admin()->create();
     $user = User::factory()->create(['phone' => '1234567890']);
 

@@ -9,12 +9,12 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\{actingAs, get};
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create(['role' => UserRole::Technician]);
     actingAs($this->user);
 });
 
-test('device show page can be rendered', function () {
+test('device show page can be rendered', function (): void {
     $device = Device::factory()->create();
 
     get(route('devices.show', $device))
@@ -22,7 +22,7 @@ test('device show page can be rendered', function () {
         ->assertSeeLivewire(Show::class);
 });
 
-test('device show requires authentication', function () {
+test('device show requires authentication', function (): void {
     auth()->logout();
     $device = Device::factory()->create();
 
@@ -30,7 +30,7 @@ test('device show requires authentication', function () {
         ->assertRedirect(route('login'));
 });
 
-test('displays device information', function () {
+test('displays device information', function (): void {
     $device = Device::factory()->create([
         'brand' => 'Apple',
         'model' => 'iPhone 15 Pro',
@@ -50,7 +50,7 @@ test('displays device information', function () {
         ->assertSee('Test notes');
 });
 
-test('displays customer information', function () {
+test('displays customer information', function (): void {
     $device = Device::factory()->create();
 
     Livewire::test(Show::class, ['device' => $device])
@@ -59,7 +59,7 @@ test('displays customer information', function () {
         ->assertSee($device->customer->phone);
 });
 
-test('displays customer address when available', function () {
+test('displays customer address when available', function (): void {
     $device = Device::factory()->create();
     $device->customer->update(['address' => '123 Main St']);
 
@@ -67,7 +67,7 @@ test('displays customer address when available', function () {
         ->assertSee('123 Main St');
 });
 
-test('displays repair history', function () {
+test('displays repair history', function (): void {
     $device = Device::factory()->hasTickets(2)->create();
     $ticket = $device->tickets->first();
 
@@ -76,14 +76,14 @@ test('displays repair history', function () {
         ->assertSee($ticket->problem_description);
 });
 
-test('displays empty state when no tickets exist', function () {
+test('displays empty state when no tickets exist', function (): void {
     $device = Device::factory()->create();
 
     Livewire::test(Show::class, ['device' => $device])
         ->assertSee('No repair tickets yet');
 });
 
-test('displays ticket status badges', function () {
+test('displays ticket status badges', function (): void {
     $device = Device::factory()->create();
     $ticket = Ticket::factory()->for($device)->create(['status' => 'completed']);
 
@@ -91,7 +91,7 @@ test('displays ticket status badges', function () {
         ->assertSee('Completed');
 });
 
-test('displays ticket creator information', function () {
+test('displays ticket creator information', function (): void {
     $device = Device::factory()->create();
     $creator = User::factory()->create(['name' => 'John Doe']);
     $ticket = Ticket::factory()->for($device)->create(['created_by' => $creator->id]);
@@ -100,14 +100,14 @@ test('displays ticket creator information', function () {
         ->assertSee('John Doe');
 });
 
-test('displays edit button for authorized users', function () {
+test('displays edit button for authorized users', function (): void {
     $device = Device::factory()->create();
 
     Livewire::test(Show::class, ['device' => $device])
         ->assertSee('Edit Device');
 });
 
-test('displays delete button for admin', function () {
+test('displays delete button for admin', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
     actingAs($admin);
 
@@ -117,7 +117,7 @@ test('displays delete button for admin', function () {
         ->assertSee('Delete');
 });
 
-test('does not display delete button for technician', function () {
+test('does not display delete button for technician', function (): void {
     $device = Device::factory()->create();
 
     $response = Livewire::test(Show::class, ['device' => $device]);
@@ -127,7 +127,7 @@ test('does not display delete button for technician', function () {
         ->and($response->html())->not->toContain('wire:click="delete"');
 });
 
-test('admin can delete device', function () {
+test('admin can delete device', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
     actingAs($admin);
 
@@ -140,7 +140,7 @@ test('admin can delete device', function () {
     expect(Device::find($device->id))->toBeNull();
 });
 
-test('manager can delete device', function () {
+test('manager can delete device', function (): void {
     $manager = User::factory()->create(['role' => UserRole::Manager]);
     actingAs($manager);
 
@@ -153,7 +153,7 @@ test('manager can delete device', function () {
     expect(Device::find($device->id))->toBeNull();
 });
 
-test('technician cannot delete device', function () {
+test('technician cannot delete device', function (): void {
     $device = Device::factory()->create();
 
     Livewire::test(Show::class, ['device' => $device])
@@ -163,7 +163,7 @@ test('technician cannot delete device', function () {
     expect(Device::find($device->id))->not->toBeNull();
 });
 
-test('delete sets success message', function () {
+test('delete sets success message', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
     actingAs($admin);
 
@@ -175,14 +175,14 @@ test('delete sets success message', function () {
     expect(session('success'))->toBe('Device deleted successfully.');
 });
 
-test('hides imei when not set', function () {
+test('hides imei when not set', function (): void {
     $device = Device::factory()->create(['imei' => null]);
 
     Livewire::test(Show::class, ['device' => $device])
         ->assertDontSee('IMEI');
 });
 
-test('hides notes when not set', function () {
+test('hides notes when not set', function (): void {
     $device = Device::factory()->create(['notes' => null]);
 
     $response = Livewire::test(Show::class, ['device' => $device]);
@@ -191,7 +191,7 @@ test('hides notes when not set', function () {
     expect($device->notes)->toBeNull();
 });
 
-test('displays dash for empty serial number', function () {
+test('displays dash for empty serial number', function (): void {
     $device = Device::factory()->create(['serial_number' => null]);
 
     Livewire::test(Show::class, ['device' => $device])

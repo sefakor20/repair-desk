@@ -6,14 +6,14 @@ use App\Livewire\Portal\NotificationHistory;
 use App\Models\{Customer, SmsDeliveryLog};
 use Livewire\Livewire;
 
-it('renders successfully', function () {
+it('renders successfully', function (): void {
     $customer = Customer::factory()->create();
 
     Livewire::test(NotificationHistory::class, ['customer' => $customer])
         ->assertStatus(200);
 });
 
-it('displays SMS delivery stats correctly', function () {
+it('displays SMS delivery stats correctly', function (): void {
     $customer = Customer::factory()->create();
 
     // Create various SMS logs
@@ -47,7 +47,7 @@ it('displays SMS delivery stats correctly', function () {
         ->assertSee('1'); // Failed/Pending
 });
 
-it('filters SMS logs by status', function () {
+it('filters SMS logs by status', function (): void {
     $customer = Customer::factory()->create();
 
     SmsDeliveryLog::factory()->create([
@@ -73,7 +73,7 @@ it('filters SMS logs by status', function () {
         ->assertDontSee('Sent message');
 });
 
-it('searches SMS logs by message content', function () {
+it('searches SMS logs by message content', function (): void {
     $customer = Customer::factory()->create();
 
     SmsDeliveryLog::factory()->create([
@@ -94,7 +94,7 @@ it('searches SMS logs by message content', function () {
         ->assertDontSee('Invoice payment reminder');
 });
 
-it('clears filters correctly', function () {
+it('clears filters correctly', function (): void {
     $customer = Customer::factory()->create();
 
     Livewire::test(NotificationHistory::class, ['customer' => $customer])
@@ -105,7 +105,7 @@ it('clears filters correctly', function () {
         ->assertSet('search', '');
 });
 
-it('paginates SMS logs', function () {
+it('paginates SMS logs', function (): void {
     $customer = Customer::factory()->create();
 
     SmsDeliveryLog::factory()->count(25)->create([
@@ -118,14 +118,14 @@ it('paginates SMS logs', function () {
         ->assertSee('2'); // Page numbers
 });
 
-it('shows empty state when no SMS logs exist', function () {
+it('shows empty state when no SMS logs exist', function (): void {
     $customer = Customer::factory()->create();
 
     Livewire::test(NotificationHistory::class, ['customer' => $customer])
         ->assertSee('No SMS notifications yet');
 });
 
-it('only displays SMS logs for the authenticated customer', function () {
+it('only displays SMS logs for the authenticated customer', function (): void {
     $customer1 = Customer::factory()->create();
     $customer2 = Customer::factory()->create();
 

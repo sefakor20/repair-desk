@@ -18,7 +18,7 @@ class BranchScopedPolicy
      */
     protected function canViewBranch(User $user, ?Branch $branch): Response
     {
-        if (! $branch) {
+        if (!$branch instanceof \App\Models\Branch) {
             return Response::allow();
         }
 
@@ -36,7 +36,7 @@ class BranchScopedPolicy
      */
     protected function canCreateInBranch(User $user, ?Branch $branch): Response
     {
-        if (! $branch) {
+        if (!$branch instanceof \App\Models\Branch) {
             return Response::allow();
         }
 
@@ -58,7 +58,7 @@ class BranchScopedPolicy
      */
     protected function canUpdateInBranch(User $user, ?Branch $branch): Response
     {
-        if (! $branch) {
+        if (!$branch instanceof \App\Models\Branch) {
             return Response::allow();
         }
 
@@ -80,7 +80,7 @@ class BranchScopedPolicy
      */
     protected function canDeleteInBranch(User $user, ?Branch $branch): Response
     {
-        if (! $branch) {
+        if (!$branch instanceof \App\Models\Branch) {
             return Response::allow();
         }
 

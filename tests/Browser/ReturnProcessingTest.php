@@ -7,7 +7,7 @@ use App\Models\{Customer, InventoryItem, PosSale, PosSaleItem, User};
 
 uses()->group('browser', 'returns');
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create();
     $this->actingAs($this->user);
     $this->customer = Customer::factory()->create();
@@ -39,14 +39,14 @@ beforeEach(function () {
     ]);
 });
 
-it('loads returns page successfully', function () {
+it('loads returns page successfully', function (): void {
     $page = visit('/pos/returns');
 
     $page->assertSee('Returns')
         ->assertNoJavaScriptErrors();
 });
 
-it('displays return list', function () {
+it('displays return list', function (): void {
     $page = visit('/pos/returns');
 
     // Just check the page loads properly
@@ -54,7 +54,7 @@ it('displays return list', function () {
         ->assertNoJavaScriptErrors();
 });
 
-it('shows return details when viewing specific return', function () {
+it('shows return details when viewing specific return', function (): void {
     $page = visit('/pos/returns');
 
     // Check returns page structure
@@ -62,7 +62,7 @@ it('shows return details when viewing specific return', function () {
         ->assertNoJavaScriptErrors();
 });
 
-it('can navigate to process return from sale', function () {
+it('can navigate to process return from sale', function (): void {
     $page = visit('/pos/' . $this->sale->id);
 
     $page->assertSee($this->sale->sale_number)

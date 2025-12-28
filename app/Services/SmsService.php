@@ -32,7 +32,7 @@ class SmsService
     {
         $template = SmsTemplate::findByKey($templateKey);
 
-        if (! $template) {
+        if (!$template instanceof \App\Models\SmsTemplate) {
             Log::warning('SMS template not found', ['key' => $templateKey]);
 
             return false;
@@ -58,18 +58,18 @@ class SmsService
      */
     public function sendBulk(array $phones, string $message, ?object $notifiable = null, ?string $notificationType = null): bool
     {
-        if (empty($this->apiKey)) {
+        if ($this->apiKey === '' || $this->apiKey === '0') {
             Log::warning('TextTango API key not configured');
 
             return false;
         }
 
-        if (empty($phones)) {
+        if ($phones === []) {
             return false;
         }
 
         // Format phone numbers (remove spaces, dashes, etc.)
-        $phones = array_map(function ($phone) {
+        $phones = array_map(function ($phone): string|array|null {
             return preg_replace('/[^0-9+]/', '', $phone);
         }, $phones);
 
@@ -113,7 +113,7 @@ class SmsService
                 $trackingId = $responseData['data']['tracking_id'] ?? null;
 
                 // Mark all logs as sent and store external_id
-                $logs->each(function ($log) use ($responseData, $trackingId) {
+                $logs->each(function ($log) use ($responseData, $trackingId): void {
                     // Use tracking_id as external_id for TextTango
                     if ($trackingId) {
                         $log->external_id = $trackingId;
@@ -134,7 +134,7 @@ class SmsService
             $errorMessage = $response->body();
 
             // Mark all logs as failed
-            $logs->each(function ($log) use ($errorMessage) {
+            $logs->each(function ($log) use ($errorMessage): void {
                 $log->markAsFailed($errorMessage);
             });
 
@@ -148,7 +148,7 @@ class SmsService
             $errorMessage = $e->getMessage();
 
             // Mark all logs as failed
-            $logs->each(function ($log) use ($errorMessage) {
+            $logs->each(function ($log) use ($errorMessage): void {
                 $log->markAsFailed($errorMessage);
             });
 
@@ -176,7 +176,7 @@ class SmsService
             return false;
         }
 
-        if (empty($this->apiKey)) {
+        if ($this->apiKey === '' || $this->apiKey === '0') {
             Log::warning('TextTango API key not configured');
 
             return false;
@@ -270,7 +270,7 @@ class SmsService
      */
     public function isEnabled(): bool
     {
-        return ! empty($this->apiKey) && ! empty($this->apiUrl);
+        return $this->apiKey !== '' && $this->apiKey !== '0' && ($this->apiUrl !== '' && $this->apiUrl !== '0');
     }
 
     /**

@@ -55,7 +55,7 @@ class Show extends Component
     {
         $this->authorize('adjustQuantity', $this->item);
 
-        $validated = $this->validate([
+        $this->validate([
             'adjustmentType' => ['required', 'in:add,remove'],
             'adjustmentQuantity' => ['required', 'integer', 'min:1'],
             'adjustmentReason' => ['required', 'string', 'max:255'],
@@ -73,7 +73,7 @@ class Show extends Component
             return;
         }
 
-        DB::transaction(function () use ($quantityChange) {
+        DB::transaction(function () use ($quantityChange): void {
             $quantityBefore = $this->item->quantity;
             $quantityAfter = $quantityBefore + $quantityChange;
 
@@ -98,7 +98,7 @@ class Show extends Component
         $this->closeAdjustModal();
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         $adjustments = $this->item->adjustments()
             ->with('adjustedBy')

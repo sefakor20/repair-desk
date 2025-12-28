@@ -30,7 +30,7 @@ class ValidateCustomerPortalAccess
 
         $customer = Customer::validatePortalToken($token, $customerId);
 
-        if (! $customer) {
+        if (!$customer instanceof \App\Models\Customer) {
             return redirect()->route('portal.login')->with('error', 'Invalid or expired portal access token.');
         }
 

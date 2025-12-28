@@ -126,7 +126,7 @@ class ManagePhotos extends Component
         $this->showDeleteModal = false;
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         return view('livewire.devices.manage-photos', [
             'devicePhotos' => $this->device->photos()->with('uploadedBy')->latest()->get(),

@@ -8,12 +8,12 @@ use Livewire\Volt\Volt;
 
 use function Pest\Laravel\actingAs;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create();
     actingAs($this->user);
 });
 
-test('dashboard shows trend indicators for urgent tickets', function () {
+test('dashboard shows trend indicators for urgent tickets', function (): void {
     $customer = Customer::factory()->create();
 
     // Create 2 urgent tickets today
@@ -38,7 +38,7 @@ test('dashboard shows trend indicators for urgent tickets', function () {
         ->assertSee('100%'); // 100% increase
 });
 
-test('dashboard shows trend indicators for revenue', function () {
+test('dashboard shows trend indicators for revenue', function (): void {
     $customer = Customer::factory()->create();
     $invoice = Invoice::factory()->create([
         'customer_id' => $customer->id,
@@ -64,7 +64,7 @@ test('dashboard shows trend indicators for revenue', function () {
         ->assertSee('25%'); // 25% increase
 });
 
-test('dashboard shows downward trend correctly', function () {
+test('dashboard shows downward trend correctly', function (): void {
     $customer = Customer::factory()->create();
     $invoice = Invoice::factory()->create([
         'customer_id' => $customer->id,
@@ -90,7 +90,7 @@ test('dashboard shows downward trend correctly', function () {
         ->assertSee('50%'); // 50% decrease
 });
 
-test('dashboard shows neutral trend when no change', function () {
+test('dashboard shows neutral trend when no change', function (): void {
     $customer = Customer::factory()->create();
     $invoice = Invoice::factory()->create([
         'customer_id' => $customer->id,
@@ -116,7 +116,7 @@ test('dashboard shows neutral trend when no change', function () {
         ->assertSee('No change');
 });
 
-test('dashboard handles zero previous value correctly', function () {
+test('dashboard handles zero previous value correctly', function (): void {
     $customer = Customer::factory()->create();
     $invoice = Invoice::factory()->create([
         'customer_id' => $customer->id,
@@ -135,7 +135,7 @@ test('dashboard handles zero previous value correctly', function () {
         ->assertSee('100%'); // 100% increase from zero
 });
 
-test('dashboard shows pending invoices trend', function () {
+test('dashboard shows pending invoices trend', function (): void {
     $customer = Customer::factory()->create();
 
     // Create 3 pending invoices today

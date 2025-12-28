@@ -8,7 +8,7 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\{actingAs, assertDatabaseHas};
 
-test('customer edit page can be rendered', function () {
+test('customer edit page can be rendered', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create();
 
@@ -19,7 +19,7 @@ test('customer edit page can be rendered', function () {
         ->assertSee($customer->full_name);
 });
 
-test('edit form is pre-populated with customer data', function () {
+test('edit form is pre-populated with customer data', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create([
         'first_name' => 'John',
@@ -42,7 +42,7 @@ test('edit form is pre-populated with customer data', function () {
         ->assertSet('form.tags', ['VIP', 'Regular']);
 });
 
-test('customer edit form requires first name', function () {
+test('customer edit form requires first name', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create();
 
@@ -53,7 +53,7 @@ test('customer edit form requires first name', function () {
         ->assertHasErrors(['form.first_name' => 'required']);
 });
 
-test('customer edit form requires last name', function () {
+test('customer edit form requires last name', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create();
 
@@ -64,7 +64,7 @@ test('customer edit form requires last name', function () {
         ->assertHasErrors(['form.last_name' => 'required']);
 });
 
-test('customer edit form requires email', function () {
+test('customer edit form requires email', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create();
 
@@ -75,7 +75,7 @@ test('customer edit form requires email', function () {
         ->assertHasErrors(['form.email' => 'required']);
 });
 
-test('customer edit form requires valid email', function () {
+test('customer edit form requires valid email', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create();
 
@@ -86,7 +86,7 @@ test('customer edit form requires valid email', function () {
         ->assertHasErrors(['form.email' => 'email']);
 });
 
-test('customer can keep same email when editing', function () {
+test('customer can keep same email when editing', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create(['email' => 'john@example.com']);
 
@@ -104,7 +104,7 @@ test('customer can keep same email when editing', function () {
     ]);
 });
 
-test('customer edit form requires unique email for other customers', function () {
+test('customer edit form requires unique email for other customers', function (): void {
     $user = createAdmin();
     $existingCustomer = Customer::factory()->create(['email' => 'existing@example.com']);
     $customer = Customer::factory()->create(['email' => 'john@example.com']);
@@ -116,7 +116,7 @@ test('customer edit form requires unique email for other customers', function ()
         ->assertHasErrors(['form.email' => 'unique']);
 });
 
-test('customer edit form requires phone', function () {
+test('customer edit form requires phone', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create();
 
@@ -127,7 +127,7 @@ test('customer edit form requires phone', function () {
         ->assertHasErrors(['form.phone' => 'required']);
 });
 
-test('customer can be updated with valid data', function () {
+test('customer can be updated with valid data', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create([
         'first_name' => 'John',
@@ -152,7 +152,7 @@ test('customer can be updated with valid data', function () {
     ]);
 });
 
-test('customer address can be updated', function () {
+test('customer address can be updated', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create(['address' => '123 Main St']);
 
@@ -168,7 +168,7 @@ test('customer address can be updated', function () {
     ]);
 });
 
-test('customer notes can be updated', function () {
+test('customer notes can be updated', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create(['notes' => 'Old note']);
 
@@ -184,7 +184,7 @@ test('customer notes can be updated', function () {
     ]);
 });
 
-test('customer tags can be added during edit', function () {
+test('customer tags can be added during edit', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create(['tags' => ['VIP']]);
 
@@ -195,7 +195,7 @@ test('customer tags can be added during edit', function () {
         ->assertSet('form.tags', ['VIP', 'Premium']);
 });
 
-test('customer tags can be removed during edit', function () {
+test('customer tags can be removed during edit', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create(['tags' => ['VIP', 'Regular', 'Premium']]);
 
@@ -205,7 +205,7 @@ test('customer tags can be removed during edit', function () {
         ->assertSet('form.tags', ['VIP', 'Premium']);
 });
 
-test('customer tags can be saved during edit', function () {
+test('customer tags can be saved during edit', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create(['tags' => ['VIP']]);
 
@@ -219,7 +219,7 @@ test('customer tags can be saved during edit', function () {
     expect($customer->tags)->toBe(['VIP', 'Premium', 'Regular']);
 });
 
-test('success message is shown after updating customer', function () {
+test('success message is shown after updating customer', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create();
 
@@ -231,7 +231,7 @@ test('success message is shown after updating customer', function () {
     expect(session('success'))->toBe('Customer updated successfully.');
 });
 
-test('unauthorized user cannot update customer', function () {
+test('unauthorized user cannot update customer', function (): void {
     // This test ensures the authorization is working at the policy level
     // In this app, all authenticated users can update customers
     $user = createAdmin();

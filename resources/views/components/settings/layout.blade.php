@@ -31,6 +31,17 @@
                         Loyalty Rewards
                     </flux:navlist.item>
                 </flux:navlist.group>
+
+                <flux:navlist.group heading="SMS Management" class="mt-6">
+                    <flux:navlist.item :href="route('settings.sms-templates')"
+                        :current="request()->routeIs('settings.sms-templates')" icon="document-text">
+                        SMS Templates
+                    </flux:navlist.item>
+                    <flux:navlist.item :href="route('settings.sms-automation')"
+                        :current="request()->routeIs('settings.sms-automation')" icon="bolt">
+                        Automation Triggers
+                    </flux:navlist.item>
+                </flux:navlist.group>
             @endcan
         </flux:navlist>
     </div>

@@ -9,19 +9,19 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\{actingAs, get};
 
-test('pos create page can be rendered', function () {
+test('pos create page can be rendered', function (): void {
     actingAs(createAdmin());
 
     get(route('pos.create'))
         ->assertSuccessful();
 });
 
-test('unauthorized user cannot access pos create page', function () {
+test('unauthorized user cannot access pos create page', function (): void {
     get(route('pos.create'))
         ->assertRedirect(route('login'));
 });
 
-test('can add item to cart', function () {
+test('can add item to cart', function (): void {
     $user = createAdmin();
     actingAs($user);
 
@@ -36,7 +36,7 @@ test('can add item to cart', function () {
         ->assertSet('cart.' . $item->id . '.name', $item->name);
 });
 
-test('cannot add out of stock item to cart', function () {
+test('cannot add out of stock item to cart', function (): void {
     $user = createAdmin();
     actingAs($user);
 
@@ -50,7 +50,7 @@ test('cannot add out of stock item to cart', function () {
         ->assertHasErrors('cart');
 });
 
-test('adding same item increases quantity', function () {
+test('adding same item increases quantity', function (): void {
     $user = createAdmin();
     actingAs($user);
 
@@ -65,7 +65,7 @@ test('adding same item increases quantity', function () {
         ->assertSet('cart.' . $item->id . '.quantity', 2);
 });
 
-test('cannot add more than available stock', function () {
+test('cannot add more than available stock', function (): void {
     $user = createAdmin();
     actingAs($user);
 
@@ -81,7 +81,7 @@ test('cannot add more than available stock', function () {
         ->assertHasErrors('cart');
 });
 
-test('can remove item from cart', function () {
+test('can remove item from cart', function (): void {
     $user = createAdmin();
     actingAs($user);
 
@@ -96,7 +96,7 @@ test('can remove item from cart', function () {
         ->assertSet('cart', []);
 });
 
-test('can update item quantity in cart', function () {
+test('can update item quantity in cart', function (): void {
     $user = createAdmin();
     actingAs($user);
 
@@ -111,7 +111,7 @@ test('can update item quantity in cart', function () {
         ->assertSet('cart.' . $item->id . '.quantity', 3);
 });
 
-test('setting quantity to zero removes item', function () {
+test('setting quantity to zero removes item', function (): void {
     $user = createAdmin();
     actingAs($user);
 
@@ -126,7 +126,7 @@ test('setting quantity to zero removes item', function () {
         ->assertSet('cart', []);
 });
 
-test('can clear cart', function () {
+test('can clear cart', function (): void {
     $user = createAdmin();
     actingAs($user);
 
@@ -143,7 +143,7 @@ test('can clear cart', function () {
         ->assertSet('notes', '');
 });
 
-test('subtotal calculates correctly', function () {
+test('subtotal calculates correctly', function (): void {
     $user = createAdmin();
     actingAs($user);
 
@@ -165,7 +165,7 @@ test('subtotal calculates correctly', function () {
     expect($component->instance()->subtotal())->toBe(150.0);
 });
 
-test('tax amount calculates correctly', function () {
+test('tax amount calculates correctly', function (): void {
     $user = createAdmin();
     actingAs($user);
 
@@ -190,7 +190,7 @@ test('tax amount calculates correctly', function () {
     expect($component->instance()->taxAmount())->toBeGreaterThan(0);
 });
 
-test('total calculates correctly with discount', function () {
+test('total calculates correctly with discount', function (): void {
     $user = createAdmin();
     actingAs($user);
 
@@ -221,7 +221,7 @@ test('total calculates correctly with discount', function () {
     expect($component->instance()->total())->toBe($expectedTotal);
 });
 
-test('cannot checkout with empty cart', function () {
+test('cannot checkout with empty cart', function (): void {
     $user = createAdmin();
     actingAs($user);
 
@@ -231,7 +231,7 @@ test('cannot checkout with empty cart', function () {
         ->assertHasErrors('cart');
 });
 
-test('payment method is required for checkout', function () {
+test('payment method is required for checkout', function (): void {
     $user = createAdmin();
     actingAs($user);
 
@@ -244,7 +244,7 @@ test('payment method is required for checkout', function () {
         ->assertHasErrors(['paymentMethod' => 'required']);
 });
 
-test('payment method must be valid', function () {
+test('payment method must be valid', function (): void {
     $user = createAdmin();
     actingAs($user);
 
@@ -257,7 +257,7 @@ test('payment method must be valid', function () {
         ->assertHasErrors(['paymentMethod' => 'in']);
 });
 
-test('discount cannot exceed subtotal', function () {
+test('discount cannot exceed subtotal', function (): void {
     $user = createAdmin();
     actingAs($user);
 
@@ -275,7 +275,7 @@ test('discount cannot exceed subtotal', function () {
         ->assertHasErrors(['discountAmount' => 'max']);
 });
 
-test('can complete sale', function () {
+test('can complete sale', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create();
     actingAs($user);
@@ -316,7 +316,7 @@ test('can complete sale', function () {
     expect($sale->status)->toBe(PosSaleStatus::Completed);
 });
 
-test('inventory is deducted after sale', function () {
+test('inventory is deducted after sale', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create(); // Add a customer like the working test
     actingAs($user);
@@ -348,7 +348,7 @@ test('inventory is deducted after sale', function () {
     expect($item->quantity)->toBe($initialQuantity - 2);
 });
 
-test('can complete sale without customer', function () {
+test('can complete sale without customer', function (): void {
     $user = createAdmin();
 
     // Create sale directly to test the feature without triggering SQLite FK constraint issue
@@ -362,7 +362,7 @@ test('can complete sale without customer', function () {
     expect($sale->status)->toBe(PosSaleStatus::Completed);
 });
 
-test('sale number is auto-generated', function () {
+test('sale number is auto-generated', function (): void {
     $user = createAdmin();
 
     // Create sale to test auto-generated sale number

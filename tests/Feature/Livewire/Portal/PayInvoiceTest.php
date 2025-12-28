@@ -166,7 +166,7 @@ test('converts amount to pesewas for paystack', function (): void {
         ->andReturn('PS_TEST_123');
     $paystackMock->shouldReceive('initializeTransaction')
         ->once()
-        ->andReturnUsing(function ($data) {
+        ->andReturnUsing(function (array $data): array {
             expect($data['amount'])->toBe(11000); // 110.00 * 100
 
             return [
@@ -191,7 +191,7 @@ test('includes invoice metadata in payment initialization', function (): void {
         ->andReturn('PS_TEST_123');
     $paystackMock->shouldReceive('initializeTransaction')
         ->once()
-        ->withArgs(function ($data): bool {
+        ->withArgs(function (array $data): bool {
             return isset($data['metadata'])
                 && $data['metadata']['invoice_id'] === $this->invoice->id
                 && $data['metadata']['invoice_number'] === $this->invoice->invoice_number
@@ -233,7 +233,7 @@ test('shows correct callback url in metadata', function (): void {
         ->andReturn('PS_TEST_123');
     $paystackMock->shouldReceive('initializeTransaction')
         ->once()
-        ->withArgs(function ($data): bool {
+        ->withArgs(function (array $data): bool {
             return str_contains($data['callback_url'], 'payment/callback');
         })
         ->andReturn([

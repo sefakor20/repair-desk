@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SmsTemplate extends Model
 {
@@ -23,6 +24,14 @@ class SmsTemplate extends Model
     ];
 
     /**
+     * Automation triggers using this template.
+     */
+    public function automationTriggers(): HasMany
+    {
+        return $this->hasMany(SmsAutomationTrigger::class);
+    }
+
+    /**
      * Render the template with provided variables.
      */
     public function render(array $variables = []): string
@@ -30,7 +39,9 @@ class SmsTemplate extends Model
         $message = $this->message;
 
         foreach ($variables as $key => $value) {
+            // Replace both single and double brace formats for backward compatibility
             $message = str_replace('{{' . $key . '}}', (string) $value, $message);
+            $message = str_replace('{' . $key . '}', (string) $value, $message);
         }
 
         return $message;
@@ -41,9 +52,10 @@ class SmsTemplate extends Model
      */
     public function extractVariables(): array
     {
-        preg_match_all('/\{\{(\w+)\}\}/', $this->message, $matches);
+        // Extract both single and double brace variables
+        preg_match_all('/\{\{?(\w+)\}\}?/', $this->message, $matches);
 
-        return $matches[1] ?? [];
+        return array_unique($matches[1] ?? []);
     }
 
     /**

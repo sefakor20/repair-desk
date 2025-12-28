@@ -7,11 +7,11 @@ use App\Models\Contact;
 use App\Models\User;
 use Livewire\Livewire;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->actingAs(User::factory()->admin()->create());
 });
 
-test('contact selection immediately updates recipient count', function () {
+test('contact selection immediately updates recipient count', function (): void {
     // Create test contacts
     $contact1 = Contact::factory()->create([
         'first_name' => 'John',
@@ -52,7 +52,7 @@ test('contact selection immediately updates recipient count', function () {
     $component->assertSet('estimatedRecipients', 0);
 });
 
-test('estimated cost updates with contact selection', function () {
+test('estimated cost updates with contact selection', function (): void {
     $contact1 = Contact::factory()->create([
         'phone' => '+233501234567',
         'is_active' => true,
@@ -76,18 +76,18 @@ test('estimated cost updates with contact selection', function () {
     $component->assertSet('estimatedRecipients', 1);
 
     // Cost should be calculated (1 recipient × 1 segment × cost_per_segment)
-    $expectedCost = 1 * 1 * config('services.texttango.cost_per_segment', 0.12);
+    $expectedCost = 1 * config('services.texttango.cost_per_segment', 0.12);
     $component->assertSet('estimatedCost', $expectedCost);
 
     // Select second contact - should double the cost
     $component->set('selectedContactIds', [$contact1->id, $contact2->id]);
     $component->assertSet('estimatedRecipients', 2);
 
-    $expectedCost = 2 * 1 * config('services.texttango.cost_per_segment', 0.12);
+    $expectedCost = 2 * config('services.texttango.cost_per_segment', 0.12);
     $component->assertSet('estimatedCost', $expectedCost);
 });
 
-test('switching segment types resets contact selection', function () {
+test('switching segment types resets contact selection', function (): void {
     $contact = Contact::factory()->create([
         'phone' => '+233501234567',
         'is_active' => true,
@@ -111,7 +111,7 @@ test('switching segment types resets contact selection', function () {
     // The estimate should be based on Customer count, not the selected contacts
     expect($component->get('estimatedRecipients'))->not->toBe(1);
 });
-test('preview modal shows and hides correctly', function () {
+test('preview modal shows and hides correctly', function (): void {
     $component = Livewire::test(CreateSmsCampaign::class)
         ->set('message', 'Test preview message');
 
@@ -128,7 +128,7 @@ test('preview modal shows and hides correctly', function () {
     $component->assertSet('showPreview', false);
 });
 
-test('test send modal works correctly', function () {
+test('test send modal works correctly', function (): void {
     $component = Livewire::test(CreateSmsCampaign::class)
         ->set('message', 'Test send message');
 
@@ -146,7 +146,7 @@ test('test send modal works correctly', function () {
     $component->assertSet('testPhoneNumber', '');
 });
 
-test('test send validates phone number', function () {
+test('test send validates phone number', function (): void {
     $component = Livewire::test(CreateSmsCampaign::class)
         ->set('message', 'Test message')
         ->set('testPhoneNumber', 'invalid-phone');
@@ -155,7 +155,7 @@ test('test send validates phone number', function () {
     $component->assertHasErrors(['testPhoneNumber']);
 });
 
-test('template selection works correctly', function () {
+test('template selection works correctly', function (): void {
     $component = Livewire::test(CreateSmsCampaign::class);
 
     // Initially no template selected
@@ -170,7 +170,7 @@ test('template selection works correctly', function () {
     $component->assertSet('message', $expectedMessage);
 });
 
-test('template can be cleared', function () {
+test('template can be cleared', function (): void {
     $component = Livewire::test(CreateSmsCampaign::class)
         ->set('selectedTemplate', 'repair_completed')
         ->set('message', 'Some message');
@@ -181,7 +181,7 @@ test('template can be cleared', function () {
     $component->assertSet('message', '');
 });
 
-test('available templates property returns correct templates', function () {
+test('available templates property returns correct templates', function (): void {
     $component = Livewire::test(CreateSmsCampaign::class);
 
     $templates = $component->get('availableTemplates');
@@ -191,7 +191,7 @@ test('available templates property returns correct templates', function () {
     expect($templates['repair_completed'])->toContain('{customer_name}');
 });
 
-test('enhanced segmentation options work correctly', function () {
+test('enhanced segmentation options work correctly', function (): void {
     $component = Livewire::test(CreateSmsCampaign::class);
 
     // Test high-value customer segmentation
@@ -209,7 +209,7 @@ test('enhanced segmentation options work correctly', function () {
     $component->assertSet('estimatedRecipients', 0); // No customers match this criteria in tests
 });
 
-test('validation works for enhanced segmentation fields', function () {
+test('validation works for enhanced segmentation fields', function (): void {
     $component = Livewire::test(CreateSmsCampaign::class)
         ->set('name', 'Test Campaign')
         ->set('message', 'Test message')

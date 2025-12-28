@@ -10,7 +10,7 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\{actingAs, assertDatabaseHas};
 
-test('user can view close drawer page when session is open', function () {
+test('user can view close drawer page when session is open', function (): void {
     $user = createAdmin();
     CashDrawerSession::factory()->open()->create();
 
@@ -20,7 +20,7 @@ test('user can view close drawer page when session is open', function () {
         ->assertSeeLivewire(CloseDrawer::class);
 });
 
-test('user cannot view close drawer page when no active session', function () {
+test('user cannot view close drawer page when no active session', function (): void {
     $user = createAdmin();
 
     actingAs($user)
@@ -28,7 +28,7 @@ test('user cannot view close drawer page when no active session', function () {
         ->assertNotFound();
 });
 
-test('user can close cash drawer with matching balance', function () {
+test('user can close cash drawer with matching balance', function (): void {
     $user = createAdmin();
     $session = CashDrawerSession::factory()->open()->create([
         'opening_balance' => 500.00,
@@ -57,7 +57,7 @@ test('user can close cash drawer with matching balance', function () {
     ]);
 });
 
-test('user can close cash drawer with overage', function () {
+test('user can close cash drawer with overage', function (): void {
     $user = createAdmin();
     $session = CashDrawerSession::factory()->open()->create([
         'opening_balance' => 100.00,
@@ -77,7 +77,7 @@ test('user can close cash drawer with overage', function () {
     ]);
 });
 
-test('user can close cash drawer with shortage', function () {
+test('user can close cash drawer with shortage', function (): void {
     $user = createAdmin();
     $session = CashDrawerSession::factory()->open()->create([
         'opening_balance' => 100.00,
@@ -97,7 +97,7 @@ test('user can close cash drawer with shortage', function () {
     ]);
 });
 
-test('closing transaction is created when drawer is closed', function () {
+test('closing transaction is created when drawer is closed', function (): void {
     $user = createAdmin();
     $session = CashDrawerSession::factory()->open()->create([
         'opening_balance' => 100.00,
@@ -117,7 +117,7 @@ test('closing transaction is created when drawer is closed', function () {
         ->reason->toBe('Cash drawer closed');
 });
 
-test('actual balance is required', function () {
+test('actual balance is required', function (): void {
     $user = createAdmin();
     CashDrawerSession::factory()->open()->create();
 
@@ -128,7 +128,7 @@ test('actual balance is required', function () {
         ->assertHasErrors(['actual_balance' => 'required']);
 });
 
-test('actual balance must be numeric', function () {
+test('actual balance must be numeric', function (): void {
     $user = createAdmin();
     CashDrawerSession::factory()->open()->create();
 
@@ -139,7 +139,7 @@ test('actual balance must be numeric', function () {
         ->assertHasErrors(['actual_balance' => 'numeric']);
 });
 
-test('actual balance cannot be negative', function () {
+test('actual balance cannot be negative', function (): void {
     $user = createAdmin();
     CashDrawerSession::factory()->open()->create();
 
@@ -150,7 +150,7 @@ test('actual balance cannot be negative', function () {
         ->assertHasErrors(['actual_balance' => 'min']);
 });
 
-test('closing notes are optional', function () {
+test('closing notes are optional', function (): void {
     $user = createAdmin();
     $session = CashDrawerSession::factory()->open()->create();
 
@@ -167,7 +167,7 @@ test('closing notes are optional', function () {
     ]);
 });
 
-test('expected balance is calculated correctly', function () {
+test('expected balance is calculated correctly', function (): void {
     $user = createAdmin();
     CashDrawerSession::factory()->open()->create([
         'opening_balance' => 100.00,
@@ -181,7 +181,7 @@ test('expected balance is calculated correctly', function () {
         ->assertViewHas('expectedBalance', 160.00);
 });
 
-test('discrepancy is calculated dynamically', function () {
+test('discrepancy is calculated dynamically', function (): void {
     $user = createAdmin();
     CashDrawerSession::factory()->open()->create([
         'opening_balance' => 100.00,
@@ -193,7 +193,7 @@ test('discrepancy is calculated dynamically', function () {
         ->assertViewHas('discrepancy', 10.00);
 });
 
-test('closing notes can include discrepancy explanation', function () {
+test('closing notes can include discrepancy explanation', function (): void {
     $user = createAdmin();
     $session = CashDrawerSession::factory()->open()->create();
 

@@ -22,7 +22,7 @@ class Create extends Component
     public string $barcodeInput = '';
     public ?Shift $activeShift = null;
 
-    public function mount()
+    public function mount(): void
     {
         $this->authorize('create', PosSale::class);
 
@@ -32,14 +32,14 @@ class Create extends Component
             ->first();
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         $customers = Customer::orderBy('first_name')->orderBy('last_name')->get();
         $inventoryItems = InventoryItem::query()
             ->where('status', 'active')
             ->where('quantity', '>', 0)
-            ->when($this->searchTerm, function ($query) {
-                $query->where(function ($q) {
+            ->when($this->searchTerm, function ($query): void {
+                $query->where(function ($q): void {
                     $q->where('name', 'like', '%' . $this->searchTerm . '%')
                         ->orWhere('sku', 'like', '%' . $this->searchTerm . '%')
                         ->orWhere('barcode', 'like', '%' . $this->searchTerm . '%');
@@ -89,7 +89,7 @@ class Create extends Component
 
     public function scanBarcode(): void
     {
-        if (empty($this->barcodeInput)) {
+        if ($this->barcodeInput === '' || $this->barcodeInput === '0') {
             return;
         }
 
@@ -173,7 +173,7 @@ class Create extends Component
     {
         $this->authorize('create', PosSale::class);
 
-        if (empty($this->cart)) {
+        if ($this->cart === []) {
             $this->addError('cart', 'Cart is empty. Add items before checkout.');
             return;
         }
@@ -189,7 +189,7 @@ class Create extends Component
             // Create the sale
             $sale = PosSale::create([
                 'shift_id' => $this->activeShift?->id,
-                'customer_id' => !empty($validated['customerId']) ? $validated['customerId'] : null,
+                'customer_id' => empty($validated['customerId']) ? null : $validated['customerId'],
                 'subtotal' => $this->subtotal(),
                 'tax_rate' => $this->taxRate(),
                 'tax_amount' => $this->taxAmount(),
@@ -220,7 +220,7 @@ class Create extends Component
             }
 
             // Update shift totals if there's an active shift
-            if ($this->activeShift) {
+            if ($this->activeShift instanceof \App\Models\Shift) {
                 $this->updateShiftTotals($sale);
             }
 

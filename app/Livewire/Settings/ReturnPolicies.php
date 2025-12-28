@@ -37,13 +37,13 @@ class ReturnPolicies extends Component
         $this->authorize('accessSettings', auth()->user());
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         $policies = ReturnPolicy::orderBy('is_active', 'desc')
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        $conditions = collect(ReturnCondition::cases())->map(fn($case) => [
+        $conditions = collect(ReturnCondition::cases())->map(fn($case): array => [
             'value' => $case->value,
             'label' => $case->label(),
         ]);

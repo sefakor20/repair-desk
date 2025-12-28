@@ -8,7 +8,7 @@ use App\Models\LoyaltyTier;
 use App\Models\User;
 use Livewire\Livewire;
 
-test('only admin can access loyalty tiers settings page', function () {
+test('only admin can access loyalty tiers settings page', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
 
     Livewire::actingAs($admin)
@@ -16,7 +16,7 @@ test('only admin can access loyalty tiers settings page', function () {
         ->assertStatus(200);
 });
 
-test('non-admin users cannot access loyalty tiers settings page', function () {
+test('non-admin users cannot access loyalty tiers settings page', function (): void {
     $user = User::factory()->create(['role' => UserRole::Technician]);
 
     Livewire::actingAs($user)
@@ -24,7 +24,7 @@ test('non-admin users cannot access loyalty tiers settings page', function () {
         ->assertForbidden();
 });
 
-test('loyalty tiers page displays all tiers', function () {
+test('loyalty tiers page displays all tiers', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
     $tiers = LoyaltyTier::factory()->count(3)->create();
 
@@ -35,7 +35,7 @@ test('loyalty tiers page displays all tiers', function () {
         ->assertSee($tiers[2]->name);
 });
 
-test('admin can create a new loyalty tier', function () {
+test('admin can create a new loyalty tier', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
 
     Livewire::actingAs($admin)
@@ -55,7 +55,7 @@ test('admin can create a new loyalty tier', function () {
     expect(LoyaltyTier::where('name', 'Diamond')->exists())->toBeTrue();
 });
 
-test('tier name is required', function () {
+test('tier name is required', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
 
     Livewire::actingAs($admin)
@@ -69,7 +69,7 @@ test('tier name is required', function () {
         ->assertHasErrors(['name']);
 });
 
-test('min points must be at least 0', function () {
+test('min points must be at least 0', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
 
     Livewire::actingAs($admin)
@@ -83,7 +83,7 @@ test('min points must be at least 0', function () {
         ->assertHasErrors(['min_points']);
 });
 
-test('points multiplier must be between 1 and 10', function () {
+test('points multiplier must be between 1 and 10', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
 
     Livewire::actingAs($admin)
@@ -97,7 +97,7 @@ test('points multiplier must be between 1 and 10', function () {
         ->assertHasErrors(['points_multiplier']);
 });
 
-test('discount percentage must be between 0 and 100', function () {
+test('discount percentage must be between 0 and 100', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
 
     Livewire::actingAs($admin)
@@ -111,7 +111,7 @@ test('discount percentage must be between 0 and 100', function () {
         ->assertHasErrors(['discount_percentage']);
 });
 
-test('admin can edit an existing loyalty tier', function () {
+test('admin can edit an existing loyalty tier', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
     $tier = LoyaltyTier::factory()->create(['name' => 'Old Name']);
 
@@ -125,7 +125,7 @@ test('admin can edit an existing loyalty tier', function () {
     expect($tier->fresh()->name)->toBe('Updated Name');
 });
 
-test('admin can delete a loyalty tier without accounts', function () {
+test('admin can delete a loyalty tier without accounts', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
     $tier = LoyaltyTier::factory()->create();
 
@@ -136,7 +136,7 @@ test('admin can delete a loyalty tier without accounts', function () {
     expect(LoyaltyTier::find($tier->id))->toBeNull();
 });
 
-test('admin cannot delete tier with active customer accounts', function () {
+test('admin cannot delete tier with active customer accounts', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
     $tier = LoyaltyTier::factory()->create();
     \App\Models\CustomerLoyaltyAccount::factory()->create(['loyalty_tier_id' => $tier->id]);
@@ -148,7 +148,7 @@ test('admin cannot delete tier with active customer accounts', function () {
     expect(LoyaltyTier::find($tier->id))->not->toBeNull();
 });
 
-test('admin can toggle tier active status', function () {
+test('admin can toggle tier active status', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
     $tier = LoyaltyTier::factory()->create(['is_active' => true]);
 
@@ -159,7 +159,7 @@ test('admin can toggle tier active status', function () {
     expect($tier->fresh()->is_active)->toBeFalse();
 });
 
-test('edit modal is pre-populated with tier data', function () {
+test('edit modal is pre-populated with tier data', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
     $tier = LoyaltyTier::factory()->create([
         'name' => 'Gold',
@@ -175,7 +175,7 @@ test('edit modal is pre-populated with tier data', function () {
         ->assertSet('points_multiplier', 1.5);
 });
 
-test('form resets after closing modal', function () {
+test('form resets after closing modal', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
 
     Livewire::actingAs($admin)
@@ -187,7 +187,7 @@ test('form resets after closing modal', function () {
         ->assertSet('showModal', false);
 });
 
-test('admin can create tier successfully', function () {
+test('admin can create tier successfully', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
 
     Livewire::actingAs($admin)
@@ -204,7 +204,7 @@ test('admin can create tier successfully', function () {
     expect(LoyaltyTier::where('name', 'Test Tier')->exists())->toBeTrue();
 });
 
-test('admin can update tier successfully', function () {
+test('admin can update tier successfully', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
     $tier = LoyaltyTier::factory()->create([
         'name' => 'Original',

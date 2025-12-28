@@ -6,7 +6,7 @@ use App\Livewire\Settings\Shop;
 use App\Models\{ShopSettings, User};
 use Livewire\Livewire;
 
-test('only admin can access shop settings page', function () {
+test('only admin can access shop settings page', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -14,7 +14,7 @@ test('only admin can access shop settings page', function () {
         ->assertSuccessful();
 });
 
-test('non-admin users cannot access shop settings page', function () {
+test('non-admin users cannot access shop settings page', function (): void {
     $manager = User::factory()->manager()->create();
     $technician = User::factory()->technician()->create();
     $frontDesk = User::factory()->create();
@@ -32,7 +32,7 @@ test('non-admin users cannot access shop settings page', function () {
         ->assertForbidden();
 });
 
-test('shop settings form is pre-filled with existing data', function () {
+test('shop settings form is pre-filled with existing data', function (): void {
     $admin = User::factory()->admin()->create();
 
     $settings = ShopSettings::getInstance();
@@ -51,7 +51,7 @@ test('shop settings form is pre-filled with existing data', function () {
         ->assertSet('tax_rate', '10.50');
 });
 
-test('admin can update shop settings', function () {
+test('admin can update shop settings', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -83,7 +83,7 @@ test('admin can update shop settings', function () {
         ->and($settings->currency)->toBe('USD');
 });
 
-test('shop name is required', function () {
+test('shop name is required', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -93,7 +93,7 @@ test('shop name is required', function () {
         ->assertHasErrors(['shop_name' => 'required']);
 });
 
-test('email must be valid', function () {
+test('email must be valid', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -103,7 +103,7 @@ test('email must be valid', function () {
         ->assertHasErrors(['email']);
 });
 
-test('website must be valid url', function () {
+test('website must be valid url', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -113,7 +113,7 @@ test('website must be valid url', function () {
         ->assertHasErrors(['website']);
 });
 
-test('tax rate is required', function () {
+test('tax rate is required', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -123,7 +123,7 @@ test('tax rate is required', function () {
         ->assertHasErrors(['tax_rate' => 'required']);
 });
 
-test('tax rate must be numeric', function () {
+test('tax rate must be numeric', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -133,7 +133,7 @@ test('tax rate must be numeric', function () {
         ->assertHasErrors(['tax_rate']);
 });
 
-test('tax rate must be between 0 and 100', function () {
+test('tax rate must be between 0 and 100', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -149,7 +149,7 @@ test('tax rate must be between 0 and 100', function () {
         ->assertHasErrors(['tax_rate']);
 });
 
-test('currency is required', function () {
+test('currency is required', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -159,7 +159,7 @@ test('currency is required', function () {
         ->assertHasErrors(['currency' => 'required']);
 });
 
-test('currency must be 3 characters', function () {
+test('currency must be 3 characters', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -175,7 +175,7 @@ test('currency must be 3 characters', function () {
         ->assertHasErrors(['currency']);
 });
 
-test('country is required', function () {
+test('country is required', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -185,7 +185,7 @@ test('country is required', function () {
         ->assertHasErrors(['country' => 'required']);
 });
 
-test('optional fields can be null', function () {
+test('optional fields can be null', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -214,7 +214,7 @@ test('optional fields can be null', function () {
         ->and($settings->website)->toBeNull();
 });
 
-test('success message is dispatched after saving', function () {
+test('success message is dispatched after saving', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -225,7 +225,7 @@ test('success message is dispatched after saving', function () {
         ->assertDispatched('settings-saved');
 });
 
-test('shop settings uses singleton pattern', function () {
+test('shop settings uses singleton pattern', function (): void {
     $settings1 = ShopSettings::getInstance();
     $settings2 = ShopSettings::getInstance();
 
@@ -233,7 +233,7 @@ test('shop settings uses singleton pattern', function () {
         ->and(ShopSettings::count())->toBe(1);
 });
 
-test('full address accessor works correctly', function () {
+test('full address accessor works correctly', function (): void {
     $settings = ShopSettings::getInstance();
     $settings->update([
         'address' => '123 Main St',
@@ -246,7 +246,7 @@ test('full address accessor works correctly', function () {
     expect($settings->full_address)->toBe('123 Main St, Test City, CA, 12345, USA');
 });
 
-test('full address accessor handles partial data', function () {
+test('full address accessor handles partial data', function (): void {
     $settings = ShopSettings::getInstance();
     $settings->update([
         'address' => '123 Main St',

@@ -10,7 +10,7 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\{actingAs, assertDatabaseHas};
 
-test('user can view open drawer page when no active session', function () {
+test('user can view open drawer page when no active session', function (): void {
     $user = createAdmin();
 
     actingAs($user)
@@ -19,7 +19,7 @@ test('user can view open drawer page when no active session', function () {
         ->assertSeeLivewire(OpenDrawer::class);
 });
 
-test('user cannot view open drawer page when session already open', function () {
+test('user cannot view open drawer page when session already open', function (): void {
     $user = createAdmin();
 
     CashDrawerSession::factory()->open()->create();
@@ -29,7 +29,7 @@ test('user cannot view open drawer page when session already open', function () 
         ->assertForbidden();
 });
 
-test('user can open cash drawer with valid data', function () {
+test('user can open cash drawer with valid data', function (): void {
     $user = createAdmin();
 
     Livewire::actingAs($user)
@@ -48,7 +48,7 @@ test('user can open cash drawer with valid data', function () {
     ]);
 });
 
-test('opening transaction is created when drawer is opened', function () {
+test('opening transaction is created when drawer is opened', function (): void {
     $user = createAdmin();
 
     Livewire::actingAs($user)
@@ -65,7 +65,7 @@ test('opening transaction is created when drawer is opened', function () {
         ->reason->toBe('Cash drawer opened');
 });
 
-test('opening balance is required', function () {
+test('opening balance is required', function (): void {
     $user = createAdmin();
 
     Livewire::actingAs($user)
@@ -75,7 +75,7 @@ test('opening balance is required', function () {
         ->assertHasErrors(['opening_balance' => 'required']);
 });
 
-test('opening balance must be numeric', function () {
+test('opening balance must be numeric', function (): void {
     $user = createAdmin();
 
     Livewire::actingAs($user)
@@ -85,7 +85,7 @@ test('opening balance must be numeric', function () {
         ->assertHasErrors(['opening_balance' => 'numeric']);
 });
 
-test('opening balance cannot be negative', function () {
+test('opening balance cannot be negative', function (): void {
     $user = createAdmin();
 
     Livewire::actingAs($user)
@@ -95,7 +95,7 @@ test('opening balance cannot be negative', function () {
         ->assertHasErrors(['opening_balance' => 'min']);
 });
 
-test('opening notes are optional', function () {
+test('opening notes are optional', function (): void {
     $user = createAdmin();
 
     Livewire::actingAs($user)
@@ -111,7 +111,7 @@ test('opening notes are optional', function () {
     ]);
 });
 
-test('cannot open drawer when another session is already open', function () {
+test('cannot open drawer when another session is already open', function (): void {
     $user = createAdmin();
 
     CashDrawerSession::factory()->open()->create();
@@ -121,7 +121,7 @@ test('cannot open drawer when another session is already open', function () {
         ->assertForbidden();
 });
 
-test('cash drawer initializes with zero values', function () {
+test('cash drawer initializes with zero values', function (): void {
     $user = createAdmin();
 
     Livewire::actingAs($user)

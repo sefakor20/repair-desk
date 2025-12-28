@@ -8,22 +8,22 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create();
     actingAs($this->user);
 });
 
-test('command palette can be rendered', function () {
+test('command palette can be rendered', function (): void {
     Livewire::test(CommandPalette::class)
         ->assertOk();
 });
 
-test('command palette is closed by default', function () {
+test('command palette is closed by default', function (): void {
     Livewire::test(CommandPalette::class)
         ->assertSet('isOpen', false);
 });
 
-test('command palette can be toggled', function () {
+test('command palette can be toggled', function (): void {
     Livewire::test(CommandPalette::class)
         ->call('toggle')
         ->assertSet('isOpen', true)
@@ -31,14 +31,14 @@ test('command palette can be toggled', function () {
         ->assertSet('isOpen', false);
 });
 
-test('command palette can be closed', function () {
+test('command palette can be closed', function (): void {
     Livewire::test(CommandPalette::class)
         ->set('isOpen', true)
         ->call('close')
         ->assertSet('isOpen', false);
 });
 
-test('command palette displays navigation commands', function () {
+test('command palette displays navigation commands', function (): void {
     Livewire::test(CommandPalette::class)
         ->assertSee('Dashboard')
         ->assertSee('Customers')
@@ -47,7 +47,7 @@ test('command palette displays navigation commands', function () {
         ->assertSee('Invoices');
 });
 
-test('command palette displays create commands', function () {
+test('command palette displays create commands', function (): void {
     Livewire::test(CommandPalette::class)
         ->assertSee('New Customer')
         ->assertSee('New Device')
@@ -55,7 +55,7 @@ test('command palette displays create commands', function () {
         ->assertSee('New Invoice');
 });
 
-test('command palette filters commands by query', function () {
+test('command palette filters commands by query', function (): void {
     Livewire::test(CommandPalette::class)
         ->set('query', 'customer')
         ->assertSee('Customers')
@@ -64,40 +64,40 @@ test('command palette filters commands by query', function () {
         ->assertDontSee('Inventory');
 });
 
-test('command palette searches in descriptions', function () {
+test('command palette searches in descriptions', function (): void {
     Livewire::test(CommandPalette::class)
         ->set('query', 'repair')
         ->assertSee('Tickets')
         ->assertSee('New Ticket');
 });
 
-test('command palette searches in keywords', function () {
+test('command palette searches in keywords', function (): void {
     Livewire::test(CommandPalette::class)
         ->set('query', 'stock')
         ->assertSee('Inventory');
 });
 
-test('command palette shows no results for invalid query', function () {
+test('command palette shows no results for invalid query', function (): void {
     Livewire::test(CommandPalette::class)
         ->set('query', 'xyzabc123')
         ->assertSee('No commands found');
 });
 
-test('command palette can select next command', function () {
+test('command palette can select next command', function (): void {
     Livewire::test(CommandPalette::class)
         ->assertSet('selectedIndex', 0)
         ->call('selectNext')
         ->assertSet('selectedIndex', 1);
 });
 
-test('command palette can select previous command', function () {
+test('command palette can select previous command', function (): void {
     Livewire::test(CommandPalette::class)
         ->set('selectedIndex', 1)
         ->call('selectPrevious')
         ->assertSet('selectedIndex', 0);
 });
 
-test('command palette wraps selection at end', function () {
+test('command palette wraps selection at end', function (): void {
     $component = Livewire::test(CommandPalette::class);
     $commandCount = count($component->get('commands'));
 
@@ -107,14 +107,14 @@ test('command palette wraps selection at end', function () {
         ->assertSet('selectedIndex', 0);
 });
 
-test('command palette resets selection when query changes', function () {
+test('command palette resets selection when query changes', function (): void {
     Livewire::test(CommandPalette::class)
         ->set('selectedIndex', 5)
         ->set('query', 'customer')
         ->assertSet('selectedIndex', 0);
 });
 
-test('command palette shows admin commands for admin users', function () {
+test('command palette shows admin commands for admin users', function (): void {
     $admin = User::factory()->admin()->create();
 
     actingAs($admin);
@@ -125,7 +125,7 @@ test('command palette shows admin commands for admin users', function () {
         ->assertSee('New User');
 });
 
-test('command palette hides admin commands for non-admin users', function () {
+test('command palette hides admin commands for non-admin users', function (): void {
     $technician = User::factory()->technician()->create();
 
     actingAs($technician);
@@ -135,7 +135,7 @@ test('command palette hides admin commands for non-admin users', function () {
         ->assertDontSee('New User');
 });
 
-test('command palette closes after executing command', function () {
+test('command palette closes after executing command', function (): void {
     Livewire::test(CommandPalette::class)
         ->set('isOpen', true)
         ->call('executeByIndex', 0)

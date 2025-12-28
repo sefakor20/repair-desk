@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Models\{Ticket, User};
 
-test('all authenticated users can view any tickets', function () {
+test('all authenticated users can view any tickets', function (): void {
     $admin = User::factory()->admin()->create();
     $manager = User::factory()->manager()->create();
     $technician = User::factory()->technician()->create();
@@ -16,7 +16,7 @@ test('all authenticated users can view any tickets', function () {
         ->and($frontDesk->can('viewAny', Ticket::class))->toBeTrue();
 });
 
-test('all authenticated users can view a ticket', function () {
+test('all authenticated users can view a ticket', function (): void {
     $ticket = Ticket::factory()->create();
     $admin = User::factory()->admin()->create();
     $technician = User::factory()->technician()->create();
@@ -25,7 +25,7 @@ test('all authenticated users can view a ticket', function () {
         ->and($technician->can('view', $ticket))->toBeTrue();
 });
 
-test('all authenticated users can create tickets', function () {
+test('all authenticated users can create tickets', function (): void {
     $admin = User::factory()->admin()->create();
     $manager = User::factory()->manager()->create();
     $technician = User::factory()->technician()->create();
@@ -37,7 +37,7 @@ test('all authenticated users can create tickets', function () {
         ->and($frontDesk->can('create', Ticket::class))->toBeTrue();
 });
 
-test('all authenticated users can update tickets', function () {
+test('all authenticated users can update tickets', function (): void {
     $ticket = Ticket::factory()->create();
     $admin = User::factory()->admin()->create();
     $technician = User::factory()->technician()->create();
@@ -48,7 +48,7 @@ test('all authenticated users can update tickets', function () {
         ->and($frontDesk->can('update', $ticket))->toBeTrue();
 });
 
-test('only admin and manager can delete tickets', function () {
+test('only admin and manager can delete tickets', function (): void {
     $ticket = Ticket::factory()->create();
     $admin = User::factory()->admin()->create();
     $manager = User::factory()->manager()->create();
@@ -61,7 +61,7 @@ test('only admin and manager can delete tickets', function () {
         ->and($frontDesk->can('delete', $ticket))->toBeFalse();
 });
 
-test('admin manager and front desk can assign tickets', function () {
+test('admin manager and front desk can assign tickets', function (): void {
     $ticket = Ticket::factory()->create();
     $admin = User::factory()->admin()->create();
     $manager = User::factory()->manager()->create();

@@ -28,7 +28,7 @@ class StaffPermissionService
         // Get active staff assignment for user's current branch
         $staff = $this->getActiveStaffAssignment($user);
 
-        if (! $staff) {
+        if (!$staff instanceof \App\Models\Staff) {
             return false;
         }
 
@@ -75,7 +75,7 @@ class StaffPermissionService
 
         $staff = $this->getActiveStaffAssignment($user);
 
-        if (! $staff) {
+        if (!$staff instanceof \App\Models\Staff) {
             return [];
         }
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Models\{InventoryItem, User};
 
-test('all authenticated users can view inventory', function () {
+test('all authenticated users can view inventory', function (): void {
     $item = InventoryItem::factory()->create();
     $admin = User::factory()->admin()->create();
     $technician = User::factory()->technician()->create();
@@ -15,7 +15,7 @@ test('all authenticated users can view inventory', function () {
         ->and($frontDesk->can('view', $item))->toBeTrue();
 });
 
-test('only admin and manager can create inventory items', function () {
+test('only admin and manager can create inventory items', function (): void {
     $admin = User::factory()->admin()->create();
     $manager = User::factory()->manager()->create();
     $technician = User::factory()->technician()->create();
@@ -27,7 +27,7 @@ test('only admin and manager can create inventory items', function () {
         ->and($frontDesk->can('create', InventoryItem::class))->toBeFalse();
 });
 
-test('only admin and manager can update inventory items', function () {
+test('only admin and manager can update inventory items', function (): void {
     $item = InventoryItem::factory()->create();
     $admin = User::factory()->admin()->create();
     $manager = User::factory()->manager()->create();
@@ -40,7 +40,7 @@ test('only admin and manager can update inventory items', function () {
         ->and($frontDesk->can('update', $item))->toBeFalse();
 });
 
-test('only admin and manager can delete inventory items', function () {
+test('only admin and manager can delete inventory items', function (): void {
     $item = InventoryItem::factory()->create();
     $admin = User::factory()->admin()->create();
     $manager = User::factory()->manager()->create();
@@ -53,7 +53,7 @@ test('only admin and manager can delete inventory items', function () {
         ->and($frontDesk->can('delete', $item))->toBeFalse();
 });
 
-test('only admin and manager can adjust inventory quantities', function () {
+test('only admin and manager can adjust inventory quantities', function (): void {
     $item = InventoryItem::factory()->create();
     $admin = User::factory()->admin()->create();
     $manager = User::factory()->manager()->create();

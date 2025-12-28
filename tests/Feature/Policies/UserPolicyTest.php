@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Models\User;
 
-test('only admin can view all users', function () {
+test('only admin can view all users', function (): void {
     $admin = User::factory()->admin()->create();
     $manager = User::factory()->manager()->create();
     $technician = User::factory()->technician()->create();
@@ -14,7 +14,7 @@ test('only admin can view all users', function () {
         ->and($technician->can('viewAny', User::class))->toBeFalse();
 });
 
-test('admin can view any user but others can only view themselves', function () {
+test('admin can view any user but others can only view themselves', function (): void {
     $admin = User::factory()->admin()->create();
     $manager = User::factory()->manager()->create();
     $technician = User::factory()->technician()->create();
@@ -27,7 +27,7 @@ test('admin can view any user but others can only view themselves', function () 
         ->and($technician->can('view', $otherUser))->toBeFalse();
 });
 
-test('only admin can create users', function () {
+test('only admin can create users', function (): void {
     $admin = User::factory()->admin()->create();
     $manager = User::factory()->manager()->create();
     $technician = User::factory()->technician()->create();
@@ -37,7 +37,7 @@ test('only admin can create users', function () {
         ->and($technician->can('create', User::class))->toBeFalse();
 });
 
-test('admin can update any user but others can only update themselves', function () {
+test('admin can update any user but others can only update themselves', function (): void {
     $admin = User::factory()->admin()->create();
     $manager = User::factory()->manager()->create();
     $technician = User::factory()->technician()->create();
@@ -50,7 +50,7 @@ test('admin can update any user but others can only update themselves', function
         ->and($technician->can('update', $otherUser))->toBeFalse();
 });
 
-test('only admin can delete users but not themselves', function () {
+test('only admin can delete users but not themselves', function (): void {
     $admin = User::factory()->admin()->create();
     $manager = User::factory()->manager()->create();
     $technician = User::factory()->technician()->create();
@@ -62,7 +62,7 @@ test('only admin can delete users but not themselves', function () {
         ->and($technician->can('delete', $otherAdmin))->toBeFalse();
 });
 
-test('only admin and manager can view reports', function () {
+test('only admin and manager can view reports', function (): void {
     $admin = User::factory()->admin()->create();
     $manager = User::factory()->manager()->create();
     $technician = User::factory()->technician()->create();
@@ -74,7 +74,7 @@ test('only admin and manager can view reports', function () {
         ->and($frontDesk->can('viewReports', User::class))->toBeFalse();
 });
 
-test('only admin can access system settings', function () {
+test('only admin can access system settings', function (): void {
     $admin = User::factory()->admin()->create();
     $manager = User::factory()->manager()->create();
     $technician = User::factory()->technician()->create();

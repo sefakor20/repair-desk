@@ -59,22 +59,22 @@ class AppServiceProvider extends ServiceProvider
     protected function registerBladeDirectives(): void
     {
         // @canStaff('permission') ... @endcanStaff
-        Blade::if('canStaff', function (string $permission) {
+        Blade::if('canStaff', function (string $permission): bool {
             return auth()->check() && auth()->user()->hasStaffPermission($permission);
         });
 
         // @hasStaffPermission('permission') ... @endhasStaffPermission
-        Blade::if('hasStaffPermission', function (string $permission) {
+        Blade::if('hasStaffPermission', function (string $permission): bool {
             return auth()->check() && auth()->user()->hasStaffPermission($permission);
         });
 
         // @hasAnyStaffPermission(['perm1', 'perm2']) ... @endhasAnyStaffPermission
-        Blade::if('hasAnyStaffPermission', function (array $permissions) {
+        Blade::if('hasAnyStaffPermission', function (array $permissions): bool {
             return auth()->check() && auth()->user()->hasAnyStaffPermission($permissions);
         });
 
         // @hasAllStaffPermissions(['perm1', 'perm2']) ... @endhasAllStaffPermissions
-        Blade::if('hasAllStaffPermissions', function (array $permissions) {
+        Blade::if('hasAllStaffPermissions', function (array $permissions): bool {
             return auth()->check() && auth()->user()->hasAllStaffPermissions($permissions);
         });
     }

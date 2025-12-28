@@ -6,7 +6,7 @@ use App\Livewire\Portal\Tickets\Show;
 use App\Models\{Customer, Ticket};
 use Livewire\Livewire;
 
-it('renders successfully', function () {
+it('renders successfully', function (): void {
     $customer = Customer::factory()->create();
     $ticket = Ticket::factory()->for($customer)->create();
 

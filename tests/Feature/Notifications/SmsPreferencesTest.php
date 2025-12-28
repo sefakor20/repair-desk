@@ -7,7 +7,7 @@ use App\Models\{Customer};
 use App\Notifications\{RepairCompleted, TicketStatusChanged};
 use App\Services\SmsService;
 
-it('respects customer SMS enabled preference', function () {
+it('respects customer SMS enabled preference', function (): void {
     $customer = Customer::factory()->create(['phone' => '+233123456789']);
     $customer->preferences()->create([
         'sms_enabled' => false,
@@ -25,7 +25,7 @@ it('respects customer SMS enabled preference', function () {
     expect($customer->smsDeliveryLogs()->count())->toBe(0);
 });
 
-it('respects ticket updates preference', function () {
+it('respects ticket updates preference', function (): void {
     $customer = Customer::factory()->create(['phone' => '+233123456789']);
     $customer->preferences()->create([
         'sms_enabled' => true,
@@ -43,7 +43,7 @@ it('respects ticket updates preference', function () {
     expect($customer->smsDeliveryLogs()->count())->toBe(0);
 });
 
-it('respects repair completed preference', function () {
+it('respects repair completed preference', function (): void {
     $customer = Customer::factory()->create(['phone' => '+233123456789']);
     $customer->preferences()->create([
         'sms_enabled' => true,
@@ -61,7 +61,7 @@ it('respects repair completed preference', function () {
     expect($customer->smsDeliveryLogs()->count())->toBe(0);
 });
 
-it('sends SMS when all preferences are enabled', function () {
+it('sends SMS when all preferences are enabled', function (): void {
     config(['services.texttango.api_key' => 'test-key']);
     config(['services.texttango.url' => 'https://api.test.com']);
 
@@ -85,7 +85,7 @@ it('sends SMS when all preferences are enabled', function () {
     expect($customer->smsDeliveryLogs()->count())->toBeGreaterThan(0);
 });
 
-it('allows customer to opt out of all SMS notifications', function () {
+it('allows customer to opt out of all SMS notifications', function (): void {
     $customer = Customer::factory()->create(['phone' => '+233123456789']);
 
     $preferences = $customer->preferences()->create([

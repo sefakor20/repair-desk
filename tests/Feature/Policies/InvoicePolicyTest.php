@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Models\{Invoice, User};
 
-test('all authenticated users can view invoices', function () {
+test('all authenticated users can view invoices', function (): void {
     $invoice = Invoice::factory()->create();
     $admin = User::factory()->admin()->create();
     $technician = User::factory()->technician()->create();
@@ -13,7 +13,7 @@ test('all authenticated users can view invoices', function () {
         ->and($technician->can('view', $invoice))->toBeTrue();
 });
 
-test('admin manager and front desk can create invoices', function () {
+test('admin manager and front desk can create invoices', function (): void {
     $admin = User::factory()->admin()->create();
     $manager = User::factory()->manager()->create();
     $technician = User::factory()->technician()->create();
@@ -25,7 +25,7 @@ test('admin manager and front desk can create invoices', function () {
         ->and($technician->can('create', Invoice::class))->toBeFalse();
 });
 
-test('admin manager and front desk can update invoices', function () {
+test('admin manager and front desk can update invoices', function (): void {
     $invoice = Invoice::factory()->create();
     $admin = User::factory()->admin()->create();
     $manager = User::factory()->manager()->create();
@@ -38,7 +38,7 @@ test('admin manager and front desk can update invoices', function () {
         ->and($technician->can('update', $invoice))->toBeFalse();
 });
 
-test('only admin and manager can delete invoices', function () {
+test('only admin and manager can delete invoices', function (): void {
     $invoice = Invoice::factory()->create();
     $admin = User::factory()->admin()->create();
     $manager = User::factory()->manager()->create();
@@ -51,7 +51,7 @@ test('only admin and manager can delete invoices', function () {
         ->and($frontDesk->can('delete', $invoice))->toBeFalse();
 });
 
-test('admin manager and front desk can process payments', function () {
+test('admin manager and front desk can process payments', function (): void {
     $invoice = Invoice::factory()->create();
     $admin = User::factory()->admin()->create();
     $manager = User::factory()->manager()->create();

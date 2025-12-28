@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Observers;
 
 use App\Enums\TicketStatus;
-use App\Models\Ticket;
+use App\Jobs\ProcessSmsAutomationTrigger;
+use App\Models\{SmsAutomationTrigger, Ticket};
 use App\Notifications\{RepairCompleted, TicketStatusChanged};
 
 class TicketObserver
@@ -33,10 +34,46 @@ class TicketObserver
             }
 
             // Send repair completed notification when status is completed
-            if ($ticket->status === TicketStatus::Completed) {
-                if ($ticket->customer && $ticket->customer->email) {
-                    $ticket->customer->notify(new RepairCompleted($ticket));
-                }
+            if ($ticket->status === TicketStatus::Completed && ($ticket->customer && $ticket->customer->email)) {
+                $ticket->customer->notify(new RepairCompleted($ticket));
+            }
+
+            // Fire SMS automation triggers for status changes
+            $this->fireSmsAutomationTriggers($ticket, 'ticket_status_changed', [
+                'old_status' => $oldStatus,
+                'new_status' => $newStatus,
+            ]);
+        }
+    }
+
+    /**
+     * Fire SMS automation triggers for the given event.
+     */
+    protected function fireSmsAutomationTriggers(Ticket $ticket, string $event, array $data = []): void
+    {
+        $triggers = SmsAutomationTrigger::active()
+            ->byEvent($event)
+            ->with('smsTemplate')
+            ->get();
+
+        foreach ($triggers as $trigger) {
+            // Check if trigger conditions are met
+            if (!$trigger->conditionsMet($data)) {
+                continue;
+            }
+
+            // Check if there are recipients for this trigger
+            $recipients = $trigger->getRecipients($ticket);
+            if (empty($recipients)) {
+                continue;
+            }
+
+            // Queue the SMS job
+            if ($trigger->getDelayMinutes() > 0) {
+                ProcessSmsAutomationTrigger::dispatch($trigger, $ticket)
+                    ->delay(now()->addMinutes($trigger->getDelayMinutes()));
+            } else {
+                ProcessSmsAutomationTrigger::dispatch($trigger, $ticket);
             }
         }
     }

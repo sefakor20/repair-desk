@@ -67,7 +67,7 @@ class Form extends Component
     {
         // Extract variables from the message
         $detectedVariables = [];
-        if ($this->message) {
+        if ($this->message !== '' && $this->message !== '0') {
             preg_match_all('/\{\{(\w+)\}\}/', $this->message, $matches);
             $detectedVariables = $matches[1] ?? [];
         }

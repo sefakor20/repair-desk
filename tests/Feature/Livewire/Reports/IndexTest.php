@@ -9,7 +9,7 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\{actingAs, get};
 
-test('reports page can be rendered by admin', function () {
+test('reports page can be rendered by admin', function (): void {
     $admin = User::factory()->admin()->create();
     actingAs($admin);
 
@@ -18,7 +18,7 @@ test('reports page can be rendered by admin', function () {
         ->assertSeeLivewire(Index::class);
 });
 
-test('reports page can be rendered by manager', function () {
+test('reports page can be rendered by manager', function (): void {
     $manager = User::factory()->manager()->create();
     actingAs($manager);
 
@@ -27,7 +27,7 @@ test('reports page can be rendered by manager', function () {
         ->assertSeeLivewire(Index::class);
 });
 
-test('unauthorized users cannot access reports page', function () {
+test('unauthorized users cannot access reports page', function (): void {
     $technician = User::factory()->technician()->create();
     actingAs($technician);
 
@@ -35,7 +35,7 @@ test('unauthorized users cannot access reports page', function () {
         ->assertForbidden();
 });
 
-test('sales report displays revenue metrics', function () {
+test('sales report displays revenue metrics', function (): void {
     $admin = User::factory()->admin()->create();
     $customer = Customer::factory()->create();
     $device = Device::factory()->for($customer)->create();
@@ -58,7 +58,7 @@ test('sales report displays revenue metrics', function () {
         ->assertSee('500.00');
 });
 
-test('payment history displays all payments', function () {
+test('payment history displays all payments', function (): void {
     $admin = User::factory()->admin()->create();
     $customer = Customer::factory()->create();
     $device = Device::factory()->for($customer)->create();
@@ -78,7 +78,7 @@ test('payment history displays all payments', function () {
         ->assertSee('250.00');
 });
 
-test('technician performance report shows metrics', function () {
+test('technician performance report shows metrics', function (): void {
     $admin = User::factory()->admin()->create();
     $technician = User::factory()->technician()->create();
     $customer = Customer::factory()->create();
@@ -97,7 +97,7 @@ test('technician performance report shows metrics', function () {
         ->assertSee($technician->name);
 });
 
-test('inventory report shows stock metrics', function () {
+test('inventory report shows stock metrics', function (): void {
     $admin = User::factory()->admin()->create();
 
     InventoryItem::factory()->create([
@@ -115,7 +115,7 @@ test('inventory report shows stock metrics', function () {
         ->assertSee('Low Stock Items');
 });
 
-test('date range filter works correctly', function () {
+test('date range filter works correctly', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -126,7 +126,7 @@ test('date range filter works correctly', function () {
         ->assertSet('endDate', '2025-01-31');
 });
 
-test('end date must be after start date', function () {
+test('end date must be after start date', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -136,7 +136,7 @@ test('end date must be after start date', function () {
         ->assertHasErrors(['endDate']);
 });
 
-test('tabs switch correctly', function () {
+test('tabs switch correctly', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -150,7 +150,7 @@ test('tabs switch correctly', function () {
         ->assertSet('tab', 'inventory');
 });
 
-test('sales report calculates average transaction correctly', function () {
+test('sales report calculates average transaction correctly', function (): void {
     $admin = User::factory()->admin()->create();
     $customer = Customer::factory()->create();
     $device = Device::factory()->for($customer)->create();
@@ -170,7 +170,7 @@ test('sales report calculates average transaction correctly', function () {
         ->assertSee('100.00');
 });
 
-test('payment history groups by payment method', function () {
+test('payment history groups by payment method', function (): void {
     $admin = User::factory()->admin()->create();
     $customer = Customer::factory()->create();
     $device = Device::factory()->for($customer)->create();

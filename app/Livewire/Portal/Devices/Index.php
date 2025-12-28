@@ -45,8 +45,8 @@ class Index extends Component
     {
         $devices = $this->customer->devices()
             ->withCount('tickets')
-            ->when($this->search, function ($query) {
-                $query->where(function ($q) {
+            ->when($this->search, function ($query): void {
+                $query->where(function ($q): void {
                     $q->where('brand', 'like', "%{$this->search}%")
                         ->orWhere('model', 'like', "%{$this->search}%")
                         ->orWhere('type', 'like', "%{$this->search}%")

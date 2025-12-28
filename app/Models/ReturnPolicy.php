@@ -60,11 +60,7 @@ class ReturnPolicy extends Model
 
         // Check return window
         $daysSincePurchase = $sale->created_at->diffInDays(now());
-        if ($daysSincePurchase > $this->return_window_days) {
-            return false;
-        }
-
-        return true;
+        return $daysSincePurchase <= $this->return_window_days;
     }
 
     public function calculateRestockingFee(float $amount): float

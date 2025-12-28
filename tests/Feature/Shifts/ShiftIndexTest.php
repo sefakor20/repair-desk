@@ -8,7 +8,7 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
 
-test('user can view shifts index page', function () {
+test('user can view shifts index page', function (): void {
     $user = createAdmin();
 
     actingAs($user)
@@ -17,7 +17,7 @@ test('user can view shifts index page', function () {
         ->assertSeeLivewire(Index::class);
 });
 
-test('shows open button when no active shift', function () {
+test('shows open button when no active shift', function (): void {
     $user = createAdmin();
 
     $response = actingAs($user)->get(route('shifts.index'));
@@ -25,7 +25,7 @@ test('shows open button when no active shift', function () {
     $response->assertSee('Open Shift');
 });
 
-test('shows close button when shift is active', function () {
+test('shows close button when shift is active', function (): void {
     $user = createAdmin();
     Shift::factory()->open()->create(['opened_by' => $user->id]);
 
@@ -34,7 +34,7 @@ test('shows close button when shift is active', function () {
     $response->assertSee('Close Shift');
 });
 
-test('displays active shift details', function () {
+test('displays active shift details', function (): void {
     $user = createAdmin();
     $shift = Shift::factory()->open()->create([
         'opened_by' => $user->id,
@@ -47,7 +47,7 @@ test('displays active shift details', function () {
     $response->assertSee('Active Shift');
 });
 
-test('shows empty state when no shifts exist', function () {
+test('shows empty state when no shifts exist', function (): void {
     $user = createAdmin();
 
     $response = actingAs($user)->get(route('shifts.index'));
@@ -55,7 +55,7 @@ test('shows empty state when no shifts exist', function () {
     $response->assertSee('No shifts recorded');
 });
 
-test('lists all shifts', function () {
+test('lists all shifts', function (): void {
     $user = createAdmin();
     Shift::factory()->closed()->count(3)->create();
 
@@ -64,7 +64,7 @@ test('lists all shifts', function () {
         ->assertSee(Shift::first()->shift_name);
 });
 
-test('search filters shifts by name', function () {
+test('search filters shifts by name', function (): void {
     $user = createAdmin();
     Shift::factory()->closed()->create(['shift_name' => 'Morning Shift']);
     Shift::factory()->closed()->create(['shift_name' => 'Evening Shift']);
@@ -76,7 +76,7 @@ test('search filters shifts by name', function () {
         ->assertDontSee('Evening Shift');
 });
 
-test('displays shift sales totals', function () {
+test('displays shift sales totals', function (): void {
     $user = createAdmin();
     Shift::factory()->closed()->create([
         'total_sales' => 1500.00,
@@ -88,13 +88,13 @@ test('displays shift sales totals', function () {
     $response->assertSee('1,500.00');
 });
 
-test('pagination works correctly', function () {
+test('pagination works correctly', function (): void {
     $user = createAdmin();
     Shift::factory()->closed()->count(20)->create();
 
     Livewire::actingAs($user)
         ->test(Index::class)
-        ->assertViewHas('shifts', function ($shifts) {
+        ->assertViewHas('shifts', function ($shifts): bool {
             return $shifts->count() === 15; // Default pagination
         });
 });

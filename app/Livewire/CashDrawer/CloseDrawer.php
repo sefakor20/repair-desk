@@ -68,7 +68,7 @@ class CloseDrawer extends Component
         $this->redirect(route('cash-drawer.index'), navigate: true);
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         return view('livewire.cash-drawer.close-drawer', [
             'expectedBalance' => $this->session->calculateExpectedBalance(),

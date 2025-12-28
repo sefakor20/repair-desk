@@ -55,8 +55,8 @@ class NotificationHistory extends Component
         }
 
         // Apply search
-        if ($this->search) {
-            $query->where(function ($q) {
+        if ($this->search !== '' && $this->search !== '0') {
+            $query->where(function ($q): void {
                 $q->where('message', 'like', '%' . $this->search . '%')
                     ->orWhere('notification_type', 'like', '%' . $this->search . '%');
             });

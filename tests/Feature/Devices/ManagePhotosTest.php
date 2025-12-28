@@ -7,11 +7,11 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Volt\Volt;
 
-beforeEach(function () {
+beforeEach(function (): void {
     Storage::fake('public');
 });
 
-test('authorized user can open upload modal', function () {
+test('authorized user can open upload modal', function (): void {
     $user = User::factory()->create();
     $device = Device::factory()->create();
 
@@ -21,7 +21,7 @@ test('authorized user can open upload modal', function () {
         ->assertSet('showUploadModal', true);
 });
 
-test('can upload single photo', function () {
+test('can upload single photo', function (): void {
     $user = User::factory()->create();
     $device = Device::factory()->create();
 
@@ -44,7 +44,7 @@ test('can upload single photo', function () {
     Storage::disk('public')->assertExists('device-photos/' . basename(DevicePhoto::first()->photo_path));
 });
 
-test('can upload multiple photos', function () {
+test('can upload multiple photos', function (): void {
     $user = User::factory()->create();
     $device = Device::factory()->create();
 
@@ -65,7 +65,7 @@ test('can upload multiple photos', function () {
     expect(DevicePhoto::where('type', 'damage')->count())->toBe(3);
 });
 
-test('photos array is required', function () {
+test('photos array is required', function (): void {
     $user = User::factory()->create();
     $device = Device::factory()->create();
 
@@ -77,7 +77,7 @@ test('photos array is required', function () {
         ->assertHasErrors(['photos' => 'required']);
 });
 
-test('photos must be array', function () {
+test('photos must be array', function (): void {
     $user = User::factory()->create();
     $device = Device::factory()->create();
 
@@ -93,7 +93,7 @@ test('photos must be array', function () {
         ->assertHasErrors('photos.0');
 });
 
-test('cannot upload more than 5 photos', function () {
+test('cannot upload more than 5 photos', function (): void {
     $user = User::factory()->create();
     $device = Device::factory()->create();
 
@@ -114,7 +114,7 @@ test('cannot upload more than 5 photos', function () {
         ->assertHasErrors(['photos' => 'max']);
 });
 
-test('each photo must be an image', function () {
+test('each photo must be an image', function (): void {
     $user = User::factory()->create();
     $device = Device::factory()->create();
 
@@ -130,7 +130,7 @@ test('each photo must be an image', function () {
         ->assertHasErrors(['photos.0' => 'image']);
 });
 
-test('each photo cannot exceed 5MB', function () {
+test('each photo cannot exceed 5MB', function (): void {
     $user = User::factory()->create();
     $device = Device::factory()->create();
 
@@ -146,7 +146,7 @@ test('each photo cannot exceed 5MB', function () {
         ->assertHasErrors(['photos.0' => 'max']);
 });
 
-test('photo type is required', function () {
+test('photo type is required', function (): void {
     $user = User::factory()->create();
     $device = Device::factory()->create();
 
@@ -160,7 +160,7 @@ test('photo type is required', function () {
         ->assertHasErrors(['photoType' => 'required']);
 });
 
-test('photo type must be valid', function () {
+test('photo type must be valid', function (): void {
     $user = User::factory()->create();
     $device = Device::factory()->create();
 
@@ -174,7 +174,7 @@ test('photo type must be valid', function () {
         ->assertHasErrors(['photoType' => 'in']);
 });
 
-test('photo description is optional', function () {
+test('photo description is optional', function (): void {
     $user = User::factory()->create();
     $device = Device::factory()->create();
 
@@ -191,7 +191,7 @@ test('photo description is optional', function () {
     expect(DevicePhoto::first()->description)->toBeNull();
 });
 
-test('photo description cannot exceed 500 characters', function () {
+test('photo description cannot exceed 500 characters', function (): void {
     $user = User::factory()->create();
     $device = Device::factory()->create();
 
@@ -206,7 +206,7 @@ test('photo description cannot exceed 500 characters', function () {
         ->assertHasErrors(['photoDescription' => 'max']);
 });
 
-test('can delete photo', function () {
+test('can delete photo', function (): void {
     $user = User::factory()->create();
     $device = Device::factory()->create();
 
@@ -236,7 +236,7 @@ test('can delete photo', function () {
     Storage::disk('public')->assertMissing($path);
 });
 
-test('can cancel photo deletion', function () {
+test('can cancel photo deletion', function (): void {
     $user = User::factory()->create();
     $device = Device::factory()->create();
 
@@ -256,7 +256,7 @@ test('can cancel photo deletion', function () {
     expect(DevicePhoto::count())->toBe(1);
 });
 
-test('unauthorized user cannot upload photos', function () {
+test('unauthorized user cannot upload photos', function (): void {
     $user = User::factory()->create();
     $device = Device::factory()->create();
 
@@ -270,7 +270,7 @@ test('unauthorized user cannot upload photos', function () {
         ->assertForbidden();
 })->skip('Authorization needs to be implemented in component');
 
-test('unauthorized user cannot delete photos', function () {
+test('unauthorized user cannot delete photos', function (): void {
     $user = User::factory()->create();
     $device = Device::factory()->create();
 
@@ -284,7 +284,7 @@ test('unauthorized user cannot delete photos', function () {
         ->assertForbidden();
 })->skip('Authorization needs to be implemented in component');
 
-test('displays existing photos', function () {
+test('displays existing photos', function (): void {
     $user = User::factory()->create();
     $device = Device::factory()->create();
 
@@ -299,7 +299,7 @@ test('displays existing photos', function () {
     expect($component->get('device')->photos->count())->toBe(3);
 });
 
-test('shows empty state when no photos exist', function () {
+test('shows empty state when no photos exist', function (): void {
     $user = User::factory()->create();
     $device = Device::factory()->create();
 
@@ -310,7 +310,7 @@ test('shows empty state when no photos exist', function () {
     expect($html)->toContain('No photos yet');
 });
 
-test('upload modal resets after successful upload', function () {
+test('upload modal resets after successful upload', function (): void {
     $user = User::factory()->create();
     $device = Device::factory()->create();
 
@@ -328,7 +328,7 @@ test('upload modal resets after successful upload', function () {
         ->assertSet('photoDescription', '');
 });
 
-test('stores photos with correct file names', function () {
+test('stores photos with correct file names', function (): void {
     $user = User::factory()->create();
     $device = Device::factory()->create();
 
@@ -345,7 +345,7 @@ test('stores photos with correct file names', function () {
     expect($devicePhoto->photo_path)->toEndWith('.jpg');
 });
 
-test('photo belongs to correct device', function () {
+test('photo belongs to correct device', function (): void {
     $user = User::factory()->create();
     $device = Device::factory()->create();
 
@@ -360,7 +360,7 @@ test('photo belongs to correct device', function () {
     expect(DevicePhoto::first()->device_id)->toBe($device->id);
 });
 
-test('component loads with device relationship', function () {
+test('component loads with device relationship', function (): void {
     $user = User::factory()->create();
     $device = Device::factory()->create();
 

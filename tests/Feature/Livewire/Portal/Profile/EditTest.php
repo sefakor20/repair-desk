@@ -8,14 +8,14 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\{assertDatabaseHas};
 
-it('renders successfully', function () {
+it('renders successfully', function (): void {
     $customer = Customer::factory()->create();
 
     Livewire::test(Edit::class, ['customer' => $customer])
         ->assertStatus(200);
 });
 
-it('populates form with customer data on mount', function () {
+it('populates form with customer data on mount', function (): void {
     $customer = Customer::factory()->create([
         'first_name' => 'John',
         'last_name' => 'Doe',
@@ -32,7 +32,7 @@ it('populates form with customer data on mount', function () {
         ->assertSet('address', '123 Main St');
 });
 
-it('validates required fields', function () {
+it('validates required fields', function (): void {
     $customer = Customer::factory()->create();
 
     Livewire::test(Edit::class, ['customer' => $customer])
@@ -44,7 +44,7 @@ it('validates required fields', function () {
         ->assertHasErrors(['first_name', 'last_name', 'email', 'phone']);
 });
 
-it('validates email format', function () {
+it('validates email format', function (): void {
     $customer = Customer::factory()->create();
 
     Livewire::test(Edit::class, ['customer' => $customer])
@@ -53,7 +53,7 @@ it('validates email format', function () {
         ->assertHasErrors(['email']);
 });
 
-it('validates email uniqueness', function () {
+it('validates email uniqueness', function (): void {
     $existingCustomer = Customer::factory()->create(['email' => 'existing@example.com']);
     $customer = Customer::factory()->create();
 
@@ -63,7 +63,7 @@ it('validates email uniqueness', function () {
         ->assertHasErrors(['email']);
 });
 
-it('allows customer to keep their own email', function () {
+it('allows customer to keep their own email', function (): void {
     $customer = Customer::factory()->create(['email' => 'john@example.com']);
 
     Livewire::test(Edit::class, ['customer' => $customer])
@@ -75,7 +75,7 @@ it('allows customer to keep their own email', function () {
         ->assertHasNoErrors();
 });
 
-it('successfully updates customer profile', function () {
+it('successfully updates customer profile', function (): void {
     $customer = Customer::factory()->create([
         'first_name' => 'John',
         'last_name' => 'Doe',
@@ -102,7 +102,7 @@ it('successfully updates customer profile', function () {
     ]);
 });
 
-it('allows optional address field', function () {
+it('allows optional address field', function (): void {
     $customer = Customer::factory()->create();
 
     Livewire::test(Edit::class, ['customer' => $customer])

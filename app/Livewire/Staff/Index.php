@@ -52,7 +52,7 @@ class Index extends Component
 
     protected function rules(): array
     {
-        $roleValues = implode(',', array_map(fn($r) => $r->value, StaffRole::cases()));
+        $roleValues = implode(',', array_map(fn(\App\Enums\StaffRole $r) => $r->value, StaffRole::cases()));
 
         return [
             'form.user_id' => 'required|exists:users,id|unique:staff,user_id',

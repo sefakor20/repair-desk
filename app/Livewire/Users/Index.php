@@ -66,18 +66,18 @@ class Index extends Component
         session()->flash('success', 'User status updated successfully.');
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         $users = User::query()
-            ->when($this->search, function ($query) {
-                $query->where(function ($q) {
+            ->when($this->search, function ($query): void {
+                $query->where(function ($q): void {
                     $q->where('name', 'like', "%{$this->search}%")
                         ->orWhere('email', 'like', "%{$this->search}%")
                         ->orWhere('phone', 'like', "%{$this->search}%");
                 });
             })
             ->when($this->roleFilter, fn($query) => $query->where('role', $this->roleFilter))
-            ->when($this->statusFilter !== '', function ($query) {
+            ->when($this->statusFilter !== '', function ($query): void {
                 $query->where('active', $this->statusFilter === '1');
             })
             ->orderBy('created_at', 'desc')

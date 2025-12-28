@@ -8,7 +8,7 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
 
-test('customer show page can be rendered', function () {
+test('customer show page can be rendered', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create();
 
@@ -18,7 +18,7 @@ test('customer show page can be rendered', function () {
         ->assertSee($customer->full_name);
 });
 
-test('customer show page displays customer information', function () {
+test('customer show page displays customer information', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create([
         'first_name' => 'John',
@@ -38,7 +38,7 @@ test('customer show page displays customer information', function () {
         ->assertSee('VIP customer');
 });
 
-test('customer show page displays tags', function () {
+test('customer show page displays tags', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create([
         'tags' => ['VIP', 'Regular', 'Premium'],
@@ -51,7 +51,7 @@ test('customer show page displays tags', function () {
         ->assertSee('Premium');
 });
 
-test('customer show page displays device count', function () {
+test('customer show page displays device count', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create();
     Device::factory()->count(3)->create(['customer_id' => $customer->id]);
@@ -62,7 +62,7 @@ test('customer show page displays device count', function () {
         ->assertSee('Devices');
 });
 
-test('customer show page displays ticket count', function () {
+test('customer show page displays ticket count', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create();
     $device = Device::factory()->create(['customer_id' => $customer->id]);
@@ -77,7 +77,7 @@ test('customer show page displays ticket count', function () {
         ->assertSee('Tickets');
 });
 
-test('customer show page displays devices list', function () {
+test('customer show page displays devices list', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create();
     $device = Device::factory()->create([
@@ -96,7 +96,7 @@ test('customer show page displays devices list', function () {
         ->assertSee('SN123456');
 });
 
-test('customer show page shows message when no devices', function () {
+test('customer show page shows message when no devices', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create();
 
@@ -105,7 +105,7 @@ test('customer show page shows message when no devices', function () {
         ->assertSee('No devices registered yet');
 });
 
-test('customer show page displays recent tickets', function () {
+test('customer show page displays recent tickets', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create();
     $device = Device::factory()->create(['customer_id' => $customer->id]);
@@ -121,7 +121,7 @@ test('customer show page displays recent tickets', function () {
         ->assertSee('Screen broken');
 });
 
-test('customer show page shows message when no tickets', function () {
+test('customer show page shows message when no tickets', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create();
 
@@ -130,7 +130,7 @@ test('customer show page shows message when no tickets', function () {
         ->assertSee('No tickets yet');
 });
 
-test('customer show page displays edit button for authorized users', function () {
+test('customer show page displays edit button for authorized users', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create();
 
@@ -139,7 +139,7 @@ test('customer show page displays edit button for authorized users', function ()
         ->assertSee('Edit');
 });
 
-test('customer show page displays delete button for admin and manager', function () {
+test('customer show page displays delete button for admin and manager', function (): void {
     $admin = User::factory()->admin()->create();
     $customer = Customer::factory()->create();
 
@@ -148,7 +148,7 @@ test('customer show page displays delete button for admin and manager', function
         ->assertSee('Delete');
 });
 
-test('customer show page hides delete button for technician and front desk', function () {
+test('customer show page hides delete button for technician and front desk', function (): void {
     $technician = User::factory()->technician()->create();
     $customer = Customer::factory()->create();
 
@@ -157,7 +157,7 @@ test('customer show page hides delete button for technician and front desk', fun
         ->assertDontSee('Delete');
 });
 
-test('admin can delete customer from show page', function () {
+test('admin can delete customer from show page', function (): void {
     $admin = User::factory()->admin()->create();
     $customer = Customer::factory()->create();
 
@@ -169,7 +169,7 @@ test('admin can delete customer from show page', function () {
     expect(Customer::find($customer->id))->toBeNull();
 });
 
-test('manager can delete customer from show page', function () {
+test('manager can delete customer from show page', function (): void {
     $manager = User::factory()->manager()->create();
     $customer = Customer::factory()->create();
 
@@ -181,7 +181,7 @@ test('manager can delete customer from show page', function () {
     expect(Customer::find($customer->id))->toBeNull();
 });
 
-test('success message is shown after deleting customer', function () {
+test('success message is shown after deleting customer', function (): void {
     $admin = User::factory()->admin()->create();
     $customer = Customer::factory()->create();
 
@@ -192,7 +192,7 @@ test('success message is shown after deleting customer', function () {
     expect(session('success'))->toBe('Customer deleted successfully.');
 });
 
-test('customer show page has breadcrumb navigation', function () {
+test('customer show page has breadcrumb navigation', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create();
 
@@ -202,7 +202,7 @@ test('customer show page has breadcrumb navigation', function () {
         ->assertSee(route('customers.index'));
 });
 
-test('unauthorized user cannot view customer', function () {
+test('unauthorized user cannot view customer', function (): void {
     // This test ensures the authorization is working at the policy level
     // In this app, all authenticated users can view customers
     $user = createAdmin();

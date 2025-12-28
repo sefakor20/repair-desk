@@ -9,18 +9,18 @@ use Livewire\Volt\Volt;
 
 use function Pest\Laravel\{actingAs, get};
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = createAdmin();
     actingAs($this->user);
 });
 
-test('inventory page can be rendered', function () {
+test('inventory page can be rendered', function (): void {
     get(route('inventory.index'))
         ->assertOk()
         ->assertSeeLivewire(Index::class);
 });
 
-test('inventory page displays inventory items', function () {
+test('inventory page displays inventory items', function (): void {
     $item = InventoryItem::factory()->create([
         'name' => 'iPhone Screen',
         'sku' => 'IP-SCR-001',
@@ -41,12 +41,12 @@ test('inventory page displays inventory items', function () {
         ->assertSee('75.00');
 });
 
-test('inventory page shows empty state when no items exist', function () {
+test('inventory page shows empty state when no items exist', function (): void {
     Volt::test(Index::class)
         ->assertSee('No inventory items yet.');
 });
 
-test('inventory page shows filtered empty state', function () {
+test('inventory page shows filtered empty state', function (): void {
     InventoryItem::factory()->create(['name' => 'iPhone Screen']);
 
     Volt::test(Index::class)
@@ -54,7 +54,7 @@ test('inventory page shows filtered empty state', function () {
         ->assertSee('No inventory items found matching your filters.');
 });
 
-test('can search inventory by name', function () {
+test('can search inventory by name', function (): void {
     InventoryItem::factory()->create(['name' => 'iPhone Screen']);
     InventoryItem::factory()->create(['name' => 'Samsung Battery']);
 
@@ -64,7 +64,7 @@ test('can search inventory by name', function () {
         ->assertDontSee('Samsung Battery');
 });
 
-test('can search inventory by sku', function () {
+test('can search inventory by sku', function (): void {
     InventoryItem::factory()->create(['name' => 'iPhone Screen', 'sku' => 'IP-001']);
     InventoryItem::factory()->create(['name' => 'Samsung Battery', 'sku' => 'SM-002']);
 
@@ -74,7 +74,7 @@ test('can search inventory by sku', function () {
         ->assertDontSee('Samsung Battery');
 });
 
-test('can search inventory by description', function () {
+test('can search inventory by description', function (): void {
     InventoryItem::factory()->create([
         'name' => 'Item 1',
         'description' => 'Original Apple replacement screen',
@@ -90,7 +90,7 @@ test('can search inventory by description', function () {
         ->assertDontSee('Item 2');
 });
 
-test('can filter inventory by status', function () {
+test('can filter inventory by status', function (): void {
     InventoryItem::factory()->create([
         'name' => 'Active Item',
         'status' => InventoryStatus::Active,
@@ -106,7 +106,7 @@ test('can filter inventory by status', function () {
         ->assertDontSee('Inactive Item');
 });
 
-test('can filter inventory by category', function () {
+test('can filter inventory by category', function (): void {
     InventoryItem::factory()->create(['name' => 'Screen', 'category' => 'Parts']);
     InventoryItem::factory()->create(['name' => 'Toolkit', 'category' => 'Tools']);
 
@@ -116,7 +116,7 @@ test('can filter inventory by category', function () {
         ->assertDontSee('Toolkit');
 });
 
-test('can filter for low stock items only', function () {
+test('can filter for low stock items only', function (): void {
     InventoryItem::factory()->create([
         'name' => 'Low Stock Item',
         'quantity' => 5,
@@ -134,7 +134,7 @@ test('can filter for low stock items only', function () {
         ->assertDontSee('Sufficient Stock Item');
 });
 
-test('highlights low stock items with badge', function () {
+test('highlights low stock items with badge', function (): void {
     InventoryItem::factory()->create([
         'name' => 'Low Stock Item',
         'quantity' => 3,
@@ -145,7 +145,7 @@ test('highlights low stock items with badge', function () {
         ->assertSee('Low');
 });
 
-test('displays reorder level for each item', function () {
+test('displays reorder level for each item', function (): void {
     InventoryItem::factory()->create([
         'name' => 'Test Item',
         'reorder_level' => 15,
@@ -155,7 +155,7 @@ test('displays reorder level for each item', function () {
         ->assertSee('Reorder at: 15');
 });
 
-test('can clear all filters', function () {
+test('can clear all filters', function (): void {
     InventoryItem::factory()->create(['name' => 'Test Item']);
 
     Volt::test(Index::class)
@@ -170,7 +170,7 @@ test('can clear all filters', function () {
         ->assertSet('lowStock', false);
 });
 
-test('search resets pagination', function () {
+test('search resets pagination', function (): void {
     InventoryItem::factory()->count(20)->create();
 
     $component = Volt::test(Index::class);
@@ -184,7 +184,7 @@ test('search resets pagination', function () {
     expect($component->get('paginators.page'))->toBe(1);
 });
 
-test('can delete inventory item', function () {
+test('can delete inventory item', function (): void {
     // Create an admin user who has permission to delete inventory
     $admin = User::factory()->admin()->create();
     actingAs($admin);
@@ -199,7 +199,7 @@ test('can delete inventory item', function () {
     expect(InventoryItem::where('name', 'To Delete')->exists())->toBeFalse();
 });
 
-test('displays active status badge correctly', function () {
+test('displays active status badge correctly', function (): void {
     InventoryItem::factory()->create([
         'name' => 'Active Item',
         'status' => InventoryStatus::Active,
@@ -209,7 +209,7 @@ test('displays active status badge correctly', function () {
         ->assertSee('Active');
 });
 
-test('displays inactive status badge correctly', function () {
+test('displays inactive status badge correctly', function (): void {
     InventoryItem::factory()->create([
         'name' => 'Inactive Item',
         'status' => InventoryStatus::Inactive,
@@ -219,7 +219,7 @@ test('displays inactive status badge correctly', function () {
         ->assertSee('Inactive');
 });
 
-test('inventory items are paginated', function () {
+test('inventory items are paginated', function (): void {
     InventoryItem::factory()->count(20)->create();
 
     $component = Volt::test(Index::class);
@@ -228,7 +228,7 @@ test('inventory items are paginated', function () {
     $component->assertSee('Next');
 });
 
-test('displays categories in filter dropdown', function () {
+test('displays categories in filter dropdown', function (): void {
     InventoryItem::factory()->create(['category' => 'Parts']);
     InventoryItem::factory()->create(['category' => 'Tools']);
 
@@ -237,25 +237,25 @@ test('displays categories in filter dropdown', function () {
         ->assertSee('Tools');
 });
 
-test('shows clear filters button when filters are active', function () {
+test('shows clear filters button when filters are active', function (): void {
     Volt::test(Index::class)
         ->set('search', 'test')
         ->assertSee('Clear filters');
 });
 
-test('hides clear filters button when no filters are active', function () {
+test('hides clear filters button when no filters are active', function (): void {
     Volt::test(Index::class)
         ->assertDontSee('Clear filters');
 });
 
-test('unauthorized user cannot access inventory page', function () {
+test('unauthorized user cannot access inventory page', function (): void {
     $this->app['auth']->forgetGuards();
 
     get(route('inventory.index'))
         ->assertRedirect(route('login'));
 });
 
-test('displays truncated description for long descriptions', function () {
+test('displays truncated description for long descriptions', function (): void {
     InventoryItem::factory()->create([
         'name' => 'Test Item',
         'description' => 'This is a very long description that should be truncated to ensure the table layout remains clean and readable for all users',

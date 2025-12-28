@@ -53,27 +53,27 @@ class Index extends Component
         $this->resetPage();
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         return view('livewire.devices.index', [
             'devices' => Device::query()
                 ->with(['customer', 'tickets'])
-                ->when($this->search, function ($query) {
-                    $query->where(function ($q) {
+                ->when($this->search, function ($query): void {
+                    $query->where(function ($q): void {
                         $q->where('brand', 'like', "%{$this->search}%")
                             ->orWhere('model', 'like', "%{$this->search}%")
                             ->orWhere('serial_number', 'like', "%{$this->search}%")
                             ->orWhere('imei', 'like', "%{$this->search}%")
-                            ->orWhereHas('customer', function ($q) {
+                            ->orWhereHas('customer', function ($q): void {
                                 $q->where('first_name', 'like', "%{$this->search}%")
                                     ->orWhere('last_name', 'like', "%{$this->search}%");
                             });
                     });
                 })
-                ->when($this->customerFilter, function ($query) {
+                ->when($this->customerFilter, function ($query): void {
                     $query->where('customer_id', $this->customerFilter);
                 })
-                ->when($this->typeFilter, function ($query) {
+                ->when($this->typeFilter, function ($query): void {
                     $query->where('type', $this->typeFilter);
                 })
                 ->withCount('tickets')

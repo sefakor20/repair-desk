@@ -167,10 +167,6 @@ class Customer extends Model
 
         // Check if customer has SMS preferences and if they allow SMS
         $preferences = $this->preferences;
-        if ($preferences && ! $preferences->sms_notifications) {
-            return false;
-        }
-
-        return true;
+        return !($preferences && ! $preferences->sms_notifications);
     }
 }

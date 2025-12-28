@@ -57,7 +57,7 @@ class Rewards extends Component
 
     public function redeemReward(): void
     {
-        if (! $this->selectedReward) {
+        if (!$this->selectedReward instanceof \App\Models\LoyaltyReward) {
             return;
         }
 
@@ -95,11 +95,11 @@ class Rewards extends Component
     public function render(): View
     {
         $rewards = LoyaltyReward::available()
-            ->where(function ($query) {
+            ->where(function ($query): void {
                 $query->whereNull('min_tier_id')
-                    ->orWhere(function ($q) {
+                    ->orWhere(function ($q): void {
                         if ($this->account->loyaltyTier) {
-                            $q->whereHas('minTier', function ($tierQuery) {
+                            $q->whereHas('minTier', function ($tierQuery): void {
                                 $tierQuery->where('priority', '<=', $this->account->loyaltyTier->priority);
                             });
                         }

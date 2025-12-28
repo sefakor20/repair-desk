@@ -32,15 +32,15 @@ class Index extends Component
         $this->authorize('viewReports', User::class);
 
         // Default to current month if not set
-        if (empty($this->startDate)) {
+        if ($this->startDate === '' || $this->startDate === '0') {
             $this->startDate = now()->startOfMonth()->format('Y-m-d');
         }
-        if (empty($this->endDate)) {
+        if ($this->endDate === '' || $this->endDate === '0') {
             $this->endDate = now()->endOfMonth()->format('Y-m-d');
         }
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         $branches = Branch::active()->orderBy('name')->get();
         $data = match ($this->tab) {
@@ -87,7 +87,7 @@ class Index extends Component
             ->whereBetween('updated_at', [$start, $end]);
         $paymentQuery = Payment::whereBetween('payment_date', [$start, $end]);
 
-        if ($this->branchFilter) {
+        if ($this->branchFilter !== '' && $this->branchFilter !== '0') {
             $invoiceQuery->where('branch_id', $this->branchFilter);
             $pendingInvoiceQuery->where('branch_id', $this->branchFilter);
             $paymentQuery->where('branch_id', $this->branchFilter);
@@ -104,7 +104,7 @@ class Index extends Component
             ->select('payment_method', DB::raw('SUM(amount) as total'))
             ->groupBy('payment_method')
             ->get()
-            ->mapWithKeys(fn($item) => [
+            ->mapWithKeys(fn($item): array => [
                 $item->payment_method->label() => (float) $item->total,
             ]);
 
@@ -114,7 +114,7 @@ class Index extends Component
             ->groupBy('date')
             ->orderBy('date')
             ->get()
-            ->mapWithKeys(fn($item) => [
+            ->mapWithKeys(fn($item): array => [
                 Carbon::parse($item->date)->format('M d') => (float) $item->total,
             ]);
 
@@ -141,7 +141,7 @@ class Index extends Component
 
         $paymentQuery = Payment::with(['invoice.customer', 'processedBy'])
             ->whereBetween('payment_date', [$start, $end]);
-        if ($this->branchFilter) {
+        if ($this->branchFilter !== '' && $this->branchFilter !== '0') {
             $paymentQuery->where('branch_id', $this->branchFilter);
         }
         $payments = $paymentQuery->orderBy('payment_date', 'desc')->get();
@@ -149,7 +149,7 @@ class Index extends Component
         $totalCollected = $payments->sum('amount');
 
         $paymentsByMethod = $payments->groupBy(fn($payment) => $payment->payment_method->label())
-            ->map(fn($group) => [
+            ->map(fn($group): array => [
                 'count' => $group->count(),
                 'total' => $group->sum('amount'),
             ]);
@@ -166,23 +166,23 @@ class Index extends Component
         $start = Carbon::parse($this->startDate)->startOfDay();
         $end = Carbon::parse($this->endDate)->endOfDay();
 
-        $technicians = User::whereHas('assignedTickets', function ($query) use ($start, $end) {
+        $technicians = User::whereHas('assignedTickets', function ($query) use ($start, $end): void {
             $query->whereBetween('created_at', [$start, $end]);
         })
             ->withCount([
-                'assignedTickets as completed_tickets' => function ($query) use ($start, $end) {
+                'assignedTickets as completed_tickets' => function ($query) use ($start, $end): void {
                     $query->where('status', TicketStatus::Completed)
                         ->whereBetween('updated_at', [$start, $end]);
                 },
-                'assignedTickets as total_tickets' => function ($query) use ($start, $end) {
+                'assignedTickets as total_tickets' => function ($query) use ($start, $end): void {
                     $query->whereBetween('created_at', [$start, $end]);
                 },
-                'assignedTickets as active_tickets' => function ($query) {
+                'assignedTickets as active_tickets' => function ($query): void {
                     $query->whereIn('status', [TicketStatus::New, TicketStatus::InProgress]);
                 },
             ])
             ->get()
-            ->map(function ($technician) use ($start, $end) {
+            ->map(function ($technician) use ($start, $end): array {
                 // Calculate revenue from technician's completed tickets
                 $revenue = Ticket::where('assigned_to', $technician->id)
                     ->where('status', TicketStatus::Completed)
@@ -257,7 +257,7 @@ class Index extends Component
         $posSaleQuery = \App\Models\PosSale::with(['items.inventoryItem', 'customer', 'soldBy'])
             ->whereBetween('sale_date', [$start, $end])
             ->where('status', \App\Enums\PosSaleStatus::Completed);
-        if ($this->branchFilter) {
+        if ($this->branchFilter !== '' && $this->branchFilter !== '0') {
             $posSaleQuery->where('branch_id', $this->branchFilter);
         }
         $posSales = $posSaleQuery->get();
@@ -276,7 +276,7 @@ class Index extends Component
 
         // Revenue by payment method
         $revenueByMethod = $posSales->groupBy(fn($sale) => $sale->payment_method->label())
-            ->map(fn($group) => [
+            ->map(fn($group): array => [
                 'count' => $group->count(),
                 'total' => $group->sum('total_amount'),
                 'percentage' => $transactionCount > 0 ? round(($group->count() / $transactionCount) * 100, 1) : 0,
@@ -285,7 +285,7 @@ class Index extends Component
 
         // Daily sales trend
         $dailySales = $posSales->groupBy(fn($sale) => $sale->sale_date->format('Y-m-d'))
-            ->map(fn($group) => [
+            ->map(fn($group): array => [
                 'date' => $group->first()->sale_date->format('M d'),
                 'count' => $group->count(),
                 'total' => $group->sum('total_amount'),
@@ -308,7 +308,7 @@ class Index extends Component
             ->groupBy('inventory_items.id', 'inventory_items.name', 'inventory_items.sku')
             ->orderByDesc('total_quantity')
             ->limit(10);
-        if ($this->branchFilter) {
+        if ($this->branchFilter !== '' && $this->branchFilter !== '0') {
             $topProductsByQuantityQuery->where('pos_sales.branch_id', $this->branchFilter);
         }
         $topProductsByQuantity = $topProductsByQuantityQuery->get();
@@ -328,14 +328,14 @@ class Index extends Component
             ->groupBy('inventory_items.id', 'inventory_items.name', 'inventory_items.sku')
             ->orderByDesc('total_revenue')
             ->limit(10);
-        if ($this->branchFilter) {
+        if ($this->branchFilter !== '' && $this->branchFilter !== '0') {
             $topProductsByRevenueQuery->where('pos_sales.branch_id', $this->branchFilter);
         }
         $topProductsByRevenue = $topProductsByRevenueQuery->get();
 
         // Sales by hour
         $salesByHour = $posSales->groupBy(fn($sale) => $sale->sale_date->format('H:00'))
-            ->map(fn($group) => [
+            ->map(fn($group): array => [
                 'hour' => $group->first()->sale_date->format('H:00'),
                 'count' => $group->count(),
                 'total' => $group->sum('total_amount'),
@@ -345,7 +345,7 @@ class Index extends Component
 
         // Sales by day of week
         $salesByDayOfWeek = $posSales->groupBy(fn($sale) => $sale->sale_date->format('l'))
-            ->map(fn($group) => [
+            ->map(fn($group): array => [
                 'count' => $group->count(),
                 'total' => $group->sum('total_amount'),
                 'avg' => $group->count() > 0 ? $group->sum('total_amount') / $group->count() : 0,
@@ -354,7 +354,7 @@ class Index extends Component
         // Top customers
         $topCustomers = $posSales->whereNotNull('customer_id')
             ->groupBy('customer_id')
-            ->map(fn($group) => [
+            ->map(fn($group): array => [
                 'customer' => $group->first()->customer,
                 'transactions' => $group->count(),
                 'total_spent' => $group->sum('total_amount'),

@@ -9,25 +9,25 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\{actingAs, get};
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create(['role' => UserRole::Technician]);
     actingAs($this->user);
 });
 
-test('devices index page can be rendered', function () {
+test('devices index page can be rendered', function (): void {
     get(route('devices.index'))
         ->assertOk()
         ->assertSeeLivewire(Index::class);
 });
 
-test('devices index requires authentication', function () {
+test('devices index requires authentication', function (): void {
     auth()->logout();
 
     get(route('devices.index'))
         ->assertRedirect(route('login'));
 });
 
-test('displays devices list', function () {
+test('displays devices list', function (): void {
     $device = Device::factory()->create();
 
     Livewire::test(Index::class)
@@ -36,17 +36,17 @@ test('displays devices list', function () {
         ->assertSee($device->type);
 });
 
-test('displays empty state when no devices exist', function () {
+test('displays empty state when no devices exist', function (): void {
     Livewire::test(Index::class)
         ->assertSee('No devices registered yet');
 });
 
-test('displays register device button for authorized users', function () {
+test('displays register device button for authorized users', function (): void {
     Livewire::test(Index::class)
         ->assertSee('Register Device');
 });
 
-test('search filters devices by brand', function () {
+test('search filters devices by brand', function (): void {
     $appleDevice = Device::factory()->create(['brand' => 'Apple']);
     $samsungDevice = Device::factory()->create(['brand' => 'Samsung']);
 
@@ -56,7 +56,7 @@ test('search filters devices by brand', function () {
         ->assertDontSee($samsungDevice->brand);
 });
 
-test('search filters devices by model', function () {
+test('search filters devices by model', function (): void {
     $iphone = Device::factory()->create(['model' => 'iPhone 15']);
     $galaxy = Device::factory()->create(['model' => 'Galaxy S24']);
 
@@ -66,7 +66,7 @@ test('search filters devices by model', function () {
         ->assertDontSee($galaxy->model);
 });
 
-test('search filters devices by serial number', function () {
+test('search filters devices by serial number', function (): void {
     $device1 = Device::factory()->create(['serial_number' => 'SN123456']);
     $device2 = Device::factory()->create(['serial_number' => 'SN789012']);
 
@@ -76,7 +76,7 @@ test('search filters devices by serial number', function () {
         ->assertDontSee($device2->device_name);
 });
 
-test('search filters devices by imei', function () {
+test('search filters devices by imei', function (): void {
     $device1 = Device::factory()->create(['type' => 'Smartphone', 'imei' => '123456789012345']);
     $device2 = Device::factory()->create(['type' => 'Smartphone', 'imei' => '987654321098765']);
 
@@ -86,7 +86,7 @@ test('search filters devices by imei', function () {
         ->assertDontSee($device2->device_name);
 });
 
-test('search filters devices by customer first name', function () {
+test('search filters devices by customer first name', function (): void {
     $customer1 = Customer::factory()->create(['first_name' => 'Jonathan']);
     $customer2 = Customer::factory()->create(['first_name' => 'Michael']);
     $device1 = Device::factory()->for($customer1)->create();
@@ -98,7 +98,7 @@ test('search filters devices by customer first name', function () {
         ->assertDontSee($device2->device_name);
 });
 
-test('search filters devices by customer last name', function () {
+test('search filters devices by customer last name', function (): void {
     $customer1 = Customer::factory()->create(['last_name' => 'Winchester']);
     $customer2 = Customer::factory()->create(['last_name' => 'Anderson']);
     $device1 = Device::factory()->for($customer1)->create();
@@ -110,7 +110,7 @@ test('search filters devices by customer last name', function () {
         ->assertDontSee($device2->device_name);
 });
 
-test('can filter devices by customer', function () {
+test('can filter devices by customer', function (): void {
     $customer1 = Customer::factory()->create();
     $customer2 = Customer::factory()->create();
     $device1 = Device::factory()->for($customer1)->create();
@@ -122,7 +122,7 @@ test('can filter devices by customer', function () {
         ->assertDontSee($device2->device_name);
 });
 
-test('can filter devices by type', function () {
+test('can filter devices by type', function (): void {
     $smartphone = Device::factory()->create(['type' => 'Smartphone']);
     $laptop = Device::factory()->create(['type' => 'Laptop']);
 
@@ -132,7 +132,7 @@ test('can filter devices by type', function () {
         ->assertDontSee($laptop->device_name);
 });
 
-test('clear filters button resets all filters', function () {
+test('clear filters button resets all filters', function (): void {
     Device::factory()->count(3)->create();
 
     Livewire::test(Index::class)
@@ -145,14 +145,14 @@ test('clear filters button resets all filters', function () {
         ->assertSet('typeFilter', '');
 });
 
-test('displays ticket count for each device', function () {
+test('displays ticket count for each device', function (): void {
     $device = Device::factory()->hasTickets(3)->create();
 
     Livewire::test(Index::class)
         ->assertSee('3');
 });
 
-test('paginates devices', function () {
+test('paginates devices', function (): void {
     Device::factory()->count(20)->create();
 
     Livewire::test(Index::class)
@@ -160,7 +160,7 @@ test('paginates devices', function () {
         ->assertSee('2');
 });
 
-test('admin can delete device', function () {
+test('admin can delete device', function (): void {
     $admin = User::factory()->create(['role' => UserRole::Admin]);
     actingAs($admin);
 
@@ -173,7 +173,7 @@ test('admin can delete device', function () {
     expect(Device::find($device->id))->toBeNull();
 });
 
-test('manager can delete device', function () {
+test('manager can delete device', function (): void {
     $manager = User::factory()->create(['role' => UserRole::Manager]);
     actingAs($manager);
 
@@ -186,7 +186,7 @@ test('manager can delete device', function () {
     expect(Device::find($device->id))->toBeNull();
 });
 
-test('technician cannot delete device', function () {
+test('technician cannot delete device', function (): void {
     $device = Device::factory()->create();
 
     Livewire::test(Index::class)
@@ -196,7 +196,7 @@ test('technician cannot delete device', function () {
     expect(Device::find($device->id))->not->toBeNull();
 });
 
-test('displays empty state with filters applied', function () {
+test('displays empty state with filters applied', function (): void {
     Device::factory()->create(['brand' => 'Apple']);
 
     Livewire::test(Index::class)

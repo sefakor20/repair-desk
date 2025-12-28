@@ -17,18 +17,15 @@ class SmsWebhookController extends Controller
     public function handleDeliveryStatus(Request $request)
     {
         // Verify webhook signature if secret is configured
-        if (config('services.texttango.webhook_secret')) {
-            if (! $this->verifyWebhookSignature($request)) {
-                Log::warning('Invalid webhook signature', [
-                    'ip' => $request->ip(),
-                    'signature' => $request->header('X-TextTango-Signature'),
-                ]);
-
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid signature',
-                ], 401);
-            }
+        if (config('services.texttango.webhook_secret') && ! $this->verifyWebhookSignature($request)) {
+            Log::warning('Invalid webhook signature', [
+                'ip' => $request->ip(),
+                'signature' => $request->header('X-TextTango-Signature'),
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid signature',
+            ], 401);
         }
 
         // Log the incoming webhook for debugging

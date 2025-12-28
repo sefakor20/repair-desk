@@ -96,14 +96,13 @@ class InvoicePaymentCallbackController extends Controller
                         'token' => $token,
                     ])
                     ->with('success', 'Payment completed successfully! GH₵ ' . number_format($amountPaid, 2) . ' has been paid.');
-            } else {
-                return redirect()
-                    ->route('portal.invoices.index', [
-                        'customer' => $customer->id,
-                        'token' => $token,
-                    ])
-                    ->with('error', 'Payment verification failed: ' . ($response['message'] ?? 'Unknown error'));
             }
+            return redirect()
+                ->route('portal.invoices.index', [
+                    'customer' => $customer->id,
+                    'token' => $token,
+                ])
+                ->with('error', 'Payment verification failed: ' . ($response['message'] ?? 'Unknown error'));
         } catch (Exception $e) {
             return redirect()
                 ->route('portal.invoices.index', [

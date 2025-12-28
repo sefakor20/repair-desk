@@ -41,27 +41,27 @@ class Index extends Component
         }
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         $branches = Branch::active()->orderBy('name')->get();
         $sales = PosSale::query()
             ->with(['customer', 'soldBy', 'items'])
-            ->when($this->searchTerm, function ($query) {
-                $query->where(function ($q) {
+            ->when($this->searchTerm, function ($query): void {
+                $query->where(function ($q): void {
                     $q->where('sale_number', 'like', '%' . $this->searchTerm . '%')
-                        ->orWhereHas('customer', function ($customerQuery) {
+                        ->orWhereHas('customer', function ($customerQuery): void {
                             $customerQuery->where('first_name', 'like', '%' . $this->searchTerm . '%')
                                 ->orWhere('last_name', 'like', '%' . $this->searchTerm . '%');
                         });
                 });
             })
-            ->when($this->statusFilter, function ($query) {
+            ->when($this->statusFilter, function ($query): void {
                 $query->where('status', $this->statusFilter);
             })
-            ->when($this->paymentMethodFilter, function ($query) {
+            ->when($this->paymentMethodFilter, function ($query): void {
                 $query->where('payment_method', $this->paymentMethodFilter);
             })
-            ->when($this->branchFilter, function ($query) {
+            ->when($this->branchFilter, function ($query): void {
                 $query->where('branch_id', $this->branchFilter);
             })
             ->latest('sale_date')

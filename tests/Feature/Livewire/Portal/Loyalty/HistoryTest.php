@@ -6,7 +6,7 @@ use App\Livewire\Portal\Loyalty\History;
 use App\Models\{Customer, CustomerLoyaltyAccount, LoyaltyTransaction};
 use Livewire\Livewire;
 
-it('can mount with customer', function () {
+it('can mount with customer', function (): void {
     $customer = Customer::factory()->create();
     $account = CustomerLoyaltyAccount::factory()->for($customer)->create();
 
@@ -16,7 +16,7 @@ it('can mount with customer', function () {
         ->assertSet('account.id', $account->id);
 });
 
-it('displays all transactions by default', function () {
+it('displays all transactions by default', function (): void {
     $customer = Customer::factory()->create();
     $account = CustomerLoyaltyAccount::factory()->for($customer)->create();
     LoyaltyTransaction::factory()->for($account, 'loyaltyAccount')->create([
@@ -35,7 +35,7 @@ it('displays all transactions by default', function () {
         ->assertSee('Reward redeemed');
 });
 
-it('can filter transactions by earned type', function () {
+it('can filter transactions by earned type', function (): void {
     $customer = Customer::factory()->create();
     $account = CustomerLoyaltyAccount::factory()->for($customer)->create();
     LoyaltyTransaction::factory()->for($account, 'loyaltyAccount')->create([
@@ -53,7 +53,7 @@ it('can filter transactions by earned type', function () {
         ->assertDontSee('Redeemed reward');
 });
 
-it('can filter transactions by redeemed type', function () {
+it('can filter transactions by redeemed type', function (): void {
     $customer = Customer::factory()->create();
     $account = CustomerLoyaltyAccount::factory()->for($customer)->create();
     LoyaltyTransaction::factory()->for($account, 'loyaltyAccount')->create([
@@ -71,7 +71,7 @@ it('can filter transactions by redeemed type', function () {
         ->assertDontSee('Earned points');
 });
 
-it('can clear filters', function () {
+it('can clear filters', function (): void {
     $customer = Customer::factory()->create();
     $account = CustomerLoyaltyAccount::factory()->for($customer)->create();
 
@@ -81,7 +81,7 @@ it('can clear filters', function () {
         ->assertSet('filterType', 'all');
 });
 
-it('displays transaction details correctly', function () {
+it('displays transaction details correctly', function (): void {
     $customer = Customer::factory()->create();
     $account = CustomerLoyaltyAccount::factory()->for($customer)->create();
     $transaction = LoyaltyTransaction::factory()->for($account, 'loyaltyAccount')->create([
@@ -97,7 +97,7 @@ it('displays transaction details correctly', function () {
         ->assertSee('1,150');
 });
 
-it('displays negative points with correct formatting', function () {
+it('displays negative points with correct formatting', function (): void {
     $customer = Customer::factory()->create();
     $account = CustomerLoyaltyAccount::factory()->for($customer)->create();
     $transaction = LoyaltyTransaction::factory()->for($account, 'loyaltyAccount')->create([
@@ -111,7 +111,7 @@ it('displays negative points with correct formatting', function () {
         ->assertSee('-100');
 });
 
-it('displays empty state when no transactions', function () {
+it('displays empty state when no transactions', function (): void {
     $customer = Customer::factory()->create();
     CustomerLoyaltyAccount::factory()->for($customer)->create();
 
@@ -120,7 +120,7 @@ it('displays empty state when no transactions', function () {
         ->assertSee('Your points activity will appear here');
 });
 
-it('paginates transactions', function () {
+it('paginates transactions', function (): void {
     $customer = Customer::factory()->create();
     $account = CustomerLoyaltyAccount::factory()->for($customer)->create();
 
@@ -132,7 +132,7 @@ it('paginates transactions', function () {
     expect($component->viewData('transactions')->perPage())->toBe(20);
 });
 
-it('resets pagination when filter changes', function () {
+it('resets pagination when filter changes', function (): void {
     $customer = Customer::factory()->create();
     $account = CustomerLoyaltyAccount::factory()->for($customer)->create();
 
@@ -147,7 +147,7 @@ it('resets pagination when filter changes', function () {
     expect($component->viewData('transactions')->currentPage())->toBe(1);
 });
 
-it('displays transactions in descending order by date', function () {
+it('displays transactions in descending order by date', function (): void {
     $customer = Customer::factory()->create();
     $account = CustomerLoyaltyAccount::factory()->for($customer)->create();
 

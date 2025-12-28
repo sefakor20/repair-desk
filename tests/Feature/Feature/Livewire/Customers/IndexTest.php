@@ -8,7 +8,7 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
 
-test('customers index page can be rendered', function () {
+test('customers index page can be rendered', function (): void {
     $user = createAdmin();
 
     actingAs($user)
@@ -17,7 +17,7 @@ test('customers index page can be rendered', function () {
         ->assertSee('Customers');
 });
 
-test('customers list shows customer data', function () {
+test('customers list shows customer data', function (): void {
     $user = createAdmin();
     $customers = Customer::factory()->count(3)->create();
 
@@ -28,7 +28,7 @@ test('customers list shows customer data', function () {
         ->assertSee($customers[1]->full_name);
 });
 
-test('search filters customers by first name', function () {
+test('search filters customers by first name', function (): void {
     $user = createAdmin();
     $john = Customer::factory()->create(['first_name' => 'Johnny', 'last_name' => 'Bravo']);
     $jane = Customer::factory()->create(['first_name' => 'Janet', 'last_name' => 'Smith']);
@@ -40,7 +40,7 @@ test('search filters customers by first name', function () {
         ->assertDontSee('Janet Smith');
 });
 
-test('search filters customers by last name', function () {
+test('search filters customers by last name', function (): void {
     $user = createAdmin();
     $john = Customer::factory()->create(['first_name' => 'Mark', 'last_name' => 'Williams']);
     $jane = Customer::factory()->create(['first_name' => 'Sarah', 'last_name' => 'Johnson']);
@@ -52,7 +52,7 @@ test('search filters customers by last name', function () {
         ->assertDontSee('Mark Williams');
 });
 
-test('search filters customers by email', function () {
+test('search filters customers by email', function (): void {
     $user = createAdmin();
     $john = Customer::factory()->create(['email' => 'john@example.com']);
     $jane = Customer::factory()->create(['email' => 'jane@example.com']);
@@ -64,7 +64,7 @@ test('search filters customers by email', function () {
         ->assertDontSee('jane@example.com');
 });
 
-test('search filters customers by phone', function () {
+test('search filters customers by phone', function (): void {
     $user = createAdmin();
     $john = Customer::factory()->create(['phone' => '1234567890']);
     $jane = Customer::factory()->create(['phone' => '0987654321']);
@@ -76,7 +76,7 @@ test('search filters customers by phone', function () {
         ->assertDontSee('0987654321');
 });
 
-test('customers are paginated', function () {
+test('customers are paginated', function (): void {
     $user = createAdmin();
     Customer::factory()->count(20)->create();
 
@@ -86,7 +86,7 @@ test('customers are paginated', function () {
     $response->assertSee('Next');
 });
 
-test('customers list shows device count', function () {
+test('customers list shows device count', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create();
     Device::factory()->count(3)->create(['customer_id' => $customer->id]);
@@ -97,7 +97,7 @@ test('customers list shows device count', function () {
         ->assertSee('3'); // Device count
 });
 
-test('customers list shows ticket count', function () {
+test('customers list shows ticket count', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create();
     $device = Device::factory()->create(['customer_id' => $customer->id]);
@@ -112,7 +112,7 @@ test('customers list shows ticket count', function () {
         ->assertSee('5'); // Ticket count
 });
 
-test('customers list displays tags', function () {
+test('customers list displays tags', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create([
         'tags' => ['VIP', 'Premium'],
@@ -124,7 +124,7 @@ test('customers list displays tags', function () {
         ->assertSee('Premium');
 });
 
-test('customers list shows empty state when no customers', function () {
+test('customers list shows empty state when no customers', function (): void {
     $user = createAdmin();
 
     Livewire::actingAs($user)
@@ -133,7 +133,7 @@ test('customers list shows empty state when no customers', function () {
         ->assertSee('Get started by creating a new customer');
 });
 
-test('customers list shows empty state when search returns no results', function () {
+test('customers list shows empty state when search returns no results', function (): void {
     $user = createAdmin();
     Customer::factory()->create(['first_name' => 'John']);
 
@@ -144,7 +144,7 @@ test('customers list shows empty state when search returns no results', function
         ->assertSee('Try adjusting your search criteria');
 });
 
-test('view button is visible for customers', function () {
+test('view button is visible for customers', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create();
 
@@ -153,7 +153,7 @@ test('view button is visible for customers', function () {
         ->assertSee(route('customers.show', $customer));
 });
 
-test('edit button is visible for customers', function () {
+test('edit button is visible for customers', function (): void {
     $user = createAdmin();
     $customer = Customer::factory()->create();
 
@@ -162,7 +162,7 @@ test('edit button is visible for customers', function () {
         ->assertSee(route('customers.edit', $customer));
 });
 
-test('delete button is visible for admin and manager', function () {
+test('delete button is visible for admin and manager', function (): void {
     $admin = User::factory()->admin()->create();
     $customer = Customer::factory()->create();
 
@@ -171,7 +171,7 @@ test('delete button is visible for admin and manager', function () {
         ->assertSee('Delete');
 });
 
-test('admin can delete customer from index', function () {
+test('admin can delete customer from index', function (): void {
     $admin = User::factory()->admin()->create();
     $customer = Customer::factory()->create();
 
@@ -182,7 +182,7 @@ test('admin can delete customer from index', function () {
     expect(Customer::find($customer->id))->toBeNull();
 });
 
-test('manager can delete customer from index', function () {
+test('manager can delete customer from index', function (): void {
     $manager = User::factory()->manager()->create();
     $customer = Customer::factory()->create();
 
@@ -193,7 +193,7 @@ test('manager can delete customer from index', function () {
     expect(Customer::find($customer->id))->toBeNull();
 });
 
-test('search resets pagination', function () {
+test('search resets pagination', function (): void {
     $user = createAdmin();
 
     // Create 20 customers so pagination is needed
@@ -209,7 +209,7 @@ test('search resets pagination', function () {
         ->assertSee('SearchMe');
 });
 
-test('customers are ordered by latest first', function () {
+test('customers are ordered by latest first', function (): void {
     $user = createAdmin();
     $older = Customer::factory()->create(['created_at' => now()->subDays(2)]);
     $newer = Customer::factory()->create(['created_at' => now()]);

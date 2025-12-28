@@ -97,7 +97,7 @@ class Ticket extends Model
         // Apply branch scoping globally
         static::addGlobalScope(new BranchScoped());
 
-        static::creating(function ($ticket) {
+        static::creating(function ($ticket): void {
             if (empty($ticket->ticket_number)) {
                 $ticket->ticket_number = 'TKT-' . mb_strtoupper(uniqid());
             }

@@ -7,7 +7,7 @@ use App\Services\BranchContextService;
 
 use function Pest\Laravel\actingAs;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->branchContext = app(BranchContextService::class);
 
     // Create branches
@@ -25,7 +25,7 @@ beforeEach(function () {
     ]);
 });
 
-test('users can only see data from their branch', function () {
+test('users can only see data from their branch', function (): void {
     // Create tickets in both branches
     $ticketA = Ticket::factory()->create(['branch_id' => $this->branchA->id]);
     $ticketB = Ticket::factory()->create(['branch_id' => $this->branchB->id]);
@@ -38,7 +38,7 @@ test('users can only see data from their branch', function () {
     expect($results->first()->id)->toBe($ticketA->id);
 });
 
-test('users cannot see data from other branches', function () {
+test('users cannot see data from other branches', function (): void {
     $ticketB = Ticket::factory()->create(['branch_id' => $this->branchB->id]);
 
     actingAs($this->userBranchA);
@@ -49,7 +49,7 @@ test('users cannot see data from other branches', function () {
     expect($results->contains('id', $ticketB->id))->toBeFalse();
 });
 
-test('inventory items are scoped by branch', function () {
+test('inventory items are scoped by branch', function (): void {
     $itemA = InventoryItem::factory()->create(['branch_id' => $this->branchA->id]);
     $itemB = InventoryItem::factory()->create(['branch_id' => $this->branchB->id]);
 
@@ -60,7 +60,7 @@ test('inventory items are scoped by branch', function () {
     expect($results->first()->id)->toBe($itemA->id);
 });
 
-test('pos sales are scoped by branch', function () {
+test('pos sales are scoped by branch', function (): void {
     $saleA = PosSale::factory()->create(['branch_id' => $this->branchA->id]);
     $saleB = PosSale::factory()->create(['branch_id' => $this->branchB->id]);
 
@@ -71,7 +71,7 @@ test('pos sales are scoped by branch', function () {
     expect($results->first()->id)->toBe($saleA->id);
 });
 
-test('invoices are scoped by branch', function () {
+test('invoices are scoped by branch', function (): void {
     $invoiceA = Invoice::factory()->create(['branch_id' => $this->branchA->id]);
     $invoiceB = Invoice::factory()->create(['branch_id' => $this->branchB->id]);
 
@@ -82,7 +82,7 @@ test('invoices are scoped by branch', function () {
     expect($results->first()->id)->toBe($invoiceA->id);
 });
 
-test('payments are scoped by branch', function () {
+test('payments are scoped by branch', function (): void {
     $paymentA = Payment::factory()->create(['branch_id' => $this->branchA->id]);
     $paymentB = Payment::factory()->create(['branch_id' => $this->branchB->id]);
 
@@ -93,21 +93,21 @@ test('payments are scoped by branch', function () {
     expect($results->first()->id)->toBe($paymentA->id);
 });
 
-test('can access branch context', function () {
+test('can access branch context', function (): void {
     actingAs($this->userBranchA);
 
     $branch = $this->branchContext->getCurrentBranch();
     expect($branch->id)->toBe($this->branchA->id);
 });
 
-test('can verify branch access', function () {
+test('can verify branch access', function (): void {
     actingAs($this->userBranchA);
 
     expect($this->branchContext->canAccessBranch($this->branchA))->toBeTrue();
     expect($this->branchContext->canAccessBranch($this->branchB))->toBeFalse();
 });
 
-test('branch context cache works correctly', function () {
+test('branch context cache works correctly', function (): void {
     actingAs($this->userBranchA);
 
     $branch1 = $this->branchContext->getCurrentBranch();
@@ -116,7 +116,7 @@ test('branch context cache works correctly', function () {
     expect($branch1->id)->toBe($branch2->id);
 });
 
-test('global scope can be removed for admin queries', function () {
+test('global scope can be removed for admin queries', function (): void {
     $ticketA = Ticket::factory()->create(['branch_id' => $this->branchA->id]);
     $ticketB = Ticket::factory()->create(['branch_id' => $this->branchB->id]);
 
@@ -131,7 +131,7 @@ test('global scope can be removed for admin queries', function () {
     expect($unscopedResults)->toHaveCount(2);
 });
 
-test('unauthenticated requests apply no scoping', function () {
+test('unauthenticated requests apply no scoping', function (): void {
     $ticket = Ticket::factory()->create(['branch_id' => $this->branchA->id]);
 
     // Without authentication, scoping is not applied
@@ -140,7 +140,7 @@ test('unauthenticated requests apply no scoping', function () {
     expect($results->count())->toBeGreaterThanOrEqual(1);
 });
 
-test('user without branch assignment can access data in tests', function () {
+test('user without branch assignment can access data in tests', function (): void {
     $unassignedUser = User::factory()->create([
         'role' => 'technician',
         'branch_id' => null,

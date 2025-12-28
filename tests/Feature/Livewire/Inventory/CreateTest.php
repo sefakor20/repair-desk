@@ -8,19 +8,19 @@ use Livewire\Volt\Volt;
 
 use function Pest\Laravel\{actingAs, assertDatabaseHas, get};
 
-beforeEach(function () {
+beforeEach(function (): void {
     // Create admin user who has permission to create inventory
     $this->admin = User::factory()->admin()->create();
     actingAs($this->admin);
 });
 
-test('inventory create page can be rendered', function () {
+test('inventory create page can be rendered', function (): void {
     get(route('inventory.create'))
         ->assertOk()
         ->assertSeeLivewire(Create::class);
 });
 
-test('can create inventory item with all fields', function () {
+test('can create inventory item with all fields', function (): void {
     Volt::test(Create::class)
         ->set('name', 'iPhone 13 Screen')
         ->set('sku', 'IP13-SCR-001')
@@ -48,7 +48,7 @@ test('can create inventory item with all fields', function () {
     ]);
 });
 
-test('can create inventory item with minimum required fields', function () {
+test('can create inventory item with minimum required fields', function (): void {
     Volt::test(Create::class)
         ->set('name', 'Test Item')
         ->set('sku', 'TEST-001')
@@ -65,7 +65,7 @@ test('can create inventory item with minimum required fields', function () {
     ]);
 });
 
-test('name is required', function () {
+test('name is required', function (): void {
     Volt::test(Create::class)
         ->set('sku', 'TEST-001')
         ->set('cost_price', '10.00')
@@ -76,7 +76,7 @@ test('name is required', function () {
         ->assertHasErrors(['name' => 'required']);
 });
 
-test('sku is required', function () {
+test('sku is required', function (): void {
     Volt::test(Create::class)
         ->set('name', 'Test Item')
         ->set('cost_price', '10.00')
@@ -87,7 +87,7 @@ test('sku is required', function () {
         ->assertHasErrors(['sku' => 'required']);
 });
 
-test('sku must be unique', function () {
+test('sku must be unique', function (): void {
     InventoryItem::factory()->create(['sku' => 'DUPLICATE-SKU']);
 
     Volt::test(Create::class)
@@ -101,7 +101,7 @@ test('sku must be unique', function () {
         ->assertHasErrors(['sku' => 'unique']);
 });
 
-test('cost price is required', function () {
+test('cost price is required', function (): void {
     Volt::test(Create::class)
         ->set('name', 'Test Item')
         ->set('sku', 'TEST-001')
@@ -112,7 +112,7 @@ test('cost price is required', function () {
         ->assertHasErrors(['cost_price' => 'required']);
 });
 
-test('cost price must be numeric', function () {
+test('cost price must be numeric', function (): void {
     Volt::test(Create::class)
         ->set('name', 'Test Item')
         ->set('sku', 'TEST-001')
@@ -124,7 +124,7 @@ test('cost price must be numeric', function () {
         ->assertHasErrors(['cost_price' => 'numeric']);
 });
 
-test('cost price must be at least zero', function () {
+test('cost price must be at least zero', function (): void {
     Volt::test(Create::class)
         ->set('name', 'Test Item')
         ->set('sku', 'TEST-001')
@@ -136,7 +136,7 @@ test('cost price must be at least zero', function () {
         ->assertHasErrors(['cost_price' => 'min']);
 });
 
-test('selling price is required', function () {
+test('selling price is required', function (): void {
     Volt::test(Create::class)
         ->set('name', 'Test Item')
         ->set('sku', 'TEST-001')
@@ -147,7 +147,7 @@ test('selling price is required', function () {
         ->assertHasErrors(['selling_price' => 'required']);
 });
 
-test('selling price must be numeric', function () {
+test('selling price must be numeric', function (): void {
     Volt::test(Create::class)
         ->set('name', 'Test Item')
         ->set('sku', 'TEST-001')
@@ -159,7 +159,7 @@ test('selling price must be numeric', function () {
         ->assertHasErrors(['selling_price' => 'numeric']);
 });
 
-test('selling price must be at least zero', function () {
+test('selling price must be at least zero', function (): void {
     Volt::test(Create::class)
         ->set('name', 'Test Item')
         ->set('sku', 'TEST-001')
@@ -171,7 +171,7 @@ test('selling price must be at least zero', function () {
         ->assertHasErrors(['selling_price' => 'min']);
 });
 
-test('quantity is required', function () {
+test('quantity is required', function (): void {
     Volt::test(Create::class)
         ->set('name', 'Test Item')
         ->set('sku', 'TEST-001')
@@ -182,7 +182,7 @@ test('quantity is required', function () {
         ->assertHasErrors(['quantity' => 'required']);
 });
 
-test('quantity must be an integer', function () {
+test('quantity must be an integer', function (): void {
     Volt::test(Create::class)
         ->set('name', 'Test Item')
         ->set('sku', 'TEST-001')
@@ -194,7 +194,7 @@ test('quantity must be an integer', function () {
         ->assertHasErrors(['quantity' => 'integer']);
 });
 
-test('quantity must be at least zero', function () {
+test('quantity must be at least zero', function (): void {
     Volt::test(Create::class)
         ->set('name', 'Test Item')
         ->set('sku', 'TEST-001')
@@ -206,7 +206,7 @@ test('quantity must be at least zero', function () {
         ->assertHasErrors(['quantity' => 'min']);
 });
 
-test('reorder level is required', function () {
+test('reorder level is required', function (): void {
     Volt::test(Create::class)
         ->set('name', 'Test Item')
         ->set('sku', 'TEST-001')
@@ -217,7 +217,7 @@ test('reorder level is required', function () {
         ->assertHasErrors(['reorder_level' => 'required']);
 });
 
-test('reorder level must be an integer', function () {
+test('reorder level must be an integer', function (): void {
     Volt::test(Create::class)
         ->set('name', 'Test Item')
         ->set('sku', 'TEST-001')
@@ -229,7 +229,7 @@ test('reorder level must be an integer', function () {
         ->assertHasErrors(['reorder_level' => 'integer']);
 });
 
-test('reorder level must be at least zero', function () {
+test('reorder level must be at least zero', function (): void {
     Volt::test(Create::class)
         ->set('name', 'Test Item')
         ->set('sku', 'TEST-001')
@@ -241,7 +241,7 @@ test('reorder level must be at least zero', function () {
         ->assertHasErrors(['reorder_level' => 'min']);
 });
 
-test('status must be valid', function () {
+test('status must be valid', function (): void {
     Volt::test(Create::class)
         ->set('name', 'Test Item')
         ->set('sku', 'TEST-001')
@@ -254,7 +254,7 @@ test('status must be valid', function () {
         ->assertHasErrors(['status' => 'in']);
 });
 
-test('description is optional', function () {
+test('description is optional', function (): void {
     Volt::test(Create::class)
         ->set('name', 'Test Item')
         ->set('sku', 'TEST-001')
@@ -262,12 +262,12 @@ test('description is optional', function () {
         ->set('selling_price', '20.00')
         ->set('quantity', '10')
         ->set('reorder_level', '2')
-        ->set('description', null)
+        ->set('description')
         ->call('save')
         ->assertHasNoErrors();
 });
 
-test('category is optional', function () {
+test('category is optional', function (): void {
     Volt::test(Create::class)
         ->set('name', 'Test Item')
         ->set('sku', 'TEST-001')
@@ -275,12 +275,12 @@ test('category is optional', function () {
         ->set('selling_price', '20.00')
         ->set('quantity', '10')
         ->set('reorder_level', '2')
-        ->set('category', null)
+        ->set('category')
         ->call('save')
         ->assertHasNoErrors();
 });
 
-test('displays existing categories for suggestions', function () {
+test('displays existing categories for suggestions', function (): void {
     InventoryItem::factory()->create(['category' => 'Parts']);
     InventoryItem::factory()->create(['category' => 'Tools']);
 
@@ -289,7 +289,7 @@ test('displays existing categories for suggestions', function () {
         ->assertSee('Tools');
 });
 
-test('unauthorized user cannot access create page', function () {
+test('unauthorized user cannot access create page', function (): void {
     // Create a technician user (not admin/manager)
     $technician = User::factory()->create(['role' => 'technician']);
     actingAs($technician);
@@ -298,7 +298,7 @@ test('unauthorized user cannot access create page', function () {
         ->assertForbidden();
 });
 
-test('flash message shown after successful creation', function () {
+test('flash message shown after successful creation', function (): void {
     Volt::test(Create::class)
         ->set('name', 'Test Item')
         ->set('sku', 'TEST-001')

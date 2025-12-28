@@ -8,7 +8,7 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
 
-it('renders successfully for card payment sale', function () {
+it('renders successfully for card payment sale', function (): void {
     $user = User::factory()->admin()->create();
     $sale = PosSale::factory()->create([
         'payment_method' => 'card',
@@ -23,7 +23,7 @@ it('renders successfully for card payment sale', function () {
         ->assertSee($sale->sale_number);
 });
 
-it('prefills email from customer', function () {
+it('prefills email from customer', function (): void {
     $user = User::factory()->admin()->create();
     $customer = \App\Models\Customer::factory()->create([
         'email' => 'customer@example.com',
@@ -40,7 +40,7 @@ it('prefills email from customer', function () {
         ->assertSet('email', 'customer@example.com');
 });
 
-it('validates email before payment initialization', function () {
+it('validates email before payment initialization', function (): void {
     $user = User::factory()->admin()->create();
     $sale = PosSale::factory()->create([
         'payment_method' => 'card',

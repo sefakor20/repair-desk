@@ -9,18 +9,18 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\{actingAs, get};
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = createAdmin(); // Default role is FrontDesk
     actingAs($this->user);
 });
 
-test('create invoice page can be rendered', function () {
+test('create invoice page can be rendered', function (): void {
     get(route('invoices.create'))
         ->assertOk()
         ->assertSeeLivewire(Create::class);
 });
 
-test('unauthorized user cannot access create invoice page', function () {
+test('unauthorized user cannot access create invoice page', function (): void {
     $technician = User::factory()->technician()->create();
     actingAs($technician);
 
@@ -28,7 +28,7 @@ test('unauthorized user cannot access create invoice page', function () {
         ->assertForbidden();
 });
 
-test('can create invoice', function () {
+test('can create invoice', function (): void {
     $ticket = Ticket::factory()->create();
 
     Livewire::test(Create::class)
@@ -53,14 +53,14 @@ test('can create invoice', function () {
         ->and($invoice->notes)->toBe('Test invoice notes');
 });
 
-test('ticket field is required', function () {
+test('ticket field is required', function (): void {
     Livewire::test(Create::class)
         ->set('subtotal', '100.00')
         ->call('create')
         ->assertHasErrors(['ticketId' => 'required']);
 });
 
-test('subtotal field is required', function () {
+test('subtotal field is required', function (): void {
     $ticket = Ticket::factory()->create();
 
     Livewire::test(Create::class)
@@ -69,7 +69,7 @@ test('subtotal field is required', function () {
         ->assertHasErrors(['subtotal' => 'required']);
 });
 
-test('subtotal must be numeric', function () {
+test('subtotal must be numeric', function (): void {
     $ticket = Ticket::factory()->create();
 
     Livewire::test(Create::class)
@@ -79,7 +79,7 @@ test('subtotal must be numeric', function () {
         ->assertHasErrors(['subtotal' => 'numeric']);
 });
 
-test('subtotal must be at least 0', function () {
+test('subtotal must be at least 0', function (): void {
     $ticket = Ticket::factory()->create();
 
     Livewire::test(Create::class)
@@ -89,7 +89,7 @@ test('subtotal must be at least 0', function () {
         ->assertHasErrors(['subtotal' => 'min']);
 });
 
-test('tax rate must be between 0 and 100', function () {
+test('tax rate must be between 0 and 100', function (): void {
     $ticket = Ticket::factory()->create();
 
     Livewire::test(Create::class)
@@ -100,7 +100,7 @@ test('tax rate must be between 0 and 100', function () {
         ->assertHasErrors(['taxRate' => 'max']);
 });
 
-test('discount must be at least 0', function () {
+test('discount must be at least 0', function (): void {
     $ticket = Ticket::factory()->create();
 
     Livewire::test(Create::class)
@@ -111,7 +111,7 @@ test('discount must be at least 0', function () {
         ->assertHasErrors(['discount' => 'min']);
 });
 
-test('cannot create invoice for ticket that already has one', function () {
+test('cannot create invoice for ticket that already has one', function (): void {
     $ticket = Ticket::factory()->create();
     Invoice::factory()->create(['ticket_id' => $ticket->id]);
 
@@ -122,7 +122,7 @@ test('cannot create invoice for ticket that already has one', function () {
         ->assertHasErrors(['ticketId']);
 });
 
-test('calculates totals correctly', function () {
+test('calculates totals correctly', function (): void {
     $ticket = Ticket::factory()->create();
 
     Livewire::test(Create::class)

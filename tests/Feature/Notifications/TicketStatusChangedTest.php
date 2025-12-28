@@ -7,7 +7,7 @@ use App\Models\{Customer, Device, Ticket};
 use App\Notifications\TicketStatusChanged;
 use Illuminate\Support\Facades\Notification;
 
-test('ticket status changed notification is sent to customer', function () {
+test('ticket status changed notification is sent to customer', function (): void {
     Notification::fake();
 
     $customer = Customer::factory()->create();
@@ -22,7 +22,7 @@ test('ticket status changed notification is sent to customer', function () {
     Notification::assertSentTo(
         $customer,
         TicketStatusChanged::class,
-        function ($notification) use ($ticket) {
+        function ($notification) use ($ticket): bool {
             return $notification->ticket->id === $ticket->id
                 && $notification->oldStatus === TicketStatus::New->value
                 && $notification->newStatus === TicketStatus::InProgress->value;
@@ -30,7 +30,7 @@ test('ticket status changed notification is sent to customer', function () {
     );
 });
 
-test('ticket status changed notification contains correct information', function () {
+test('ticket status changed notification contains correct information', function (): void {
     $customer = Customer::factory()->create(['first_name' => 'John', 'phone' => '+1234567890']);
     $device = Device::factory()->for($customer)->create();
     $ticket = Ticket::factory()->for($customer)->for($device)->create();
@@ -43,7 +43,7 @@ test('ticket status changed notification contains correct information', function
         ->and($mailData->greeting)->toContain('Hello John');
 });
 
-test('ticket status changed notification generates sms message', function () {
+test('ticket status changed notification generates sms message', function (): void {
     $customer = Customer::factory()->create(['phone' => '+1234567890']);
     $device = Device::factory()->for($customer)->create();
     $ticket = Ticket::factory()->for($customer)->for($device)->create();
@@ -58,7 +58,7 @@ test('ticket status changed notification generates sms message', function () {
         ->toContain('In progress');
 });
 
-test('ticket status changed notification includes sms channel when customer has phone', function () {
+test('ticket status changed notification includes sms channel when customer has phone', function (): void {
     $customer = Customer::factory()->create(['phone' => '+1234567890']);
     $device = Device::factory()->for($customer)->create();
     $ticket = Ticket::factory()->for($customer)->for($device)->create();
@@ -71,7 +71,7 @@ test('ticket status changed notification includes sms channel when customer has 
         ->toContain(\App\Channels\SmsChannel::class);
 });
 
-test('ticket status changed notification excludes sms channel when customer has no phone', function () {
+test('ticket status changed notification excludes sms channel when customer has no phone', function (): void {
     $customer = Customer::factory()->create(['phone' => '+1234567890']);
     $customer->updateQuietly(['phone' => null]);
 

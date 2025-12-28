@@ -18,7 +18,7 @@ function createLoyaltyAccount($customer, $points = 0)
     return $customer->fresh();
 }
 
-it('renders successfully', function () {
+it('renders successfully', function (): void {
     $customer = Customer::factory()->create();
     createLoyaltyAccount($customer, 1000);
 
@@ -26,7 +26,7 @@ it('renders successfully', function () {
         ->assertStatus(200);
 });
 
-it('validates recipient email is required', function () {
+it('validates recipient email is required', function (): void {
     $customer = Customer::factory()->create();
     createLoyaltyAccount($customer, 1000);
 
@@ -38,7 +38,7 @@ it('validates recipient email is required', function () {
         ->assertHasErrors(['recipient_email']);
 });
 
-it('validates recipient email exists', function () {
+it('validates recipient email exists', function (): void {
     $customer = Customer::factory()->create();
     createLoyaltyAccount($customer, 1000);
 
@@ -50,7 +50,7 @@ it('validates recipient email exists', function () {
         ->assertHasErrors(['recipient_email']);
 });
 
-it('validates points are required', function () {
+it('validates points are required', function (): void {
     $customer = Customer::factory()->create();
     $recipient = Customer::factory()->create(['email' => 'recipient@example.com']);
     createLoyaltyAccount($customer, 1000);
@@ -64,7 +64,7 @@ it('validates points are required', function () {
         ->assertHasErrors(['points']);
 });
 
-it('prevents transfer to self', function () {
+it('prevents transfer to self', function (): void {
     $customer = Customer::factory()->create(['email' => 'sender@example.com']);
     createLoyaltyAccount($customer, 1000);
 
@@ -76,7 +76,7 @@ it('prevents transfer to self', function () {
         ->assertHasErrors(['recipient_email']);
 });
 
-it('validates minimum transfer amount', function () {
+it('validates minimum transfer amount', function (): void {
     $customer = Customer::factory()->create();
     $recipient = Customer::factory()->create(['email' => 'recipient@example.com']);
     createLoyaltyAccount($customer, 1000);
@@ -90,7 +90,7 @@ it('validates minimum transfer amount', function () {
         ->assertHasErrors(['points']);
 });
 
-it('validates sufficient balance', function () {
+it('validates sufficient balance', function (): void {
     $customer = Customer::factory()->create();
     $recipient = Customer::factory()->create(['email' => 'recipient@example.com']);
     createLoyaltyAccount($customer, 100);
@@ -104,7 +104,7 @@ it('validates sufficient balance', function () {
         ->assertHasErrors(['points']);
 });
 
-it('successfully transfers points', function () {
+it('successfully transfers points', function (): void {
     $customer = Customer::factory()->create();
     $recipient = Customer::factory()->create(['email' => 'recipient@example.com']);
     createLoyaltyAccount($customer, 1000);
@@ -132,7 +132,7 @@ it('successfully transfers points', function () {
         ->and($recipient->fresh()->loyaltyAccount->total_points)->toBe(100);
 });
 
-it('can transfer without message', function () {
+it('can transfer without message', function (): void {
     $customer = Customer::factory()->create();
     $recipient = Customer::factory()->create(['email' => 'recipient@example.com']);
     createLoyaltyAccount($customer, 1000);
@@ -146,7 +146,7 @@ it('can transfer without message', function () {
         ->assertHasNoErrors();
 });
 
-it('displays transfer history', function () {
+it('displays transfer history', function (): void {
     $customer = Customer::factory()->create();
     $recipient = Customer::factory()->create();
     createLoyaltyAccount($customer, 1000);
@@ -164,7 +164,7 @@ it('displays transfer history', function () {
         ->assertSee('Completed');
 });
 
-it('opens and closes transfer modal', function () {
+it('opens and closes transfer modal', function (): void {
     $customer = Customer::factory()->create();
     createLoyaltyAccount($customer, 1000);
 

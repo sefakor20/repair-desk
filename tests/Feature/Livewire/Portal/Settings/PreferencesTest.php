@@ -8,14 +8,14 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\{assertDatabaseHas};
 
-it('renders successfully', function () {
+it('renders successfully', function (): void {
     $customer = Customer::factory()->create();
 
     Livewire::test(Preferences::class, ['customer' => $customer])
         ->assertStatus(200);
 });
 
-it('creates preferences with defaults if not exists', function () {
+it('creates preferences with defaults if not exists', function (): void {
     $customer = Customer::factory()->create();
 
     Livewire::test(Preferences::class, ['customer' => $customer])
@@ -30,7 +30,7 @@ it('creates preferences with defaults if not exists', function () {
     expect($customer->preferences)->not->toBeNull();
 });
 
-it('loads existing preferences', function () {
+it('loads existing preferences', function (): void {
     $customer = Customer::factory()->create();
     CustomerPreference::create([
         'customer_id' => $customer->id,
@@ -53,7 +53,7 @@ it('loads existing preferences', function () {
         ->assertSet('newsletter', true);
 });
 
-it('successfully updates all preferences', function () {
+it('successfully updates all preferences', function (): void {
     $customer = Customer::factory()->create();
     CustomerPreference::create([
         'customer_id' => $customer->id,
@@ -76,7 +76,7 @@ it('successfully updates all preferences', function () {
     ]);
 });
 
-it('can opt out of all notifications', function () {
+it('can opt out of all notifications', function (): void {
     $customer = Customer::factory()->create();
 
     Livewire::test(Preferences::class, ['customer' => $customer])

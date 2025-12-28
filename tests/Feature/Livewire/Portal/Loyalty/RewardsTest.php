@@ -6,7 +6,7 @@ use App\Livewire\Portal\Loyalty\Rewards;
 use App\Models\{Customer, CustomerLoyaltyAccount, LoyaltyReward, LoyaltyTier};
 use Livewire\Livewire;
 
-it('can mount with customer', function () {
+it('can mount with customer', function (): void {
     $customer = Customer::factory()->create();
     $account = CustomerLoyaltyAccount::factory()->for($customer)->create();
 
@@ -16,7 +16,7 @@ it('can mount with customer', function () {
         ->assertSet('account.id', $account->id);
 });
 
-it('displays available rewards', function () {
+it('displays available rewards', function (): void {
     $customer = Customer::factory()->create();
     $account = CustomerLoyaltyAccount::factory()->for($customer)->create(['total_points' => 1000]);
     $reward = LoyaltyReward::factory()->create([
@@ -30,7 +30,7 @@ it('displays available rewards', function () {
         ->assertSee('500');
 });
 
-it('shows redeem button for eligible rewards', function () {
+it('shows redeem button for eligible rewards', function (): void {
     $customer = Customer::factory()->create();
     $account = CustomerLoyaltyAccount::factory()->for($customer)->create(['total_points' => 1000]);
     $reward = LoyaltyReward::factory()->create([
@@ -43,7 +43,7 @@ it('shows redeem button for eligible rewards', function () {
         ->assertSee('Redeem Now');
 });
 
-it('shows insufficient points message for ineligible rewards', function () {
+it('shows insufficient points message for ineligible rewards', function (): void {
     $customer = Customer::factory()->create();
     $account = CustomerLoyaltyAccount::factory()->for($customer)->create(['total_points' => 100]);
     $reward = LoyaltyReward::factory()->create([
@@ -56,7 +56,7 @@ it('shows insufficient points message for ineligible rewards', function () {
         ->assertSeeHtml('4,900');
 });
 
-it('can open redemption modal', function () {
+it('can open redemption modal', function (): void {
     $customer = Customer::factory()->create();
     $account = CustomerLoyaltyAccount::factory()->for($customer)->create(['total_points' => 1000]);
     $reward = LoyaltyReward::factory()->create([
@@ -71,7 +71,7 @@ it('can open redemption modal', function () {
         ->assertSet('selectedReward.id', $reward->id);
 });
 
-it('can close redemption modal', function () {
+it('can close redemption modal', function (): void {
     $customer = Customer::factory()->create();
     $account = CustomerLoyaltyAccount::factory()->for($customer)->create(['total_points' => 1000]);
     $reward = LoyaltyReward::factory()->create(['points_required' => 500, 'is_active' => true]);
@@ -84,7 +84,7 @@ it('can close redemption modal', function () {
         ->assertSet('selectedReward', null);
 });
 
-it('can redeem reward successfully', function () {
+it('can redeem reward successfully', function (): void {
     $customer = Customer::factory()->create();
     $account = CustomerLoyaltyAccount::factory()->for($customer)->create(['total_points' => 1000]);
     $reward = LoyaltyReward::factory()->create([
@@ -104,7 +104,7 @@ it('can redeem reward successfully', function () {
     expect($reward->fresh()->times_redeemed)->toBe(1);
 });
 
-it('prevents redeeming ineligible reward', function () {
+it('prevents redeeming ineligible reward', function (): void {
     $customer = Customer::factory()->create();
     $account = CustomerLoyaltyAccount::factory()->for($customer)->create(['total_points' => 100]);
     $reward = LoyaltyReward::factory()->create([
@@ -121,7 +121,7 @@ it('prevents redeeming ineligible reward', function () {
     expect($account->total_points)->toBe(100); // Points unchanged
 });
 
-it('filters rewards by customer tier', function () {
+it('filters rewards by customer tier', function (): void {
     $customer = Customer::factory()->create();
     $tier = LoyaltyTier::factory()->create(['name' => 'Bronze', 'priority' => 1]);
     $account = CustomerLoyaltyAccount::factory()->for($customer)->for($tier, 'loyaltyTier')->create(['total_points' => 1000]);
@@ -146,7 +146,7 @@ it('filters rewards by customer tier', function () {
         ->assertDontSee('Gold Reward');
 });
 
-it('displays empty state when no rewards available', function () {
+it('displays empty state when no rewards available', function (): void {
     $customer = Customer::factory()->create();
     CustomerLoyaltyAccount::factory()->for($customer)->create();
 
@@ -154,7 +154,7 @@ it('displays empty state when no rewards available', function () {
         ->assertSee('No rewards available');
 });
 
-it('paginates rewards', function () {
+it('paginates rewards', function (): void {
     $customer = Customer::factory()->create();
     CustomerLoyaltyAccount::factory()->for($customer)->create(['total_points' => 10000]);
 

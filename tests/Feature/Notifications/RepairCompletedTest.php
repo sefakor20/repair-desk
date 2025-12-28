@@ -7,7 +7,7 @@ use App\Models\{Customer, Device, Invoice, Ticket};
 use App\Notifications\RepairCompleted;
 use Illuminate\Support\Facades\Notification;
 
-test('repair completed notification is sent when ticket status changes to completed', function () {
+test('repair completed notification is sent when ticket status changes to completed', function (): void {
     Notification::fake();
 
     $customer = Customer::factory()->create();
@@ -21,7 +21,7 @@ test('repair completed notification is sent when ticket status changes to comple
     Notification::assertSentTo($customer, RepairCompleted::class);
 });
 
-test('repair completed notification contains device and ticket information', function () {
+test('repair completed notification contains device and ticket information', function (): void {
     $customer = Customer::factory()->create(['first_name' => 'Jane']);
     $device = Device::factory()->for($customer)->create();
     $ticket = Ticket::factory()->for($customer)->for($device)->create([
@@ -36,7 +36,7 @@ test('repair completed notification contains device and ticket information', fun
         ->and($mailData->subject)->toContain($ticket->ticket_number);
 });
 
-test('repair completed notification includes invoice balance when invoice exists', function () {
+test('repair completed notification includes invoice balance when invoice exists', function (): void {
     $customer = Customer::factory()->create();
     $device = Device::factory()->for($customer)->create();
     $ticket = Ticket::factory()->for($customer)->for($device)->create([
@@ -57,7 +57,7 @@ test('repair completed notification includes invoice balance when invoice exists
     expect($smsMessage)->toContain('300.00');
 });
 
-test('repair completed notification generates sms message', function () {
+test('repair completed notification generates sms message', function (): void {
     $customer = Customer::factory()->create(['phone' => '+1234567890']);
     $device = Device::factory()->for($customer)->create();
     $ticket = Ticket::factory()->for($customer)->for($device)->create([

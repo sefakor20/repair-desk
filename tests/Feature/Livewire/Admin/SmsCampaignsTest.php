@@ -7,7 +7,7 @@ use App\Models\SmsCampaign;
 use App\Models\User;
 use Livewire\Livewire;
 
-it('renders successfully for admin user', function () {
+it('renders successfully for admin user', function (): void {
     $admin = User::factory()->admin()->create();
 
     Livewire::actingAs($admin)
@@ -15,7 +15,7 @@ it('renders successfully for admin user', function () {
         ->assertStatus(200);
 });
 
-it('requires manage_settings permission', function () {
+it('requires manage_settings permission', function (): void {
     $user = User::factory()->create();
 
     Livewire::actingAs($user)
@@ -23,7 +23,7 @@ it('requires manage_settings permission', function () {
         ->assertStatus(403);
 });
 
-it('can toggle analytics visibility', function () {
+it('can toggle analytics visibility', function (): void {
     $admin = User::factory()->admin()->create();
 
     $component = Livewire::actingAs($admin)
@@ -41,7 +41,7 @@ it('can toggle analytics visibility', function () {
     $component->assertSet('showAnalytics', false);
 });
 
-it('provides accurate analytics data', function () {
+it('provides accurate analytics data', function (): void {
     $admin = User::factory()->admin()->create();
 
     // Create test campaigns
