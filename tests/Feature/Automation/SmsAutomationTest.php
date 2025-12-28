@@ -9,7 +9,6 @@ use App\Models\SmsTemplate;
 use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Support\Facades\Queue;
-use Livewire\Livewire;
 
 beforeEach(function (): void {
     $this->admin = User::factory()->create();
@@ -78,7 +77,7 @@ test('automation trigger fires when ticket status changes', function (): void {
     $ticket->update(['status' => 'in_progress']);
 
     // Assert that the job was queued
-    Queue::assertPushed(ProcessSmsAutomationTrigger::class, function ($job) use ($trigger, $ticket) {
+    Queue::assertPushed(ProcessSmsAutomationTrigger::class, function ($job) use ($trigger, $ticket): bool {
         return $job->trigger->id === $trigger->id && $job->model->id === $ticket->id;
     });
 });
@@ -111,7 +110,7 @@ test('automation trigger respects delay settings', function (): void {
 
     $ticket->update(['status' => 'completed']);
 
-    Queue::assertPushed(ProcessSmsAutomationTrigger::class, function ($job) {
+    Queue::assertPushed(ProcessSmsAutomationTrigger::class, function ($job): bool {
         // Check that the job has a delay
         return $job->delay !== null;
     });

@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use BackedEnum;
 
 class SmsAutomationTrigger extends Model
 {
@@ -154,7 +155,7 @@ class SmsAutomationTrigger extends Model
 
         if (isset($model->status)) {
             $status = $model->status;
-            if ($status instanceof \BackedEnum) {
+            if ($status instanceof BackedEnum) {
                 $variables['status'] = ucwords(str_replace('_', ' ', $status->value));
             } else {
                 $variables['status'] = ucwords(str_replace('_', ' ', $status));

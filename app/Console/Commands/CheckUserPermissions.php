@@ -72,7 +72,7 @@ class CheckUserPermissions extends Command
         $this->info("All Users:");
         $this->table(
             ['ID', 'Name', 'Email', 'Role', 'Has manage_settings'],
-            $users->map(function (User $user) {
+            $users->map(function (User $user): array {
                 return [
                     $user->id,
                     $user->name,
