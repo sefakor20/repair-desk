@@ -2,7 +2,7 @@
 
 ## Summary
 
-Fixed two critical production errors that were causing application failures.
+Fixed three critical production errors that were causing application failures.
 
 ## Issues Fixed
 
@@ -22,15 +22,6 @@ Fixed two critical production errors that were causing application failures.
 
 -   `app/Console/Commands/RetryFailedSms.php`
 
-**Required Migration**:
-
-```bash
-php artisan migrate
-```
-
-The specific migration that needs to run is:
-`2025_11_27_210243_add_cost_and_retry_fields_to_sms_delivery_logs_table.php`
-
 ### 2. Dashboard View Error (Attempt to read property "full_name" on null)
 
 **Problem**: Dashboard was throwing errors when trying to access the `full_name` property on null customer objects.
@@ -46,11 +37,27 @@ The specific migration that needs to run is:
 
 -   `resources/views/livewire/dashboard.blade.php`
 
+### 3. Customer Creation Error (SQLSTATE[22001]: String data, right truncated: 1406 Data too long for column 'branch_id')
+
+**Problem**: Customer creation was failing because the `branch_id` column was too small for UUID values.
+
+**Root Cause**: The `add_branch_id_to_customers_table` migration used ULID format (26 chars) but the branches table uses UUIDs (36 chars).
+
+**Solution**:
+
+-   Fixed the migration to use `char(36)` instead of `ulid()` to match the branches table
+-   Created additional migration to fix existing production column size
+
+**Files Modified**:
+
+-   `database/migrations/2025_12_29_195318_add_branch_id_to_customers_table.php`
+-   `database/migrations/2025_12_29_203516_fix_customers_branch_id_column_size.php` (new)
+
 ## Deployment Instructions
 
 ### For Production Deployment:
 
-1. **Run pending migrations** (critical for SMS functionality):
+1. **Run pending migrations** (critical for all functionality):
 
     ```bash
     php artisan migrate --force
@@ -64,15 +71,29 @@ The specific migration that needs to run is:
     php artisan route:clear
     ```
 
-3. **Test SMS retry command** after migration:
+3. **Test functionality** after migration:
+
     ```bash
+    # Test SMS retry command
     php artisan sms:retry-failed --limit=1
+
+    # Test customer creation (should work without column size errors)
+    # This can be tested through the UI or with tinker
     ```
+
+### Required Migrations
+
+The following migrations must be run in production:
+
+1. `2025_11_27_210243_add_cost_and_retry_fields_to_sms_delivery_logs_table.php` (SMS retry columns)
+2. `2025_12_29_195318_add_branch_id_to_customers_table.php` (Customer branch_id column)
+3. `2025_12_29_203516_fix_customers_branch_id_column_size.php` (Fix column size for UUIDs)
 
 ### Monitoring
 
 -   **SMS Command**: Should no longer fail with column not found errors
 -   **Dashboard**: Should display "No Customer" instead of throwing exceptions
+-   **Customer Creation**: Should work without branch_id column size errors
 -   **Scheduled Tasks**: The `sms:retry-failed` command should run without exit code 1
 
 ## Testing
@@ -81,6 +102,7 @@ All fixes have been tested with:
 
 -   Unit tests for dashboard null safety
 -   Integration tests for SMS command schema validation
+-   Customer creation tests with branch_id assignment
 -   Edge case testing for missing customer data
 
 ## Prevention
@@ -89,4 +111,5 @@ To prevent similar issues in the future:
 
 1. Always include schema checks for optional columns in production commands
 2. Use null safety operators when accessing potentially null relationships
-3. Ensure all migrations are run during deployment process
+3. Ensure column types match between related tables when adding foreign keys
+4. Test migrations thoroughly in staging before production deployment
