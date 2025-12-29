@@ -5,12 +5,13 @@ declare(strict_types=1);
 use App\Enums\{PaymentMethod, PosSaleStatus, UserRole};
 use App\Livewire\Reports\Index;
 use App\Models\{Customer, InventoryItem, PosSale, PosSaleItem, User};
+use Carbon\Carbon;
 use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
 
 beforeEach(function (): void {
-    $this->user = User::factory()->create(['role' => UserRole::Admin]);
+    $this->user = createAdmin();
     actingAs($this->user);
 });
 
@@ -250,16 +251,25 @@ test('pos analytics displays sales by hour', function (): void {
 });
 
 test('pos analytics shows sales by day of week', function (): void {
-    $item = InventoryItem::factory()->create(['quantity' => 100]);
+    // Create super admin user (bypasses branch scoping completely)
+    $superAdmin = User::factory()->superAdmin()->create();
+    $this->actingAs($superAdmin);
 
-    // Create sales on different days of the week
-    $monday = now()->startOfWeek(); // Monday
-    $friday = now()->startOfWeek()->addDays(4); // Friday
+    // Create a branch for test data
+    $branch = \App\Models\Branch::factory()->create();
+
+    $item = InventoryItem::factory()->create(['quantity' => 100, 'branch_id' => $branch->id]);
+
+    // Create sales on actual Monday and Friday in December 2025
+    // December 1, 2025 (Monday) and December 5, 2025 (Friday)
+    $monday = Carbon::create(2025, 12, 1, 10, 0, 0);
+    $friday = Carbon::create(2025, 12, 5, 14, 0, 0);
 
     $sale1 = PosSale::factory()->create([
         'total_amount' => 100.00,
         'status' => PosSaleStatus::Completed,
         'sale_date' => $monday,
+        'branch_id' => $branch->id,
     ]);
     PosSaleItem::factory()->create([
         'pos_sale_id' => $sale1->id,
@@ -270,13 +280,19 @@ test('pos analytics shows sales by day of week', function (): void {
         'total_amount' => 200.00,
         'status' => PosSaleStatus::Completed,
         'sale_date' => $friday,
+        'branch_id' => $branch->id,
     ]);
     PosSaleItem::factory()->create([
         'pos_sale_id' => $sale2->id,
         'inventory_item_id' => $item->id,
     ]);
 
-    Livewire::test(Index::class, ['tab' => 'pos'])
+    Livewire::test(Index::class, [
+        'tab' => 'pos',
+        'startDate' => '2025-12-01',
+        'endDate' => '2025-12-31',
+        'branchFilter' => '', // Explicitly ensure no branch filter is applied
+    ])
         ->assertSee('Sales by Day of Week')
         ->assertSee('Monday')
         ->assertSee('Friday');
