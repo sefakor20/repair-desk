@@ -78,6 +78,7 @@ class Create extends Component
                 'total' => $total,
                 'status' => InvoiceStatus::Pending,
                 'notes' => $validated['notes'] ?? null,
+                'branch_id' => auth()->user()->branch_id,
             ]);
         });
 

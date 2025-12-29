@@ -69,6 +69,7 @@ class Create extends Component
             'estimated_completion' => $validated['form']['estimated_completion'] ?: null,
             'status' => TicketStatus::New,
             'created_by' => Auth::id(),
+            'branch_id' => auth()->user()->branch_id,
         ]);
 
         session()->flash('success', 'Ticket created successfully.');

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Traits\BranchScoped;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -29,6 +30,7 @@ class Customer extends Model
         'portal_token_created_at',
         'referral_code',
         'referred_by',
+        'branch_id',
     ];
 
     protected function casts(): array
@@ -82,6 +84,11 @@ class Customer extends Model
     public function referredBy(): BelongsTo
     {
         return $this->belongsTo(Customer::class, 'referred_by');
+    }
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
     }
 
     public function achievements(): BelongsToMany
@@ -168,5 +175,13 @@ class Customer extends Model
         // Check if customer has SMS preferences and if they allow SMS
         $preferences = $this->preferences;
         return !($preferences && ! $preferences->sms_notifications);
+    }
+
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        // Apply branch scoping globally
+        static::addGlobalScope(new BranchScoped());
     }
 }
