@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Enums\{PaymentMethod, PosSaleStatus, UserRole};
+use App\Enums\{PaymentMethod, PosSaleStatus};
 use App\Livewire\Reports\Index;
 use App\Models\{Customer, InventoryItem, PosSale, PosSaleItem, User};
 use Carbon\Carbon;

@@ -61,6 +61,9 @@ class Create extends Component
         // Convert empty strings to null for proper enum handling
         $data = array_map(fn($value) => $value === '' ? null : $value, $validated['form']);
 
+        // Automatically set the branch_id to the current user's branch
+        $data['branch_id'] = auth()->user()->branch_id;
+
         $device = Device::create($data);
 
         session()->flash('success', 'Device registered successfully.');

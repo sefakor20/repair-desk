@@ -71,6 +71,9 @@ class Create extends Component
             $data['image_path'] = $this->image_path->store('inventory', 'public');
         }
 
+        // Automatically set the branch_id to the current user's branch
+        $data['branch_id'] = auth()->user()->branch_id;
+
         InventoryItem::create($data);
 
         session()->flash('success', 'Inventory item created successfully.');

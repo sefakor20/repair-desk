@@ -58,6 +58,9 @@ class Create extends Component
 
         $validated = $this->validate();
 
+        // Automatically set the branch_id to the current user's branch
+        $validated['form']['branch_id'] = auth()->user()->branch_id;
+
         Customer::create($validated['form']);
 
         session()->flash('success', 'Customer created successfully.');

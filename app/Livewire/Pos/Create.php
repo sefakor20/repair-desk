@@ -201,6 +201,7 @@ class Create extends Component
                 'sold_by' => Auth::id(),
                 'sale_date' => now(),
                 'status' => PosSaleStatus::Completed,
+                'branch_id' => auth()->user()->branch_id,
             ]);
 
             // Create sale items and update inventory
