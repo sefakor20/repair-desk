@@ -8,6 +8,7 @@ use App\Models\SmsDeliveryLog;
 use App\Services\SmsService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class RetryFailedSms extends Command
 {
@@ -33,6 +34,15 @@ class RetryFailedSms extends Command
         $limit = (int) $this->option('limit');
 
         // Find failed messages that are ready for retry
+        // Check if retry columns exist before using them
+        $hasRetryColumns = Schema::hasColumns('sms_delivery_logs', ['retry_count', 'max_retries', 'next_retry_at']);
+
+        if (!$hasRetryColumns) {
+            $this->warn('SMS retry columns are missing. Please run migrations first.');
+            $this->info('Required migration: 2025_11_27_210243_add_cost_and_retry_fields_to_sms_delivery_logs_table.php');
+            return self::FAILURE;
+        }
+
         $logs = SmsDeliveryLog::where('status', 'failed')
             ->where('retry_count', '<', DB::raw('max_retries'))
             ->where(function ($query): void {
