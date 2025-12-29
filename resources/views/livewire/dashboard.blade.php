@@ -176,7 +176,7 @@
                                     </a>
                                 </td>
                                 <td class="whitespace-nowrap px-6 py-4">
-                                    <flux:text>{{ $ticket->customer->full_name }}</flux:text>
+                                    <flux:text>{{ $ticket->customer?->full_name ?? __('No Customer') }}</flux:text>
                                 </td>
                                 <td class="px-6 py-4">
                                     <flux:text class="text-sm">{{ $ticket->device?->device_name }}</flux:text>
