@@ -64,7 +64,7 @@ class SetupProductionDefaults extends Command
                     'zip' => '12345',
                     'country' => 'Your Country',
                     'phone' => '+1234567890',
-                    'email' => 'contact@yourcompany.com',
+                    'email' => 'contact@example.com',
                     'is_active' => true,
                     'is_main' => true,
                     'notes' => 'Default main branch created during setup. Please update with your actual business details.',
@@ -81,7 +81,7 @@ class SetupProductionDefaults extends Command
     {
         if (ShopSettings::count() === 0 || $this->option('force')) {
             $settings = ShopSettings::updateOrCreate(
-                ['id' => 1],
+                ['shop_name' => 'Repair Desk'],
                 [
                     'shop_name' => 'Repair Desk',
                     'address' => '123 Business Street',
@@ -90,8 +90,8 @@ class SetupProductionDefaults extends Command
                     'zip' => '12345',
                     'country' => 'Your Country',
                     'phone' => '+1234567890',
-                    'email' => 'contact@yourcompany.com',
-                    'website' => 'https://yourcompany.com',
+                    'email' => 'contact@example.com',
+                    'website' => 'https://example.com',
                     'tax_rate' => 0.00,
                     'currency' => 'USD',
                 ],
@@ -171,10 +171,10 @@ class SetupProductionDefaults extends Command
             }
 
             $admin = User::updateOrCreate(
-                ['email' => 'admin@yourcompany.com'],
+                ['email' => 'admin@example.com'],
                 [
                     'name' => 'System Administrator',
-                    'email' => 'admin@yourcompany.com',
+                    'email' => 'admin@example.com',
                     'password' => Hash::make('change-me-in-production'),
                     'role' => UserRole::Admin,
                     'email_verified_at' => now(),
