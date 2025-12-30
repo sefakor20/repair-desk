@@ -2,7 +2,7 @@
 
 ## Summary
 
-Fixed three critical production errors that were causing application failures.
+Fixed four critical production errors that were causing application failures.
 
 ## Issues Fixed
 
@@ -53,6 +53,22 @@ Fixed three critical production errors that were causing application failures.
 -   `database/migrations/2025_12_29_195318_add_branch_id_to_customers_table.php`
 -   `database/migrations/2025_12_29_203516_fix_customers_branch_id_column_size.php` (new)
 
+### 4. Device Index Route Error (Missing required parameter for [Route: customers.show] [URI: customers/{customer}])
+
+**Problem**: The devices index page was throwing URL generation errors when trying to create links to customer detail pages.
+
+**Root Cause**: Some devices have null customer relationships but the Blade template was trying to generate routes without null checks.
+
+**Solution**:
+
+-   Added null safety checks before generating customer route URLs
+-   Display "No Customer" text when customer relationship is null
+-   Prevents URL generation exceptions for orphaned devices
+
+**Files Modified**:
+
+-   `resources/views/livewire/devices/index.blade.php`
+
 ## Deployment Instructions
 
 ### For Production Deployment:
@@ -94,6 +110,7 @@ The following migrations must be run in production:
 -   **SMS Command**: Should no longer fail with column not found errors
 -   **Dashboard**: Should display "No Customer" instead of throwing exceptions
 -   **Customer Creation**: Should work without branch_id column size errors
+-   **Device Index**: Should display "No Customer" instead of throwing route generation errors
 -   **Scheduled Tasks**: The `sms:retry-failed` command should run without exit code 1
 
 ## Testing
@@ -103,7 +120,8 @@ All fixes have been tested with:
 -   Unit tests for dashboard null safety
 -   Integration tests for SMS command schema validation
 -   Customer creation tests with branch_id assignment
--   Edge case testing for missing customer data
+-   Device index tests for null customer handling
+-   Edge case testing for missing customer data and broken relationships
 
 ## Prevention
 
@@ -112,4 +130,6 @@ To prevent similar issues in the future:
 1. Always include schema checks for optional columns in production commands
 2. Use null safety operators when accessing potentially null relationships
 3. Ensure column types match between related tables when adding foreign keys
-4. Test migrations thoroughly in staging before production deployment
+4. Add null checks before generating route URLs with relationships
+5. Test migrations thoroughly in staging before production deployment
+6. Include defensive programming patterns for view templates that handle relationships
