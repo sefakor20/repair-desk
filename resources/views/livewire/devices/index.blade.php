@@ -120,10 +120,14 @@
                                     @endif
                                 </td>
                                 <td class="whitespace-nowrap px-6 py-4">
-                                    <a href="{{ route('customers.show', $device->customer) }}"
-                                        class="text-zinc-900 hover:text-blue-600 dark:text-zinc-100 dark:hover:text-blue-400">
-                                        {{ $device->customer->full_name }}
-                                    </a>
+                                    @if ($device->customer)
+                                        <a href="{{ route('customers.show', $device->customer) }}"
+                                            class="text-zinc-900 hover:text-blue-600 dark:text-zinc-100 dark:hover:text-blue-400">
+                                            {{ $device->customer->full_name }}
+                                        </a>
+                                    @else
+                                        <span class="text-sm text-zinc-400">No Customer</span>
+                                    @endif
                                 </td>
                                 <td class="whitespace-nowrap px-6 py-4">
                                     <flux:badge>{{ $device->type }}</flux:badge>
@@ -209,10 +213,14 @@
                             <div class="flex items-center justify-between text-sm">
                                 <dt class="font-medium text-zinc-500 dark:text-zinc-400">Customer</dt>
                                 <dd class="text-zinc-900 dark:text-white">
-                                    <a href="{{ route('customers.show', $device->customer) }}"
-                                        class="hover:text-blue-600 dark:hover:text-blue-400">
-                                        {{ $device->customer->full_name }}
-                                    </a>
+                                    @if ($device->customer)
+                                        <a href="{{ route('customers.show', $device->customer) }}"
+                                            class="hover:text-blue-600 dark:hover:text-blue-400">
+                                            {{ $device->customer->full_name }}
+                                        </a>
+                                    @else
+                                        <span class="text-sm text-zinc-400">No Customer</span>
+                                    @endif
                                 </dd>
                             </div>
                             @if ($device->storage_capacity)
