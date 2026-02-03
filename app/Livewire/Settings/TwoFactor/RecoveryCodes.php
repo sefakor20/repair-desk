@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Livewire\Settings\TwoFactor;
 
 use Exception;
-use Laravel\Fortify\Actions\GenerateNewRecoveryCodes;
-use Livewire\Attributes\Locked;
 use Livewire\Component;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Locked;
+use Laravel\Fortify\Actions\GenerateNewRecoveryCodes;
 
+#[Layout('components.layouts.app')]
 class RecoveryCodes extends Component
 {
     #[Locked]

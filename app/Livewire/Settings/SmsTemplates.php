@@ -6,9 +6,11 @@ namespace App\Livewire\Settings;
 
 use App\Models\SmsTemplate;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+#[Layout('components.layouts.app')]
 class SmsTemplates extends Component
 {
     use WithPagination;
