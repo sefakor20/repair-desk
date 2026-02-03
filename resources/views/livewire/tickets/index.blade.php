@@ -291,8 +291,8 @@
                         <div class="flex items-center justify-between text-sm">
                             <dt class="font-medium text-zinc-500 dark:text-zinc-400">Customer</dt>
                             <dd class="text-right text-zinc-900 dark:text-white">
-                                <div>{{ $ticket->customer->full_name }}</div>
-                                <div class="text-xs text-zinc-500 dark:text-zinc-400">{{ $ticket->customer->email }}
+                                <div>{{ $ticket->customer?->full_name }}</div>
+                                <div class="text-xs text-zinc-500 dark:text-zinc-400">{{ $ticket->customer?->email }}
                                 </div>
                             </dd>
                         </div>
