@@ -40,7 +40,7 @@
                 </div>
                 <div>
                     <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('Customer') }}</flux:text>
-                    <flux:text class="mt-1 font-medium">{{ $invoice->customer->name }}</flux:text>
+                    <flux:text class="mt-1 font-medium">{{ $invoice->customer?->name }}</flux:text>
                 </div>
                 <div>
                     <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('Ticket') }}</flux:text>
@@ -52,7 +52,7 @@
                 </div>
                 <div>
                     <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('Device') }}</flux:text>
-                    <flux:text class="mt-1 font-medium">{{ $invoice->ticket->device->name }}</flux:text>
+                    <flux:text class="mt-1 font-medium">{{ $invoice->ticket->device?->name }}</flux:text>
                 </div>
                 <div>
                     <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('Invoice Date') }}</flux:text>
