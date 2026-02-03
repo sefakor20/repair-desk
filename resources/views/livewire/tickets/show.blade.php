@@ -43,17 +43,19 @@
 
                 <div class="space-y-4">
                     <!-- Customer Info -->
-                    <div>
-                        <h3 class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Customer</h3>
-                        <div class="mt-1">
-                            <a href="{{ route('customers.show', $ticket->customer) }}" wire:navigate
-                                class="text-zinc-900 hover:text-zinc-700 dark:text-white dark:hover:text-zinc-300">
-                                {{ $ticket->customer->full_name }}
-                            </a>
-                            <p class="text-sm text-zinc-600 dark:text-zinc-400">{{ $ticket->customer->email }}</p>
-                            <p class="text-sm text-zinc-600 dark:text-zinc-400">{{ $ticket->customer->phone }}</p>
+                    @if ($ticket->customer)
+                        <div>
+                            <h3 class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Customer</h3>
+                            <div class="mt-1">
+                                <a href="{{ route('customers.show', $ticket->customer) }}" wire:navigate
+                                    class="text-zinc-900 hover:text-zinc-700 dark:text-white dark:hover:text-zinc-300">
+                                    {{ $ticket->customer->full_name }}
+                                </a>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400">{{ $ticket->customer->email }}</p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400">{{ $ticket->customer->phone }}</p>
+                            </div>
                         </div>
-                    </div>
+                    @endif
 
                     <!-- Device Info -->
                     @if ($ticket->device)
