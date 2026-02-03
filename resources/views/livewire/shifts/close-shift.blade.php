@@ -1,4 +1,4 @@
-<div class="mx-auto max-w-3xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
+<div class="max-w-3xl space-y-6">
     <div class="mb-6">
         <flux:heading size="xl" class="mb-2">Close Shift</flux:heading>
         <flux:text>Review your shift performance and close</flux:text>

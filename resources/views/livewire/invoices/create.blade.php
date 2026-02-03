@@ -11,7 +11,7 @@
         </div>
     </div>
 
-    <div class="mx-auto max-w-2xl">
+    <div class="max-w-3xl space-y-6">
         <div class="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
             <form wire:submit="create">
                 <div class="space-y-6">
@@ -22,8 +22,8 @@
                             <option value="">{{ __('Select a ticket') }}</option>
                             @foreach ($tickets as $ticket)
                                 <option value="{{ $ticket->id }}">
-                                    {{ $ticket->ticket_number }} - {{ $ticket->customer->name }}
-                                    ({{ $ticket->device->name }})
+                                    {{ $ticket->ticket_number }} - {{ $ticket->customer?->name }}
+                                    ({{ $ticket->device?->name }})
                                 </option>
                             @endforeach
                         </flux:select>

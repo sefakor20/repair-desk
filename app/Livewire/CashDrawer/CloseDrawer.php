@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace App\Livewire\CashDrawer;
 
-use App\Enums\CashDrawerStatus;
-use App\Enums\CashTransactionType;
-use App\Models\CashDrawerSession;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Livewire\Attributes\Validate;
 use Livewire\Component;
+use App\Enums\CashDrawerStatus;
+use Livewire\Attributes\Layout;
+use App\Models\CashDrawerSession;
+use Livewire\Attributes\Validate;
+use App\Enums\CashTransactionType;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
+#[Layout('components.layouts.app')]
 class CloseDrawer extends Component
 {
     use AuthorizesRequests;

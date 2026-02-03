@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Livewire\Users;
 
-use App\Enums\UserRole;
 use App\Models\User;
+use App\Enums\UserRole;
+use Livewire\Component;
+use Livewire\Attributes\Layout;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
-use Livewire\Component;
 
+#[Layout('components.layouts.app')]
 class Create extends Component
 {
     public string $name = '';

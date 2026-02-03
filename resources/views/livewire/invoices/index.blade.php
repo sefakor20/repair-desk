@@ -96,7 +96,7 @@
                                 </a>
                             </td>
                             <td class="px-6 py-4 text-sm text-zinc-900 dark:text-zinc-100">
-                                {{ $invoice->customer->full_name }}
+                                {{ $invoice->customer?->full_name }}
                             </td>
                             <td class="whitespace-nowrap px-6 py-4 text-sm text-zinc-500 dark:text-zinc-400">
                                 <a href="{{ route('tickets.show', $invoice->ticket) }}"
@@ -198,7 +198,7 @@
                         <dl class="space-y-2.5">
                             <div class="flex items-center justify-between text-sm">
                                 <dt class="font-medium text-zinc-500 dark:text-zinc-400">Customer</dt>
-                                <dd class="text-zinc-900 dark:text-white">{{ $invoice->customer->full_name }}</dd>
+                                <dd class="text-zinc-900 dark:text-white">{{ $invoice->customer?->full_name }}</dd>
                             </div>
                             <div class="flex items-center justify-between text-sm">
                                 <dt class="font-medium text-zinc-500 dark:text-zinc-400">Ticket</dt>

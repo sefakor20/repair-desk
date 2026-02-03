@@ -6,8 +6,10 @@ namespace App\Livewire\Settings;
 
 use App\Models\ShopSettings;
 use App\Models\User;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
+#[Layout('components.layouts.app')]
 class Shop extends Component
 {
     public string $shop_name = '';
