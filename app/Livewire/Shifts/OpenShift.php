@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Livewire\Shifts;
 
-use App\Enums\ShiftStatus;
 use App\Models\Shift;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Livewire\Attributes\Validate;
 use Livewire\Component;
+use App\Enums\ShiftStatus;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Validate;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
+#[Layout('components.layouts.app')]
 class OpenShift extends Component
 {
     use AuthorizesRequests;

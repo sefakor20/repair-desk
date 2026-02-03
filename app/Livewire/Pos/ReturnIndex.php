@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Livewire\Pos;
 
-use App\Enums\ReturnStatus;
-use App\Models\PosReturn;
-use Livewire\Attributes\{Computed, Url};
 use Livewire\Component;
+use App\Models\PosReturn;
+use App\Enums\ReturnStatus;
 use Livewire\WithPagination;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\{Computed, Url};
 
+#[Layout('components.layouts.app')]
 class ReturnIndex extends Component
 {
     use WithPagination;

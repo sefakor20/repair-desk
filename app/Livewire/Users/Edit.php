@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace App\Livewire\Users;
 
-use App\Enums\UserRole;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Password;
+use App\Enums\UserRole;
 use Livewire\Component;
+use Illuminate\Validation\Rule;
+use Livewire\Attributes\Layout;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 
+#[Layout('components.layouts.app')]
 class Edit extends Component
 {
     public User $user;

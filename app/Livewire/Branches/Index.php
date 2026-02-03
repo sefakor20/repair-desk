@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Livewire\Branches;
 
-use App\Models\Branch;
-use Livewire\Attributes\Url;
-use Livewire\Component;
-use Livewire\WithPagination;
 use Flux\Flux;
+use App\Models\Branch;
+use Livewire\Component;
+use Livewire\Attributes\Url;
+use Livewire\WithPagination;
+use Livewire\Attributes\Layout;
 
+#[Layout('components.layouts.app')]
 class Index extends Component
 {
     use WithPagination;
