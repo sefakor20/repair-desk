@@ -9,6 +9,9 @@ use App\Services\TourService;
 use Livewire\Volt\Volt;
 
 beforeEach(function (): void {
+    // Enable onboarding tour for tests
+    config(['app.onboarding_tour_enabled' => true]);
+
     $this->user = User::factory()->create([
         'role' => UserRole::Admin,
     ]);
@@ -32,6 +35,14 @@ test('tour should show for new user without completed tour', function (): void {
     $tourService = app(TourService::class);
 
     expect($tourService->shouldShowTour($this->user))->toBeTrue();
+});
+
+test('tour should not show when feature flag is disabled', function (): void {
+    config(['app.onboarding_tour_enabled' => false]);
+
+    $tourService = app(TourService::class);
+
+    expect($tourService->shouldShowTour($this->user))->toBeFalse();
 });
 
 test('tour should not show for user with completed tour', function (): void {

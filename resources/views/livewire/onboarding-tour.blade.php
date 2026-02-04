@@ -1,10 +1,10 @@
 <div>
     @if ($showTour && $this->currentTourStep)
         <!-- Tour Spotlight Overlay -->
-        <div class="tour-spotlight-overlay fixed inset-0 z-40" wire:key="tour-overlay"></div>
+        <div class="tour-spotlight-overlay fixed inset-0 z-[9998]" wire:key="tour-overlay"></div>
 
         <!-- Tour Modal -->
-        <div class="tour-modal fixed z-50" wire:key="tour-modal-{{ $currentStep }}" style="top: 20px; right: 20px;">
+        <div class="tour-modal fixed z-[10000]" wire:key="tour-modal-{{ $currentStep }}">
             <div
                 class="w-80 bg-white rounded-xl shadow-2xl border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
                 <!-- Progress Bar -->
@@ -87,6 +87,37 @@
                 let currentHighlight = null;
                 let spotlightOverlay = null;
 
+                console.log('[Tour] Initialized');
+
+                // Function to expand navigation group containing element
+                async function expandGroupContainingElement(element) {
+                    if (!element) return;
+
+                    console.log('[Tour] Checking if element is in expandable group:', element);
+
+                    // Find the closest expandable group
+                    let parent = element.parentElement;
+                    while (parent) {
+                        // Look for Flux expandable trigger button
+                        const trigger = parent.querySelector('[data-flux-expandable-trigger]');
+                        if (trigger) {
+                            const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
+                            console.log('[Tour] Found expandable group, expanded:', isExpanded);
+
+                            if (!isExpanded) {
+                                console.log('[Tour] Expanding group...');
+                                trigger.click();
+                                // Wait for animation to complete
+                                await new Promise(resolve => setTimeout(resolve, 300));
+                                return true;
+                            }
+                            return false;
+                        }
+                        parent = parent.parentElement;
+                    }
+                    return false;
+                }
+
                 // Function to create spotlight effect
                 function createSpotlight(element) {
                     const overlay = document.querySelector('.tour-spotlight-overlay');
@@ -115,7 +146,8 @@
                 }
 
                 // Function to highlight target elements
-                function highlightElement(selector) {
+                async function highlightElement(selector) {
+                    console.log('[Tour] Attempting to highlight:', selector);
 
                     // Remove previous highlight
                     if (currentHighlight) {
@@ -125,122 +157,161 @@
 
                     if (!selector) {
                         createSpotlight(null);
+                        positionModalDefault();
                         return;
                     }
 
+                    // Wait for DOM to be ready
+                    await new Promise(resolve => requestAnimationFrame(resolve));
+
                     // Add small delay to ensure DOM is ready
-                    setTimeout(() => {
-                        // Try multiple selector strategies
-                        let element = document.querySelector(selector);
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    // Try multiple selector strategies
+                    let element = document.querySelector(selector);
 
-                        // If not found, try finding parent elements that might contain our target
-                        if (!element && selector.includes('[data-tour')) {
-                            const tourValue = selector.match(/data-tour="([^"]+)"/)?.[1];
+                    // If not found, try finding parent elements that might contain our target
+                    if (!element && selector.includes('[data-tour')) {
+                        const tourValue = selector.match(/data-tour="([^"]+)"/)?.[1];
 
-                            if (tourValue) {
-                                element = document.querySelector(`[data-tour="${tourValue}"]`);
+                        if (tourValue) {
+                            element = document.querySelector(`[data-tour="${tourValue}"]`);
 
-                                // If still not found, look for elements with the tour attribute anywhere
-                                if (!element) {
-                                    element = document.querySelector(`*[data-tour="${tourValue}"]`);
-                                }
+                            // If still not found, look for elements with the tour attribute anywhere
+                            if (!element) {
+                                element = document.querySelector(`*[data-tour="${tourValue}"]`);
+                            }
 
-                                // Try to find the element manually
-                                if (!element) {
-                                    const allTourElements = document.querySelectorAll('[data-tour]');
-                                    for (const el of allTourElements) {
-                                        if (el.getAttribute('data-tour') === tourValue) {
-                                            element = el;
-                                            break;
-                                        }
+                            // Try to find the element manually
+                            if (!element) {
+                                const allTourElements = document.querySelectorAll('[data-tour]');
+                                for (const el of allTourElements) {
+                                    if (el.getAttribute('data-tour') === tourValue) {
+                                        element = el;
+                                        break;
                                     }
                                 }
                             }
                         }
+                    }
 
-                        if (element) {
+                    if (!element) {
+                        console.warn('[Tour] Element not found for selector:', selector);
+                        createSpotlight(null);
+                        positionModalDefault();
+                        return;
+                    }
 
-                            // For Flux UI components, we might need to highlight the actual clickable element
-                            const clickableElement = element.querySelector('a, button') || element;
+                    console.log('[Tour] Found element:', element);
 
-                            clickableElement.classList.add('tour-highlight');
-                            currentHighlight = clickableElement;
+                    // Expand navigation group if element is inside one
+                    await expandGroupContainingElement(element);
 
-                            // Create spotlight effect
-                            createSpotlight(clickableElement);
+                    // For Flux UI components, we might need to highlight the actual clickable element
+                    const clickableElement = element.querySelector('a, button') || element;
 
-                            // Scroll into view with more padding
-                            clickableElement.scrollIntoView({
-                                behavior: 'smooth',
-                                block: 'center',
-                                inline: 'center'
-                            });
+                    clickableElement.classList.add('tour-highlight');
+                    currentHighlight = clickableElement;
 
-                            // Position modal to avoid blocking the highlight
-                            const modal = document.querySelector('.tour-modal');
-                            if (modal) {
-                                const rect = clickableElement.getBoundingClientRect();
-                                const modalRect = modal.getBoundingClientRect();
-                                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                                const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+                    console.log('[Tour] Applied highlight to:', clickableElement);
 
-                                // Reset any previous positioning
-                                modal.style.left = 'auto';
-                                modal.style.right = 'auto';
-                                modal.style.top = 'auto';
-                                modal.style.bottom = 'auto';
+                    // Create spotlight effect
+                    createSpotlight(clickableElement);
 
-                                // Calculate available space
-                                const spaceRight = window.innerWidth - rect.right;
-                                const spaceLeft = rect.left;
-                                const spaceTop = rect.top;
-                                const spaceBottom = window.innerHeight - rect.bottom;
+                    // Scroll into view with more padding
+                    clickableElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center',
+                        inline: 'center'
+                    });
 
-                                // Try to position modal to the right first
-                                if (spaceRight > modalRect.width + 40) {
-                                    modal.style.left = (rect.right + scrollLeft + 20) + 'px';
-                                    modal.style.top = Math.max(20, rect.top + scrollTop - 20) + 'px';
-                                }
-                                // Try positioning to the left
-                                else if (spaceLeft > modalRect.width + 40) {
-                                    modal.style.left = (rect.left + scrollLeft - modalRect.width - 20) + 'px';
-                                    modal.style.top = Math.max(20, rect.top + scrollTop - 20) + 'px';
-                                }
-                                // Try positioning below
-                                else if (spaceBottom > modalRect.height + 40) {
-                                    modal.style.left = Math.max(20, Math.min(rect.left + scrollLeft, window
-                                        .innerWidth - modalRect.width - 20)) + 'px';
-                                    modal.style.top = (rect.bottom + scrollTop + 20) + 'px';
-                                }
-                                // Try positioning above
-                                else if (spaceTop > modalRect.height + 40) {
-                                    modal.style.left = Math.max(20, Math.min(rect.left + scrollLeft, window
-                                        .innerWidth - modalRect.width - 20)) + 'px';
-                                    modal.style.top = (rect.top + scrollTop - modalRect.height - 20) + 'px';
-                                }
-                                // Fallback to top-right corner
-                                else {
-                                    modal.style.top = '20px';
-                                    modal.style.right = '20px';
-                                }
-                            }
-                        } else {
-                            createSpotlight(null);
-                        }
-                    }, 100);
+                    // Position modal to avoid blocking the highlight
+                    positionModal(clickableElement);
+                }
+
+                // Function to position modal dynamically
+                function positionModal(targetElement) {
+                    const modal = document.querySelector('.tour-modal');
+                    if (!modal || !targetElement) return;
+
+                    const rect = targetElement.getBoundingClientRect();
+                    const modalRect = modal.getBoundingClientRect();
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+
+                    // Reset any previous positioning
+                    modal.style.left = 'auto';
+                    modal.style.right = 'auto';
+                    modal.style.top = 'auto';
+                    modal.style.bottom = 'auto';
+
+                    // Calculate available space
+                    const spaceRight = window.innerWidth - rect.right;
+                    const spaceLeft = rect.left;
+                    const spaceTop = rect.top;
+                    const spaceBottom = window.innerHeight - rect.bottom;
+
+                    console.log('[Tour] Positioning modal. Spaces - Right:', spaceRight, 'Left:', spaceLeft, 'Top:', spaceTop, 'Bottom:', spaceBottom);
+
+                    // Try to position modal to the right first
+                    if (spaceRight > modalRect.width + 40) {
+                        modal.style.left = (rect.right + scrollLeft + 20) + 'px';
+                        modal.style.top = Math.max(20, rect.top + scrollTop - 20) + 'px';
+                    }
+                    // Try positioning to the left
+                    else if (spaceLeft > modalRect.width + 40) {
+                        modal.style.left = (rect.left + scrollLeft - modalRect.width - 20) + 'px';
+                        modal.style.top = Math.max(20, rect.top + scrollTop - 20) + 'px';
+                    }
+                    // Try positioning below
+                    else if (spaceBottom > modalRect.height + 40) {
+                        modal.style.left = Math.max(20, Math.min(rect.left + scrollLeft, window.innerWidth - modalRect.width - 20)) + 'px';
+                        modal.style.top = (rect.bottom + scrollTop + 20) + 'px';
+                    }
+                    // Try positioning above
+                    else if (spaceTop > modalRect.height + 40) {
+                        modal.style.left = Math.max(20, Math.min(rect.left + scrollLeft, window.innerWidth - modalRect.width - 20)) + 'px';
+                        modal.style.top = (rect.top + scrollTop - modalRect.height - 20) + 'px';
+                    }
+                    // Fallback to top-right corner
+                    else {
+                        positionModalDefault();
+                    }
+                }
+
+                // Function to position modal at default location
+                function positionModalDefault() {
+                    const modal = document.querySelector('.tour-modal');
+                    if (!modal) return;
+
+                    console.log('[Tour] Positioning modal at default location');
+                    modal.style.top = '20px';
+                    modal.style.right = '20px';
+                    modal.style.left = 'auto';
+                    modal.style.bottom = 'auto';
                 }
 
                 // Listen for Livewire updates to trigger highlighting
                 Livewire.on('tour-step-updated', (event) => {
                     const target = event[0]?.target || event.target || null;
-                    // Use longer timeout to ensure DOM is fully updated
-                    setTimeout(() => highlightElement(target), 400);
+                    console.log('[Tour] Step updated event received, target:', target);
+                    highlightElement(target);
+                });
+
+                // Listen for Livewire navigation to reposition tour
+                document.addEventListener('livewire:navigated', () => {
+                    console.log('[Tour] Page navigated, re-highlighting current step');
+                    setTimeout(() => {
+                        @if (isset($this->currentTourStep['target']) && $this->currentTourStep['target'])
+                            highlightElement({!! json_encode($this->currentTourStep['target']) !!});
+                        @endif
+                    }, 300);
                 });
 
                 // Update spotlight on window resize
                 window.addEventListener('resize', () => {
                     if (currentHighlight) {
                         createSpotlight(currentHighlight);
+                        positionModal(currentHighlight);
                     }
                 });
 
@@ -249,25 +320,30 @@
                     // Wait for page to be fully loaded
                     if (document.readyState === 'loading') {
                         document.addEventListener('DOMContentLoaded', () => {
-                            setTimeout(() => highlightElement({!! json_encode($this->currentTourStep['target']) !!}), 300);
+                            highlightElement({!! json_encode($this->currentTourStep['target']) !!});
                         });
                     } else {
-                        setTimeout(() => highlightElement({!! json_encode($this->currentTourStep['target']) !!}), 300);
+                        highlightElement({!! json_encode($this->currentTourStep['target']) !!});
                     }
+                @else
+                    // No target, just position modal at default location
+                    positionModalDefault();
                 @endif
 
                 // Listen for tour step changes
                 Livewire.hook('message.processed', (message, component) => {
                     if (component.name === 'onboarding-tour') {
                         const stepData = component.get('currentTourStep');
+                        console.log('[Tour] Message processed, stepData:', stepData);
                         if (stepData && stepData.target) {
-                            setTimeout(() => highlightElement(stepData.target), 200);
+                            highlightElement(stepData.target);
                         }
                     }
                 });
 
                 // Clean up on tour close
                 Livewire.on('tour-closed', () => {
+                    console.log('[Tour] Tour closed, cleaning up');
                     if (currentHighlight) {
                         currentHighlight.classList.remove('tour-highlight');
                         currentHighlight = null;
@@ -303,10 +379,11 @@
             }
 
             .tour-highlight {
-                position: relative;
-                z-index: 41;
+                position: relative !important;
+                z-index: 9999 !important;
                 border-radius: 8px;
                 transition: all 0.3s ease;
+                pointer-events: auto !important;
                 box-shadow:
                     0 0 0 3px rgba(59, 130, 246, 0.8),
                     0 0 0 6px rgba(59, 130, 246, 0.4),

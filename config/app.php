@@ -125,4 +125,18 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Onboarding Tour
+    |--------------------------------------------------------------------------
+    |
+    | This setting controls whether the onboarding tour is enabled globally.
+    | When disabled, users will not see the interactive tour on first login.
+    | You can control this per-environment using the ONBOARDING_TOUR_ENABLED
+    | environment variable in your .env file.
+    |
+    */
+
+    'onboarding_tour_enabled' => env('ONBOARDING_TOUR_ENABLED', false),
+
 ];
