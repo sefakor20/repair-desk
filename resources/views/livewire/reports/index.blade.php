@@ -250,7 +250,7 @@
                                         {{ $payment->payment_date->format('M d, Y') }}
                                     </td>
                                     <td class="px-6 py-4 text-sm">
-                                        {{ $payment->invoice->customer->full_name }}
+                                        {{ $payment->invoice->customer?->full_name }}
                                     </td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm font-medium">
                                         {{ format_currency($payment->amount) }}
@@ -591,10 +591,10 @@
                                 @foreach ($topCustomers as $customerData)
                                     <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-900/50">
                                         <td class="px-6 py-4">
-                                            <flux:text class="font-medium">{{ $customerData['customer']->full_name }}
+                                            <flux:text class="font-medium">{{ $customerData['customer']?->full_name }}
                                             </flux:text>
                                             <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">
-                                                {{ $customerData['customer']->email }}
+                                                {{ $customerData['customer']?->email }}
                                             </flux:text>
                                         </td>
                                         <td class="whitespace-nowrap px-6 py-4 text-right text-sm">
