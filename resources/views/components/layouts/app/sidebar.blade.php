@@ -90,7 +90,7 @@
                 </flux:navlist.item>
             </flux:navlist.group>
 
-            <flux:navlist.group expandable :expanded="shouldExpandGroup(['branches.*', 'users.*', 'admin.sms-monitoring', 'admin.sms-reports', 'admin.sms-campaigns*', 'admin.contacts.*', 'admin.sms-templates.*'])" :heading="__('Management')" class="grid">
+            <flux:navlist.group expandable :expanded="shouldExpandGroup(['branches.*', 'users.*'])" :heading="__('Management')" class="grid">
                 @can('viewAny', App\Models\Branch::class)
                     <flux:navlist.item icon="store" :href="route('branches.index')"
                         :current="request()->routeIs('branches.*')" wire:navigate data-tour="branches-nav">
@@ -102,44 +102,43 @@
                         :current="request()->routeIs('users.*')" wire:navigate data-tour="users-nav">{{ __('Users') }}
                     </flux:navlist.item>
                 @endcan
+            </flux:navlist.group>
 
-                <flux:sidebar.group expandable icon="chat-bubble-left-right" heading="SMS" class="grid"
-                    data-tour="sms-nav">
-                    @hasAnyStaffPermission(['manage_settings', 'view_reports'])
-                        <flux:navlist.item icon="chat-bubble-left-right" :href="route('admin.sms-monitoring')"
-                            :current="request()->routeIs('admin.sms-monitoring')" wire:navigate
-                            data-tour="sms-monitoring-nav">{{ __('Monitoring') }}
-                        </flux:navlist.item>
-                    @endhasAnyStaffPermission
+            <flux:navlist.group expandable :expanded="shouldExpandGroup(['admin.sms-monitoring', 'admin.sms-reports', 'admin.sms-campaigns*', 'admin.contacts.*', 'admin.sms-templates.*'])" :heading="__('SMS')" class="grid">
+                @hasAnyStaffPermission(['manage_settings', 'view_reports'])
+                    <flux:navlist.item icon="chat-bubble-left-right" :href="route('admin.sms-monitoring')"
+                        :current="request()->routeIs('admin.sms-monitoring')" wire:navigate
+                        data-tour="sms-monitoring-nav">{{ __('Monitoring') }}
+                    </flux:navlist.item>
+                @endhasAnyStaffPermission
 
-                    @hasAnyStaffPermission(['manage_settings', 'view_reports'])
-                        <flux:navlist.item icon="chart-bar" :href="route('admin.sms-reports')"
-                            :current="request()->routeIs('admin.sms-reports')" wire:navigate data-tour="sms-reports-nav">
-                            {{ __('Reports') }}
-                        </flux:navlist.item>
-                    @endhasAnyStaffPermission
+                @hasAnyStaffPermission(['manage_settings', 'view_reports'])
+                    <flux:navlist.item icon="chart-bar" :href="route('admin.sms-reports')"
+                        :current="request()->routeIs('admin.sms-reports')" wire:navigate data-tour="sms-reports-nav">
+                        {{ __('Reports') }}
+                    </flux:navlist.item>
+                @endhasAnyStaffPermission
 
-                    @hasAnyStaffPermission(['manage_settings'])
-                        <flux:navlist.item icon="megaphone" :href="route('admin.sms-campaigns')"
-                            :current="request()->routeIs('admin.sms-campaigns*')" wire:navigate
-                            data-tour="sms-campaigns-nav">{{ __('Campaigns') }}
-                        </flux:navlist.item>
-                    @endhasAnyStaffPermission
+                @hasAnyStaffPermission(['manage_settings'])
+                    <flux:navlist.item icon="megaphone" :href="route('admin.sms-campaigns')"
+                        :current="request()->routeIs('admin.sms-campaigns*')" wire:navigate
+                        data-tour="sms-campaigns-nav">{{ __('Campaigns') }}
+                    </flux:navlist.item>
+                @endhasAnyStaffPermission
 
-                    @hasAnyStaffPermission(['manage_settings'])
-                        <flux:navlist.item icon="book-user" :href="route('admin.contacts.index')"
-                            :current="request()->routeIs('admin.contacts.*')" wire:navigate data-tour="sms-contacts-nav">
-                            {{ __('Contacts') }}
-                        </flux:navlist.item>
-                    @endhasAnyStaffPermission
+                @hasAnyStaffPermission(['manage_settings'])
+                    <flux:navlist.item icon="book-user" :href="route('admin.contacts.index')"
+                        :current="request()->routeIs('admin.contacts.*')" wire:navigate data-tour="sms-contacts-nav">
+                        {{ __('Contacts') }}
+                    </flux:navlist.item>
+                @endhasAnyStaffPermission
 
-                    @hasAnyStaffPermission(['manage_settings'])
-                        <flux:navlist.item icon="document-text" :href="route('admin.sms-templates.index')"
-                            :current="request()->routeIs('admin.sms-templates.*')" wire:navigate
-                            data-tour="sms-templates-nav">{{ __('Templates') }}
-                        </flux:navlist.item>
-                    @endhasAnyStaffPermission
-                </flux:sidebar.group>
+                @hasAnyStaffPermission(['manage_settings'])
+                    <flux:navlist.item icon="document-text" :href="route('admin.sms-templates.index')"
+                        :current="request()->routeIs('admin.sms-templates.*')" wire:navigate
+                        data-tour="sms-templates-nav">{{ __('Templates') }}
+                    </flux:navlist.item>
+                @endhasAnyStaffPermission
             </flux:navlist.group>
         </flux:navlist>
 
