@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Pos\PaystackCallbackController;
 use App\Livewire\Analytics\Dashboard as AnalyticsDashboard;
+use App\Livewire\Auth\Login;
 use App\Livewire\Customers\Create as CustomersCreate;
 use App\Livewire\Customers\Edit as CustomersEdit;
 use App\Livewire\Customers\Index as CustomersIndex;
@@ -71,9 +72,7 @@ use App\Livewire\Users\Index as UsersIndex;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
-Route::get('/', function (): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View {
-    return view('welcome');
-})->name('home');
+Route::get('/', Login::class)->middleware('guest')->name('home');
 
 Route::get('dashboard', Dashboard::class)
     ->middleware(['auth', 'verified'])
