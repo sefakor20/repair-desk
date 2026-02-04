@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Traits\{AutoAssignBranch, BranchScoped};
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,8 +17,10 @@ class SmsCampaign extends Model
     /** @use HasFactory<\Database\Factories\SmsCampaignFactory> */
     use HasFactory;
     use HasUlids;
+    use AutoAssignBranch;
 
     protected $fillable = [
+        'branch_id',
         'name',
         'message',
         'status',
@@ -51,6 +54,11 @@ class SmsCampaign extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
     }
 
     public function deliveryLogs(): HasMany
@@ -143,5 +151,11 @@ class SmsCampaign extends Model
     public function scopeActive($query)
     {
         return $query->whereIn('status', ['scheduled', 'sending']);
+    }
+
+    protected static function boot(): void
+    {
+        parent::boot();
+        static::addGlobalScope(new BranchScoped());
     }
 }

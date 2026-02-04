@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Enums\{ReturnReason, ReturnStatus};
-use App\Models\{PosSale, User};
+use App\Models\{Branch, PosSale, User};
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -26,6 +26,7 @@ class PosReturnFactory extends Factory
         $totalRefund = ($subtotalReturned + $taxReturned) - $restockingFee;
 
         return [
+            'branch_id' => Branch::factory(),
             'return_number' => 'RET-' . now()->format('Ymd') . '-' . fake()->unique()->numberBetween(1000, 9999),
             'original_sale_id' => PosSale::factory(),
             'customer_id' => fn(array $attributes) => PosSale::find($attributes['original_sale_id'])?->customer_id,

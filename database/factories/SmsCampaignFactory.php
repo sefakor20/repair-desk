@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Models\User;
+use App\Models\{User};
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,6 +20,7 @@ class SmsCampaignFactory extends Factory
     public function definition(): array
     {
         return [
+            'branch_id' => null,
             'name' => fake()->sentence(3),
             'message' => fake()->paragraph(),
             'status' => 'draft',
