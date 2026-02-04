@@ -32,7 +32,7 @@
                 @endhasAnyStaffPermission
             </flux:navlist.group>
 
-            <flux:navlist.group :heading="__('Operations')" class="grid">
+            <flux:navlist.group expandable :expanded="shouldExpandGroup(['customers.*', 'devices.*', 'tickets.*', 'inventory.*'])" :heading="__('Operations')" class="grid">
                 @hasAnyStaffPermission(['manage_customers', 'create_tickets', 'view_assigned_tickets'])
                     <flux:navlist.item icon="user-group" :href="route('customers.index')"
                         :current="request()->routeIs('customers.*')" wire:navigate data-tour="customers-nav">
@@ -57,7 +57,7 @@
                 @endhasAnyStaffPermission
             </flux:navlist.group>
 
-            <flux:navlist.group :heading="__('Sales & Payments')" class="grid">
+            <flux:navlist.group expandable :expanded="shouldExpandGroup(['invoices.*', 'pos.*', 'cash-drawer.*', 'shifts.*'])" :heading="__('Sales & Payments')" class="grid">
                 @hasAnyStaffPermission(['create_invoices', 'view_sales', 'process_payments'])
                     <flux:navlist.item icon="document-text" :href="route('invoices.index')"
                         :current="request()->routeIs('invoices.*')" wire:navigate data-tour="invoices-section">
@@ -90,7 +90,7 @@
                 </flux:navlist.item>
             </flux:navlist.group>
 
-            <flux:navlist.group :heading="__('Management')" class="grid">
+            <flux:navlist.group expandable :expanded="shouldExpandGroup(['branches.*', 'users.*', 'admin.sms-monitoring', 'admin.sms-reports', 'admin.sms-campaigns*', 'admin.contacts.*', 'admin.sms-templates.*'])" :heading="__('Management')" class="grid">
                 @can('viewAny', App\Models\Branch::class)
                     <flux:navlist.item icon="store" :href="route('branches.index')"
                         :current="request()->routeIs('branches.*')" wire:navigate data-tour="branches-nav">
