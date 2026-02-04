@@ -28,6 +28,11 @@ class TourService
      */
     public function shouldShowTour(User $user): bool
     {
+        // Check if tours are globally enabled
+        if (!config('app.onboarding_tour_enabled', false)) {
+            return false;
+        }
+
         $tourName = $this->getTourNameForUser($user);
         return !$user->hasCompletedTour($tourName);
     }
