@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Enums\ShiftStatus;
-use App\Models\User;
+use App\Models\{Branch, User};
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -28,6 +28,7 @@ class ShiftFactory extends Factory
         $salesCount = fake()->numberBetween(5, 50);
 
         return [
+            'branch_id' => Branch::factory(),
             'shift_name' => fake()->randomElement(['Morning Shift', 'Afternoon Shift', 'Evening Shift', 'Night Shift']),
             'opened_by' => User::factory(),
             'closed_by' => User::factory(),

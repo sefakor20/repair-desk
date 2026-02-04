@@ -8,16 +8,19 @@ use App\Models\{Customer, InventoryItem, PosReturn, PosSale, PosSaleItem, User};
 use Livewire\Livewire;
 
 beforeEach(function (): void {
-    $this->user = User::factory()->create();
+    $branch = \App\Models\Branch::factory()->create();
+    $this->user = User::factory()->create(['branch_id' => $branch->id]);
     $this->actingAs($this->user);
 
-    $this->customer = Customer::factory()->create();
+    $this->customer = Customer::factory()->create(['branch_id' => $branch->id]);
     $this->item = InventoryItem::factory()->create([
+        'branch_id' => $branch->id,
         'selling_price' => 100.00,
         'quantity' => 10,
     ]);
 
     $this->sale = PosSale::factory()->create([
+        'branch_id' => $branch->id,
         'customer_id' => $this->customer->id,
         'status' => PosSaleStatus::Completed,
         'subtotal' => 200.00,

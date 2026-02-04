@@ -113,7 +113,12 @@ class Index extends Component
                 ->paginate(15),
             'statuses' => TicketStatus::cases(),
             'priorities' => TicketPriority::cases(),
-            'technicians' => User::whereIn('role', ['admin', 'manager', 'technician'])->get(),
+            'technicians' => User::whereIn('role', ['admin', 'manager', 'technician'])
+                ->when(
+                    auth()->user()->branch_id,
+                    fn($query) => $query->where('branch_id', auth()->user()->branch_id),
+                )
+                ->get(),
             'branches' => $branches,
         ])->with('Ticket', Ticket::class);
     }

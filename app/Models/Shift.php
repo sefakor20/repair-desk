@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\ShiftStatus;
+use App\Traits\{AutoAssignBranch, BranchScoped};
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,8 +16,10 @@ class Shift extends Model
     /** @use HasFactory<\Database\Factories\ShiftFactory> */
     use HasFactory;
     use HasUlids;
+    use AutoAssignBranch;
 
     protected $fillable = [
+        'branch_id',
         'shift_name',
         'opened_by',
         'closed_by',
@@ -58,6 +61,11 @@ class Shift extends Model
         return $this->belongsTo(User::class, 'closed_by');
     }
 
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
     public function sales(): HasMany
     {
         return $this->hasMany(PosSale::class);
@@ -89,5 +97,11 @@ class Shift extends Model
         }
 
         return (float) ($this->total_sales / $this->sales_count);
+    }
+
+    protected static function boot(): void
+    {
+        parent::boot();
+        static::addGlobalScope(new BranchScoped());
     }
 }

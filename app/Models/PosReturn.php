@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\ReturnReason;
 use App\Enums\ReturnStatus;
+use App\Traits\{AutoAssignBranch, BranchScoped};
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,8 +17,10 @@ class PosReturn extends Model
 {
     use HasFactory;
     use HasUlids;
+    use AutoAssignBranch;
 
     protected $fillable = [
+        'branch_id',
         'return_number',
         'original_sale_id',
         'customer_id',
@@ -72,6 +75,11 @@ class PosReturn extends Model
     public function shift(): BelongsTo
     {
         return $this->belongsTo(Shift::class);
+    }
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
     }
 
     public function items(): HasMany
@@ -153,5 +161,11 @@ class PosReturn extends Model
     public function scopeByStatus($query, ReturnStatus $status)
     {
         return $query->where('status', $status);
+    }
+
+    protected static function boot(): void
+    {
+        parent::boot();
+        static::addGlobalScope(new BranchScoped());
     }
 }

@@ -89,6 +89,10 @@ class Create extends Component
             : collect();
 
         $technicians = User::whereIn('role', ['admin', 'manager', 'technician'])
+            ->when(
+                auth()->user()->branch_id,
+                fn($query) => $query->where('branch_id', auth()->user()->branch_id),
+            )
             ->orderBy('name')
             ->get();
 

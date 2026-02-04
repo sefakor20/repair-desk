@@ -29,7 +29,7 @@ test('user cannot view open shift page when shift already open', function (): vo
 });
 
 test('user can open shift with valid data', function (): void {
-    $user = createAdmin();
+    $user = createAdmin(['branch_id' => \App\Models\Branch::factory()->create()->id]);
 
     Livewire::actingAs($user)
         ->test(OpenShift::class)
@@ -68,7 +68,7 @@ test('shift name cannot exceed 255 characters', function (): void {
 });
 
 test('opening notes are optional', function (): void {
-    $user = createAdmin();
+    $user = createAdmin(['branch_id' => \App\Models\Branch::factory()->create()->id]);
 
     Livewire::actingAs($user)
         ->test(OpenShift::class)
@@ -106,7 +106,7 @@ test('cannot open shift when user already has open shift', function (): void {
 });
 
 test('shift initializes with zero values', function (): void {
-    $user = createAdmin();
+    $user = createAdmin(['branch_id' => \App\Models\Branch::factory()->create()->id]);
 
     Livewire::actingAs($user)
         ->test(OpenShift::class)

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\StaffRole;
+use App\Traits\BranchScoped;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -105,6 +106,7 @@ class Staff extends Model
     protected static function boot(): void
     {
         parent::boot();
+        static::addGlobalScope(new BranchScoped());
 
         static::deleting(function ($staff): false {
             // Prevent deletion - set inactive instead
