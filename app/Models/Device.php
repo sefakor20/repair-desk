@@ -89,7 +89,7 @@ class Device extends Model
         }
 
         if ($this->isUnderWarranty()) {
-            $daysLeft = now()->diffInDays($this->warranty_expiry);
+            $daysLeft = (int) ceil(now()->diffInDays($this->warranty_expiry, false));
             return "Active ({$daysLeft} days left)";
         }
 
