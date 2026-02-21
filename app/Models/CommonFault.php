@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\DeviceCategory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class CommonFault extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'name',
         'description',

@@ -30,4 +30,11 @@ enum TicketPriority: string
             self::Urgent => 'red',
         };
     }
+
+    public static function options(): array
+    {
+        return collect(self::cases())
+            ->mapWithKeys(fn(self $priority) => [$priority->value => $priority->label()])
+            ->all();
+    }
 }

@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Livewire\Devices;
 
-use App\Models\{Customer, Device};
+use App\Enums\DeviceCategory;
+use App\Models\{Customer, Device, DeviceBrand, DeviceModel};
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -32,17 +33,29 @@ class Edit extends Component
         'password_pin' => '',
     ];
 
+    // New fields for enum and relational data
+    public ?string $device_type = null;
+
+    public ?int $brand_id = null;
+
+    public ?int $model_id = null;
+
     public function mount(Device $device): void
     {
         $this->authorize('update', $device);
 
         $this->device = $device;
 
+        // Load new relational fields (with backward compatibility)
+        $this->device_type = $device->device_type?->value ?? DeviceCategory::Smartphone->value;
+        $this->brand_id = $device->brand_id;
+        $this->model_id = $device->model_id;
+
         $this->form = [
             'customer_id' => $device->customer_id,
-            'type' => $device->type,
-            'brand' => $device->brand,
-            'model' => $device->model,
+            'type' => $device->type ?? '',
+            'brand' => $device->brand ?? '',
+            'model' => $device->model ?? '',
             'color' => $device->color ?? '',
             'storage_capacity' => $device->storage_capacity ?? '',
             'serial_number' => $device->serial_number ?? '',
@@ -58,15 +71,34 @@ class Edit extends Component
         ];
     }
 
+    public function updatedDeviceType(): void
+    {
+        // Reset brand and model when device type changes
+        $this->brand_id = null;
+        $this->model_id = null;
+        $this->form['brand'] = '';
+        $this->form['model'] = '';
+    }
+
+    public function updatedBrandId(): void
+    {
+        // Reset model when brand changes
+        $this->model_id = null;
+        $this->form['model'] = '';
+    }
+
     public function save(): void
     {
         $this->authorize('update', $this->device);
 
         $validated = $this->validate([
             'form.customer_id' => ['required', 'exists:customers,id'],
-            'form.type' => ['required', 'string', 'max:255'],
-            'form.brand' => ['required', 'string', 'max:255'],
-            'form.model' => ['required', 'string', 'max:255'],
+            'device_type' => ['required', 'string'],
+            'brand_id' => ['nullable', 'exists:device_brands,id'],
+            'model_id' => ['nullable', 'exists:device_models,id'],
+            'form.type' => ['nullable', 'string', 'max:255'],
+            'form.brand' => ['nullable', 'string', 'max:255'],
+            'form.model' => ['nullable', 'string', 'max:255'],
             'form.color' => ['nullable', 'string', 'max:255'],
             'form.storage_capacity' => ['nullable', 'string', 'max:255'],
             'form.serial_number' => ['nullable', 'string', 'max:255'],
@@ -84,6 +116,19 @@ class Edit extends Component
         // Convert empty strings to null for proper enum handling
         $updateData = array_map(fn($value) => $value === '' ? null : $value, $validated['form']);
 
+        // Add new relational fields
+        $updateData['device_type'] = $this->device_type;
+        $updateData['brand_id'] = $this->brand_id;
+        $updateData['model_id'] = $this->model_id;
+
+        // Populate legacy text fields from selected brand/model if not manually entered
+        if ($this->brand_id && ! $updateData['brand']) {
+            $updateData['brand'] = DeviceBrand::find($this->brand_id)?->name;
+        }
+        if ($this->model_id && ! $updateData['model']) {
+            $updateData['model'] = DeviceModel::find($this->model_id)?->name;
+        }
+
         // Only update password if provided
         if (empty($updateData['password_pin'])) {
             unset($updateData['password_pin']);
@@ -96,10 +141,37 @@ class Edit extends Component
         $this->redirect(route('devices.show', $this->device), navigate: true);
     }
 
+    public function getBrandsProperty()
+    {
+        if (! $this->device_type) {
+            return collect();
+        }
+
+        return DeviceBrand::query()
+            ->active()
+            ->where('category', $this->device_type)
+            ->orderBy('name')
+            ->get();
+    }
+
+    public function getModelsProperty()
+    {
+        if (! $this->brand_id) {
+            return collect();
+        }
+
+        return DeviceModel::query()
+            ->active()
+            ->where('brand_id', $this->brand_id)
+            ->orderBy('name')
+            ->get();
+    }
+
     public function render()
     {
         return view('livewire.devices.edit', [
             'customers' => Customer::orderBy('first_name')->get(),
+            'deviceCategories' => DeviceCategory::options(),
         ])->title('Edit ' . $this->device->device_name);
     }
 }

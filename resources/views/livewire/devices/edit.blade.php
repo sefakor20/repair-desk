@@ -27,28 +27,62 @@
                 <div>
                     <h3 class="mb-4 text-sm font-semibold text-zinc-900 dark:text-white">Device Details</h3>
                     <div class="space-y-6">
-                        <div class="grid gap-6 sm:grid-cols-2">
-                            <flux:field>
-                                <flux:label>Device Type *</flux:label>
-                                <flux:input wire:model="form.type" placeholder="e.g., Smartphone, Laptop"
-                                    :invalid="$errors->has('form.type')" />
-                                <flux:error name="form.type" />
-                            </flux:field>
+                        {{-- Device Type Dropdown --}}
+                        <flux:field>
+                            <flux:label>Device Type *</flux:label>
+                            <flux:select wire:model.live="device_type" :invalid="$errors->has('device_type')">
+                                @foreach ($deviceCategories as $value => $label)
+                                    <option value="{{ $value }}">{{ $label }}</option>
+                                @endforeach
+                            </flux:select>
+                            <flux:error name="device_type" />
+                        </flux:field>
 
+                        {{-- Brand Selection --}}
+                        <flux:field>
+                            <flux:label>Brand *</flux:label>
+                            <flux:select wire:model.live="brand_id" :invalid="$errors->has('brand_id')">
+                                <option value="">Select a brand or enter custom below</option>
+                                @foreach ($this->brands as $brand)
+                                    <option value="{{ $brand->id }}">{{ $brand->name }}</option>
+                                @endforeach
+                            </flux:select>
+                            <flux:error name="brand_id" />
+                        </flux:field>
+
+                        @if (!$brand_id)
                             <flux:field>
-                                <flux:label>Brand *</flux:label>
-                                <flux:input wire:model="form.brand" placeholder="e.g., Apple, Samsung"
+                                <flux:label>Custom Brand</flux:label>
+                                <flux:input wire:model="form.brand" placeholder="Enter brand name (if not in list above)"
                                     :invalid="$errors->has('form.brand')" />
                                 <flux:error name="form.brand" />
+                                <flux:description>Only fill this if the brand is not available in the dropdown</flux:description>
                             </flux:field>
-                        </div>
+                        @endif
 
-                        <flux:field>
-                            <flux:label>Model *</flux:label>
-                            <flux:input wire:model="form.model" placeholder="e.g., iPhone 15 Pro, MacBook Pro"
-                                :invalid="$errors->has('form.model')" />
-                            <flux:error name="form.model" />
-                        </flux:field>
+                        {{-- Model Selection --}}
+                        @if ($brand_id)
+                            <flux:field>
+                                <flux:label>Model *</flux:label>
+                                <flux:select wire:model.live="model_id" :invalid="$errors->has('model_id')">
+                                    <option value="">Select a model or enter custom below</option>
+                                    @foreach ($this->models as $model)
+                                        <option value="{{ $model->id }}">{{ $model->name }}</option>
+                                    @endforeach
+                                </flux:select>
+                                <flux:error name="model_id" />
+                            </flux:field>
+                        @endif
+
+                        @if (!$model_id)
+                            <flux:field>
+                                <flux:label>Custom Model</flux:label>
+                                <flux:input wire:model="form.model" placeholder="Enter model name (if not in list above)"
+                                    :invalid="$errors->has('form.model')" />
+                                <flux:error name="form.model" />
+                                <flux:description>Only fill this if the model is not available in the dropdown</flux:description>
+                            </flux:field>
+                        @endif
 
                         <div class="grid gap-6 sm:grid-cols-2">
                             <flux:field>

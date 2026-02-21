@@ -96,6 +96,16 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('devices/{device}', DevicesShow::class)->name('devices.show');
     Route::get('devices/{device}/edit', DevicesEdit::class)->name('devices.edit');
 
+    // Device Assessment Routes
+    Route::get('assessments', \App\Livewire\Assessments\Manage::class)->name('assessments.index');
+    Route::get('assessments/create', \App\Livewire\Assessments\Manage::class)->name('assessments.create');
+    Route::get('assessments/{assessmentId}', \App\Livewire\Assessments\Manage::class)->name('assessments.view');
+    Route::get('devices/{deviceId}/assessments/create', \App\Livewire\Assessments\Manage::class)->name('devices.assessments.create');
+    Route::get('tickets/{ticketId}/assessments/create', \App\Livewire\Assessments\Manage::class)->name('tickets.assessments.create');
+
+    // Intake Wizard
+    Route::get('intake/wizard', \App\Livewire\Intake\Wizard::class)->name('intake.wizard')->middleware('staff.permission:create_tickets');
+
     // Ticket routes
     Route::get('tickets', TicketsIndex::class)->name('tickets.index')->middleware('staff.permission:manage_tickets');
     Route::get('tickets/create', TicketsCreate::class)->name('tickets.create')->middleware('staff.permission:create_tickets');

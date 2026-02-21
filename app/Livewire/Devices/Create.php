@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Livewire\Devices;
 
-use App\Models\{Customer, Device};
+use App\Enums\DeviceCategory;
+use App\Models\{Customer, Device, DeviceBrand, DeviceModel};
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -30,9 +31,33 @@ class Create extends Component
         'password_pin' => '',
     ];
 
+    // New fields for enum and relational data
+    public ?string $device_type = null;
+
+    public ?int $brand_id = null;
+
+    public ?int $model_id = null;
+
     public function mount(): void
     {
         $this->authorize('create', Device::class);
+        $this->device_type = DeviceCategory::Smartphone->value;
+    }
+
+    public function updatedDeviceType(): void
+    {
+        // Reset brand and model when device type changes
+        $this->brand_id = null;
+        $this->model_id = null;
+        $this->form['brand'] = '';
+        $this->form['model'] = '';
+    }
+
+    public function updatedBrandId(): void
+    {
+        // Reset model when brand changes
+        $this->model_id = null;
+        $this->form['model'] = '';
     }
 
     public function save(): void
@@ -41,9 +66,12 @@ class Create extends Component
 
         $validated = $this->validate([
             'form.customer_id' => ['required', 'exists:customers,id'],
-            'form.type' => ['required', 'string', 'max:255'],
-            'form.brand' => ['required', 'string', 'max:255'],
-            'form.model' => ['required', 'string', 'max:255'],
+            'device_type' => ['required', 'string'],
+            'brand_id' => ['nullable', 'exists:device_brands,id'],
+            'model_id' => ['nullable', 'exists:device_models,id'],
+            'form.type' => ['nullable', 'string', 'max:255'],
+            'form.brand' => ['nullable', 'string', 'max:255'],
+            'form.model' => ['nullable', 'string', 'max:255'],
             'form.color' => ['nullable', 'string', 'max:255'],
             'form.storage_capacity' => ['nullable', 'string', 'max:255'],
             'form.serial_number' => ['nullable', 'string', 'max:255'],
@@ -61,6 +89,19 @@ class Create extends Component
         // Convert empty strings to null for proper enum handling
         $data = array_map(fn($value) => $value === '' ? null : $value, $validated['form']);
 
+        // Add new relational fields
+        $data['device_type'] = $this->device_type;
+        $data['brand_id'] = $this->brand_id;
+        $data['model_id'] = $this->model_id;
+
+        // Populate legacy text fields from selected brand/model if not manually entered
+        if ($this->brand_id && ! $data['brand']) {
+            $data['brand'] = DeviceBrand::find($this->brand_id)?->name;
+        }
+        if ($this->model_id && ! $data['model']) {
+            $data['model'] = DeviceModel::find($this->model_id)?->name;
+        }
+
         // Automatically set the branch_id to the current user's branch
         $data['branch_id'] = auth()->user()->branch_id;
 
@@ -71,10 +112,37 @@ class Create extends Component
         $this->redirect(route('devices.show', $device), navigate: true);
     }
 
+    public function getBrandsProperty()
+    {
+        if (! $this->device_type) {
+            return collect();
+        }
+
+        return DeviceBrand::query()
+            ->active()
+            ->where('category', $this->device_type)
+            ->orderBy('name')
+            ->get();
+    }
+
+    public function getModelsProperty()
+    {
+        if (! $this->brand_id) {
+            return collect();
+        }
+
+        return DeviceModel::query()
+            ->active()
+            ->where('brand_id', $this->brand_id)
+            ->orderBy('name')
+            ->get();
+    }
+
     public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         return view('livewire.devices.create', [
             'customers' => Customer::orderBy('first_name')->get(),
+            'deviceCategories' => DeviceCategory::options(),
         ]);
     }
 }

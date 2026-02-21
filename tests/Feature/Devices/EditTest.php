@@ -32,7 +32,7 @@ test('device edit requires authentication', function (): void {
 
 test('form is pre-populated with device data', function (): void {
     $device = Device::factory()->create([
-        'type' => 'Smartphone',
+        'device_type' => 'smartphone',
         'brand' => 'Apple',
         'model' => 'iPhone 15 Pro',
         'serial_number' => 'SN123456',
@@ -42,7 +42,7 @@ test('form is pre-populated with device data', function (): void {
 
     Livewire::test(Edit::class, ['device' => $device])
         ->assertSet('form.customer_id', $device->customer_id)
-        ->assertSet('form.type', 'Smartphone')
+        ->assertSet('device_type', 'smartphone')
         ->assertSet('form.brand', 'Apple')
         ->assertSet('form.model', 'iPhone 15 Pro')
         ->assertSet('form.serial_number', 'SN123456')
@@ -69,7 +69,7 @@ test('can update device with all fields', function (): void {
 
     Livewire::test(Edit::class, ['device' => $device])
         ->set('form.customer_id', $newCustomer->id)
-        ->set('form.type', 'Laptop')
+        ->set('device_type', 'laptop')
         ->set('form.brand', 'Dell')
         ->set('form.model', 'XPS 15')
         ->set('form.serial_number', 'NEW123')
@@ -81,7 +81,7 @@ test('can update device with all fields', function (): void {
 
     $device->refresh();
     expect($device->customer_id)->toBe($newCustomer->id);
-    expect($device->type)->toBe('Laptop');
+    expect($device->device_type->value)->toBe('laptop');
     expect($device->brand)->toBe('Dell');
     expect($device->model)->toBe('XPS 15');
     expect($device->serial_number)->toBe('NEW123');
@@ -124,31 +124,13 @@ test('customer_id must exist', function (): void {
         ->assertHasErrors(['form.customer_id']);
 });
 
-test('type is required', function (): void {
+test('device_type is required', function (): void {
     $device = Device::factory()->create();
 
     Livewire::test(Edit::class, ['device' => $device])
-        ->set('form.type', '')
+        ->set('device_type', '')
         ->call('save')
-        ->assertHasErrors(['form.type' => 'required']);
-});
-
-test('brand is required', function (): void {
-    $device = Device::factory()->create();
-
-    Livewire::test(Edit::class, ['device' => $device])
-        ->set('form.brand', '')
-        ->call('save')
-        ->assertHasErrors(['form.brand' => 'required']);
-});
-
-test('model is required', function (): void {
-    $device = Device::factory()->create();
-
-    Livewire::test(Edit::class, ['device' => $device])
-        ->set('form.model', '')
-        ->call('save')
-        ->assertHasErrors(['form.model' => 'required']);
+        ->assertHasErrors(['device_type' => 'required']);
 });
 
 test('serial_number is optional', function (): void {
@@ -185,15 +167,6 @@ test('notes is optional', function (): void {
 
     $device->refresh();
     expect($device->notes)->toBeEmpty();
-});
-
-test('type cannot exceed 255 characters', function (): void {
-    $device = Device::factory()->create();
-
-    Livewire::test(Edit::class, ['device' => $device])
-        ->set('form.type', str_repeat('a', 256))
-        ->call('save')
-        ->assertHasErrors(['form.type']);
 });
 
 test('brand cannot exceed 255 characters', function (): void {
