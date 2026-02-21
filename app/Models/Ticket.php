@@ -33,6 +33,9 @@ class Ticket extends Model
         'created_by',
         'estimated_completion',
         'actual_completion',
+        'repair_completion_date',
+        'post_repair_warranty_terms',
+        'post_repair_warranty_expiry',
     ];
 
     protected function casts(): array
@@ -42,6 +45,8 @@ class Ticket extends Model
             'priority' => TicketPriority::class,
             'estimated_completion' => 'datetime',
             'actual_completion' => 'datetime',
+            'repair_completion_date' => 'date',
+            'post_repair_warranty_expiry' => 'date',
         ];
     }
 
@@ -88,6 +93,44 @@ class Ticket extends Model
     public function invoice(): HasOne
     {
         return $this->hasOne(Invoice::class);
+    }
+
+    public function assessments(): HasMany
+    {
+        return $this->hasMany(DeviceAssessment::class);
+    }
+
+    public function isUnderRepairWarranty(): bool
+    {
+        if (! $this->post_repair_warranty_expiry) {
+            return false;
+        }
+
+        return $this->post_repair_warranty_expiry->isFuture();
+    }
+
+    public function getRepairWarrantyStatusAttribute(): string
+    {
+        if (! $this->post_repair_warranty_expiry) {
+            return 'No Repair Warranty';
+        }
+
+        if ($this->isUnderRepairWarranty()) {
+            $daysLeft = (int) ceil(now()->diffInDays($this->post_repair_warranty_expiry, false));
+
+            return "Active ({$daysLeft} days left)";
+        }
+
+        return 'Expired';
+    }
+
+    public function getRepairWarrantyDaysRemainingAttribute(): ?int
+    {
+        if (! $this->post_repair_warranty_expiry || ! $this->isUnderRepairWarranty()) {
+            return null;
+        }
+
+        return (int) ceil(now()->diffInDays($this->post_repair_warranty_expiry, false));
     }
 
     protected static function boot(): void
