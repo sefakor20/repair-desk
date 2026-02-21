@@ -179,6 +179,16 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('admin/brands/create', \App\Livewire\Admin\Brands\Form::class)->name('admin.brands.create')->middleware('staff.permission:manage_settings');
     Route::get('admin/brands/{brand}/edit', \App\Livewire\Admin\Brands\Form::class)->name('admin.brands.edit')->middleware('staff.permission:manage_settings');
 
+    // Device Models
+    Route::get('admin/models', \App\Livewire\Admin\Models\Index::class)->name('admin.models.index')->middleware('staff.permission:manage_settings');
+    Route::get('admin/models/create', \App\Livewire\Admin\Models\Form::class)->name('admin.models.create')->middleware('staff.permission:manage_settings');
+    Route::get('admin/models/{model}/edit', \App\Livewire\Admin\Models\Form::class)->name('admin.models.edit')->middleware('staff.permission:manage_settings');
+
+    // Common Faults
+    Route::get('admin/faults', \App\Livewire\Admin\Faults\Index::class)->name('admin.faults.index')->middleware('staff.permission:manage_settings');
+    Route::get('admin/faults/create', \App\Livewire\Admin\Faults\Form::class)->name('admin.faults.create')->middleware('staff.permission:manage_settings');
+    Route::get('admin/faults/{fault}/edit', \App\Livewire\Admin\Faults\Form::class)->name('admin.faults.edit')->middleware('staff.permission:manage_settings');
+
     // SMS Templates
     Route::get('admin/sms-templates', \App\Livewire\Admin\SmsTemplates\Index::class)->name('admin.sms-templates.index')->middleware('staff.permission:manage_settings');
     Route::get('admin/sms-templates/create', \App\Livewire\Admin\SmsTemplates\Form::class)->name('admin.sms-templates.create')->middleware('staff.permission:manage_settings');

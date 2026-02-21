@@ -104,6 +104,29 @@
                 @endcan
             </flux:navlist.group>
 
+            <flux:navlist.group expandable :expanded="shouldExpandGroup(['admin.brands.*', 'admin.models.*', 'admin.faults.*'])" :heading="__('Device Setup')" class="grid">
+                @hasAnyStaffPermission(['manage_settings'])
+                    <flux:navlist.item icon="tag" :href="route('admin.brands.index')"
+                        :current="request()->routeIs('admin.brands.*')" wire:navigate data-tour="brands-nav">
+                        {{ __('Brands') }}
+                    </flux:navlist.item>
+                @endhasAnyStaffPermission
+
+                @hasAnyStaffPermission(['manage_settings'])
+                    <flux:navlist.item icon="device-phone-mobile" :href="route('admin.models.index')"
+                        :current="request()->routeIs('admin.models.*')" wire:navigate data-tour="models-nav">
+                        {{ __('Models') }}
+                    </flux:navlist.item>
+                @endhasAnyStaffPermission
+
+                @hasAnyStaffPermission(['manage_settings'])
+                    <flux:navlist.item icon="wrench" :href="route('admin.faults.index')"
+                        :current="request()->routeIs('admin.faults.*')" wire:navigate data-tour="faults-nav">
+                        {{ __('Common Faults') }}
+                    </flux:navlist.item>
+                @endhasAnyStaffPermission
+            </flux:navlist.group>
+
             <flux:navlist.group expandable :expanded="shouldExpandGroup(['admin.sms-monitoring', 'admin.sms-reports', 'admin.sms-campaigns*', 'admin.contacts.*', 'admin.sms-templates.*'])" :heading="__('SMS')" class="grid">
                 @hasAnyStaffPermission(['manage_settings', 'view_reports'])
                     <flux:navlist.item icon="chat-bubble-left-right" :href="route('admin.sms-monitoring')"

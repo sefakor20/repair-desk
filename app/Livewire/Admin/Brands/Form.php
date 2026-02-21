@@ -30,7 +30,7 @@ class Form extends Component
 
     public function mount(?DeviceBrand $brand = null): void
     {
-        if ($brand->exists) {
+        if ($brand && $brand->exists) {
             $this->authorize('update', $brand);
             $this->brand = $brand;
             $this->isEditing = true;
@@ -39,6 +39,7 @@ class Form extends Component
             $this->is_active = $brand->is_active;
         } else {
             $this->authorize('create', DeviceBrand::class);
+            $this->brand = new DeviceBrand();
             $this->category = DeviceCategory::Smartphone->value;
         }
     }
